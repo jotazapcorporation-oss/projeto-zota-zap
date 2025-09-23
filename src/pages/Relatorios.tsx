@@ -35,7 +35,7 @@ export default function Relatorios() {
         transactions,
         summaryData,
         filters,
-        userName: user?.name || user?.email || 'Usuário'
+        userName: user?.email || 'Usuário'
       }
 
       generatePDFReport(reportData, options)

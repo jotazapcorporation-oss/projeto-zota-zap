@@ -1,13 +1,10 @@
 import { useState, useEffect, createContext, useContext } from 'react'
-
-interface User {
-  id: string
-  email: string
-  name?: string
-}
+import { supabase } from '@/integrations/supabase/client'
+import type { User, Session } from '@supabase/supabase-js'
 
 interface AuthContextType {
   user: User | null
+  session: Session | null
   loading: boolean
   signIn: (email: string, password: string) => Promise<{ error: any }>
   signOut: () => Promise<void>
@@ -16,60 +13,83 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
-// Mock users for demo purposes
-const DEMO_USERS = [
-  { id: '1', email: 'demo@financas.com', password: 'demo123', name: 'Usuário Demo' },
-  { id: '2', email: 'teste@financas.com', password: 'teste123456', name: 'Usuário Teste' }
-]
-
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
+  const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Check if user is logged in from localStorage
-    const savedUser = localStorage.getItem('jsap-user')
-    if (savedUser) {
-      try {
-        setUser(JSON.parse(savedUser))
-      } catch (error) {
-        localStorage.removeItem('jsap-user')
+    // Set up auth state listener FIRST
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log('Auth state changed:', event, session)
+        setSession(session)
+        setUser(session?.user ?? null)
+        setLoading(false)
       }
-    }
-    setLoading(false)
+    )
+
+    // THEN check for existing session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('Initial session:', session)
+      setSession(session)
+      setUser(session?.user ?? null)
+      setLoading(false)
+    })
+
+    return () => subscription.unsubscribe()
   }, [])
 
   const signIn = async (email: string, password: string) => {
-    const demoUser = DEMO_USERS.find(u => u.email === email && u.password === password)
-    
-    if (demoUser) {
-      const user = { id: demoUser.id, email: demoUser.email, name: demoUser.name }
-      setUser(user)
-      localStorage.setItem('jsap-user', JSON.stringify(user))
+    try {
+      console.log('Attempting Supabase login for:', email)
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      if (error) {
+        console.error('Supabase login error:', error)
+        return { error }
+      }
+
+      console.log('Supabase login successful:', data)
       return { error: null }
+    } catch (error) {
+      console.error('Unexpected login error:', error)
+      return { error }
     }
-    
-    return { error: { message: 'Email ou senha incorretos' } }
   }
 
   const signOut = async () => {
-    setUser(null)
-    localStorage.removeItem('jsap-user')
+    try {
+      const { error } = await supabase.auth.signOut()
+      if (error) {
+        console.error('Sign out error:', error)
+      }
+    } catch (error) {
+      console.error('Unexpected sign out error:', error)
+    }
   }
 
   const resetPassword = async (email: string) => {
-    // Simulate password reset
-    const demoUser = DEMO_USERS.find(u => u.email === email)
-    if (demoUser) {
-      return { error: null }
+    try {
+      const redirectUrl = `${window.location.origin}/reset-password`
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: redirectUrl,
+      })
+      return { error }
+    } catch (error) {
+      console.error('Reset password error:', error)
+      return { error }
     }
-    return { error: { message: 'Email não encontrado' } }
   }
 
   return (
     <AuthContext.Provider
       value={{
         user,
+        session,
         loading,
         signIn,
         signOut,
