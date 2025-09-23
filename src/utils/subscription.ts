@@ -22,21 +22,51 @@ export const fetchSubscriptionInfoWithJWT = async (): Promise<ExternalSubscripti
   }
 }
 
-export const fetchSubscriptionInfo = async (subscriptionId: string): Promise<ExternalSubscriptionData> => {
-  // Return demo external subscription data for local system
-  return {
-    id: subscriptionId,
-    dataAssinatura: new Date().toISOString(),
-    valor: 97.00,
-    ciclo: 'monthly',
-    status: 'ACTIVE',
-    proimoPagamento: new Date(Date.now() + (30 * 24 * 60 * 60 * 1000)).toISOString(),
-    creditCard: {
-      creditCardNumber: '**** **** **** 1234',
-      creditCardBrand: 'visa',
-      creditCardToken: 'demo-token'
+export const fetchSubscriptionInfo = async (userId: string): Promise<ExternalSubscriptionData | null> => {
+  try {
+    const credentials = btoa('USUARIO:SENHA');
+    
+    const response = await fetch('https://webhook.jzap.net/webhook/assinatura/info', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Basic ${credentials}`
+      },
+      body: JSON.stringify({
+        userId: userId
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao buscar informações da assinatura');
     }
+
+    const data: ExternalSubscriptionData = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Erro na busca das informações de assinatura:', error);
+    throw new Error('Não foi possível carregar as informações da assinatura');
   }
+}
+
+export const mapSubscriptionData = (apiData: ExternalSubscriptionData): SubscriptionData => {
+  return {
+    id: apiData.id,
+    user_id: '',
+    subscription_id: apiData.id,
+    status: apiData.status.toLowerCase() as 'active' | 'inactive' | 'cancelled' | 'suspended',
+    plan_name: 'Plano Mensal',
+    amount: apiData.valor,
+    currency: 'BRL',
+    cycle: apiData.ciclo,
+    start_date: apiData.dataAssinatura,
+    next_payment_date: apiData.proimoPagamento,
+    payment_method: 'credit_card',
+    card_last_four: apiData.creditCard.creditCardNumber.slice(-4),
+    card_brand: apiData.creditCard.creditCardBrand,
+    created_at: apiData.dataAssinatura,
+    updated_at: new Date().toISOString()
+  };
 }
 
 export const fetchLocalSubscriptionData = async (userId: string): Promise<SubscriptionData> => {
@@ -46,8 +76,8 @@ export const fetchLocalSubscriptionData = async (userId: string): Promise<Subscr
     user_id: userId,
     subscription_id: 'demo-external-subscription',
     status: 'active',
-    plan_name: 'POUPE AGORA',
-    amount: 97.00,
+    plan_name: 'Plano Mensal',
+    amount: 19.90,
     currency: 'BRL',
     cycle: 'monthly',
     start_date: new Date().toISOString(),

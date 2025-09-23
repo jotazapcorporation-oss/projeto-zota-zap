@@ -5,20 +5,49 @@ import { Button } from '@/components/ui/button'
 import { useAuth } from '@/hooks/useLocalAuth'
 import { toast } from '@/hooks/use-toast'
 import { CreditCard, RefreshCw, AlertCircle } from 'lucide-react'
+import { fetchSubscriptionInfo, mapSubscriptionData } from '@/utils/subscription'
+import { SubscriptionDetails } from './SubscriptionDetails'
+import type { SubscriptionData } from '@/types/subscription'
 
 export function SubscriptionInfo() {
   const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [syncing, setSyncing] = useState(false)
+  const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null)
+
+  useEffect(() => {
+    loadSubscriptionData()
+  }, [user])
+
+  const loadSubscriptionData = async () => {
+    if (!user?.id) return
+    
+    try {
+      setLoading(true)
+      const apiData = await fetchSubscriptionInfo(user.id)
+      if (apiData) {
+        const mappedData = mapSubscriptionData(apiData)
+        setSubscriptionData(mappedData)
+      }
+    } catch (error: any) {
+      console.error('Erro ao carregar dados da assinatura:', error)
+      toast({
+        title: "Erro ao carregar assinatura",
+        description: error.message,
+        variant: "destructive",
+      })
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const syncSubscriptionData = async () => {
     try {
       setSyncing(true)
-      // Database tables don't exist yet
+      await loadSubscriptionData()
       toast({
-        title: "Banco de dados indisponível",
-        description: "Aguarde a recriação das tabelas para usar esta funcionalidade",
-        variant: "destructive",
+        title: "Dados atualizados",
+        description: "Informações da assinatura foram sincronizadas com sucesso",
       })
     } catch (error: any) {
       console.error('Erro na sincronização:', error)
@@ -41,25 +70,42 @@ export function SubscriptionInfo() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="text-center py-8 space-y-4">
-          <CreditCard className="h-12 w-12 text-muted-foreground mx-auto" />
-          <div className="space-y-2">
-            <p className="text-muted-foreground">Banco de dados indisponível</p>
-            <div className="bg-muted/50 rounded-lg p-3">
-              <div className="flex items-center gap-2 text-sm">
-                <AlertCircle className="h-4 w-4 text-yellow-500" />
-                <span>Aguarde a recriação das tabelas</span>
-              </div>
-              <p className="text-xs text-muted-foreground mt-1">
-                As tabelas do banco de dados foram removidas e precisam ser recriadas
-              </p>
+        {loading ? (
+          <div className="text-center py-8 space-y-4">
+            <RefreshCw className="h-12 w-12 text-muted-foreground mx-auto animate-spin" />
+            <p className="text-muted-foreground">Carregando informações da assinatura...</p>
+          </div>
+        ) : subscriptionData ? (
+          <div className="space-y-6">
+            <SubscriptionDetails subscriptionData={subscriptionData} />
+            <div className="flex justify-center">
+              <Button onClick={syncSubscriptionData} disabled={syncing} variant="outline" size="sm">
+                <RefreshCw className={`h-4 w-4 mr-2 ${syncing ? 'animate-spin' : ''}`} />
+                {syncing ? 'Sincronizando...' : 'Sincronizar Dados'}
+              </Button>
             </div>
           </div>
-          <Button onClick={syncSubscriptionData} disabled={syncing} variant="outline" size="sm">
-            <RefreshCw className={`h-4 w-4 mr-2 ${syncing ? 'animate-spin' : ''}`} />
-            {syncing ? 'Aguardando...' : 'Aguardar Recriação'}
-          </Button>
-        </div>
+        ) : (
+          <div className="text-center py-8 space-y-4">
+            <CreditCard className="h-12 w-12 text-muted-foreground mx-auto" />
+            <div className="space-y-2">
+              <p className="text-muted-foreground">Nenhuma assinatura encontrada</p>
+              <div className="bg-muted/50 rounded-lg p-3">
+                <div className="flex items-center gap-2 text-sm">
+                  <AlertCircle className="h-4 w-4 text-yellow-500" />
+                  <span>Não foi possível carregar os dados da assinatura</span>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Verifique se você possui uma assinatura ativa
+                </p>
+              </div>
+            </div>
+            <Button onClick={syncSubscriptionData} disabled={syncing} variant="outline" size="sm">
+              <RefreshCw className={`h-4 w-4 mr-2 ${syncing ? 'animate-spin' : ''}`} />
+              {syncing ? 'Tentando novamente...' : 'Tentar Novamente'}
+            </Button>
+          </div>
+        )}
       </CardContent>
     </Card>
   )

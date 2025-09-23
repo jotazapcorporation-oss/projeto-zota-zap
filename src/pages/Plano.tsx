@@ -12,7 +12,7 @@ export default function Plano() {
   
   const handleSubscribe = () => {
     console.log('Iniciando processo de pagamento - JZAP');
-    window.location.href = '#';
+    window.location.href = 'https://www.asaas.com/c/h2qg6p0uokffvi4b';
   };
   
   const handleBackToLogin = () => {
@@ -107,7 +107,7 @@ export default function Plano() {
           <div className="w-full mx-auto">
             <div className="text-start py-4 sm:py-6 lg:py-8">
               <h1 className="text-xl sm:text-2xl font-bold text-slate-800 mb-2 dark:text-slate-300">
-                POUPE AGORA  R$ 97,00
+                R$ 19,90 ao mês
               </h1>
               <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8">
                 Organize suas finanças de forma simples e inteligente!
@@ -128,7 +128,7 @@ export default function Plano() {
               {/* Impact Message */}
               <div className="bg-primary/10 rounded-lg p-3 sm:p-4 mb-6 sm:mb-8">
                 <p className="text-base sm:text-lg font-semibold text-primary text-center">
-                  Invista no controle da sua vida financeira por menos de R$0,05 por dia!
+                  Invista no controle da sua vida financeira por apenas R$ 19,90 por mês!
                 </p>
               </div>
 

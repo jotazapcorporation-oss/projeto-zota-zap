@@ -6,9 +6,9 @@ interface WhatsAppValidationResponse {
 
 export async function validateWhatsAppNumber(phoneNumber: string): Promise<{ exists: boolean; whatsappId?: string }> {
   try {
-    const credentials = btoa('JZAP:123456');
+    const credentials = btoa('USUARIO:SENHA');
     
-    const response = await fetch('https://n8n.jzap.shop/webhook-test/verifica-zap', {
+    const response = await fetch('https://webhook.jzap.net/webhook/verifica-zap', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
