@@ -47,7 +47,7 @@ export type Database = {
           data: string | null
           descricao: string | null
           id: number
-          userid: string | null
+          userid: string
           valor: number | null
         }
         Insert: {
@@ -55,7 +55,7 @@ export type Database = {
           data?: string | null
           descricao?: string | null
           id?: never
-          userid?: string | null
+          userid: string
           valor?: number | null
         }
         Update: {
@@ -63,7 +63,7 @@ export type Database = {
           data?: string | null
           descricao?: string | null
           id?: never
-          userid?: string | null
+          userid?: string
           valor?: number | null
         }
         Relationships: [
@@ -142,7 +142,7 @@ export type Database = {
           id: number
           quando: string | null
           tipo: string | null
-          userid: string | null
+          userid: string
           valor: number | null
         }
         Insert: {
@@ -153,7 +153,7 @@ export type Database = {
           id?: never
           quando?: string | null
           tipo?: string | null
-          userid?: string | null
+          userid: string
           valor?: number | null
         }
         Update: {
@@ -164,7 +164,7 @@ export type Database = {
           id?: never
           quando?: string | null
           tipo?: string | null
-          userid?: string | null
+          userid?: string
           valor?: number | null
         }
         Relationships: [
