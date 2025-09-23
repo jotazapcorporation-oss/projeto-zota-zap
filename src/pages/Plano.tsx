@@ -107,7 +107,7 @@ export default function Plano() {
           <div className="w-full mx-auto">
             <div className="text-start py-4 sm:py-6 lg:py-8">
               <h1 className="text-xl sm:text-2xl font-bold text-slate-800 mb-2 dark:text-slate-300">
-                R$ 19,90 ao mês
+                Plano JZAP - Assistente Financeiro R$ 19,90 ao mês
               </h1>
               <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8">
                 Organize suas finanças de forma simples e inteligente!
