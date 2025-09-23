@@ -1,6 +1,7 @@
 
-import { useState, useMemo } from 'react'
-import { useAuth } from '@/hooks/useLocalAuth';
+import { useState, useMemo, useEffect } from 'react'
+import { useAuth } from '@/hooks/useLocalAuth'
+import { supabase } from '@/integrations/supabase/client'
 
 export interface ReportTransaction {
   id: number
@@ -27,6 +28,8 @@ export interface ReportFilters {
 
 export function useReports() {
   const { user } = useAuth()
+  const [transactions, setTransactions] = useState<ReportTransaction[]>([])
+  const [isLoading, setIsLoading] = useState(false)
   const [filters, setFilters] = useState<ReportFilters>({
     startDate: '',
     endDate: '',
@@ -35,9 +38,75 @@ export function useReports() {
     period: 'month'
   })
 
-  // Database tables don't exist yet, return empty data
-  const transactions: ReportTransaction[] = []
-  const isLoading = false
+  const fetchTransactions = async () => {
+    if (!user) return
+    
+    try {
+      setIsLoading(true)
+      let query = supabase
+        .from('transacoes')
+        .select(`
+          *,
+          categorias(id, nome)
+        `)
+        .eq('userid', user.id)
+        .order('created_at', { ascending: false })
+
+      // Apply filters
+      if (filters.type) {
+        query = query.eq('tipo', filters.type)
+      }
+      
+      if (filters.categoryId) {
+        query = query.eq('category_id', filters.categoryId)
+      }
+
+      // Apply date filters based on period
+      const now = new Date()
+      let startDate: Date | null = null
+      let endDate: Date | null = null
+
+      switch (filters.period) {
+        case 'day':
+          startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+          endDate = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
+          break
+        case 'month':
+          startDate = new Date(now.getFullYear(), now.getMonth(), 1)
+          endDate = new Date(now.getFullYear(), now.getMonth() + 1, 1)
+          break
+        case 'year':
+          startDate = new Date(now.getFullYear(), 0, 1)
+          endDate = new Date(now.getFullYear() + 1, 0, 1)
+          break
+        case 'custom':
+          if (filters.startDate) startDate = new Date(filters.startDate)
+          if (filters.endDate) endDate = new Date(filters.endDate)
+          break
+      }
+
+      if (startDate) {
+        query = query.gte('created_at', startDate.toISOString())
+      }
+      if (endDate) {
+        query = query.lt('created_at', endDate.toISOString())
+      }
+
+      const { data, error } = await query
+
+      if (error) throw error
+      setTransactions(data || [])
+    } catch (error: any) {
+      console.error('Erro ao carregar transações:', error)
+      setTransactions([])
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchTransactions()
+  }, [user, filters])
 
   // Calculate summary data
   const summaryData = useMemo(() => {
