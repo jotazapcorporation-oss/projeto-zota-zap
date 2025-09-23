@@ -4,12 +4,12 @@ import { Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { CategoriesList } from '@/components/categories/CategoriesList';
 import { CategoryForm } from '@/components/categories/CategoryForm';
-import { useCategories } from '@/hooks/useLocalCategories';
+import { useSupabaseCategories } from '@/hooks/useSupabaseCategories';
 
 export default function Categorias() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<any>(null);
-  const { categories, isLoading } = useCategories();
+  const { categories, isLoading } = useSupabaseCategories();
 
   const handleEditCategory = (category: any) => {
     setEditingCategory(category);

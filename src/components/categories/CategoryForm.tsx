@@ -11,7 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { useCategories, Category } from '@/hooks/useLocalCategories';
+import { useSupabaseCategories, Category } from '@/hooks/useSupabaseCategories';
 
 interface CategoryFormProps {
   category?: Category | null;
@@ -21,7 +21,7 @@ interface CategoryFormProps {
 export function CategoryForm({ category, onClose }: CategoryFormProps) {
   const [nome, setNome] = useState('');
   const [tags, setTags] = useState('');
-  const { createCategory, updateCategory, isCreating, isUpdating } = useCategories();
+  const { createCategory, updateCategory, isCreating, isUpdating } = useSupabaseCategories();
 
   useEffect(() => {
     if (category) {

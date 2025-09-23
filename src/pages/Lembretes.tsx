@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -9,22 +9,19 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { useAuth } from '@/hooks/useLocalAuth'
-import { toast } from '@/hooks/use-toast'
+import { useSupabaseLembretes, type Lembrete } from '@/hooks/useSupabaseLembretes'
 import { Plus, Edit, Trash2, Calendar, Clock } from 'lucide-react'
-
-interface Lembrete {
-  id: number
-  created_at: string
-  userid: string | null
-  descricao: string | null
-  data: string | null
-  valor: number | null
-}
 
 export default function Lembretes() {
   const { user } = useAuth()
-  const [lembretes, setLembretes] = useState<Lembrete[]>([])
-  const [loading, setLoading] = useState(true)
+  const { 
+    lembretes, 
+    isLoading: loading, 
+    createLembrete, 
+    updateLembrete, 
+    deleteLembrete, 
+    deleteAllLembretes 
+  } = useSupabaseLembretes()
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingLembrete, setEditingLembrete] = useState<Lembrete | null>(null)
   const [formData, setFormData] = useState({
@@ -33,50 +30,27 @@ export default function Lembretes() {
     valor: '',
   })
 
-  useEffect(() => {
-    if (user) {
-      fetchLembretes()
-    }
-  }, [user])
-
-  const fetchLembretes = async () => {
-    try {
-      // Database tables don't exist yet
-      setLembretes([])
-      toast({
-        title: "Banco de dados indisponível",
-        description: "Aguarde a recriação das tabelas para visualizar os lembretes",
-        variant: "destructive",
-      })
-    } catch (error: any) {
-      toast({
-        title: "Erro ao carregar lembretes",
-        description: error.message,
-        variant: "destructive",
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    try {
-      // Database tables don't exist yet
-      toast({
-        title: "Banco de dados indisponível",
-        description: "Aguarde a recriação das tabelas para salvar lembretes",
-        variant: "destructive",
-      })
-    } catch (error: any) {
-      console.error('Erro ao salvar lembrete:', error)
-      toast({
-        title: "Erro ao salvar lembrete",
-        description: error.message,
-        variant: "destructive",
-      })
+    if (!formData.descricao.trim()) return
+
+    const lembreteData = {
+      descricao: formData.descricao,
+      data: formData.data || undefined,
+      valor: formData.valor ? parseFloat(formData.valor) : undefined,
     }
+
+    if (editingLembrete) {
+      await updateLembrete(editingLembrete.id, lembreteData)
+    } else {
+      await createLembrete(lembreteData)
+    }
+
+    // Reset form and close dialog
+    setFormData({ descricao: '', data: '', valor: '' })
+    setEditingLembrete(null)
+    setDialogOpen(false)
   }
 
   const handleEdit = (lembrete: Lembrete) => {
@@ -91,38 +65,11 @@ export default function Lembretes() {
 
   const handleDelete = async (id: number) => {
     if (!confirm('Tem certeza que deseja excluir este lembrete?')) return
-
-    try {
-      // Database tables don't exist yet
-      toast({
-        title: "Banco de dados indisponível",
-        description: "Aguarde a recriação das tabelas para excluir lembretes",
-        variant: "destructive",
-      })
-    } catch (error: any) {
-      toast({
-        title: "Erro ao excluir lembrete",
-        description: error.message,
-        variant: "destructive",
-      })
-    }
+    await deleteLembrete(id)
   }
 
   const handleDeleteAll = async () => {
-    try {
-      // Database tables don't exist yet
-      toast({
-        title: "Banco de dados indisponível",
-        description: "Aguarde a recriação das tabelas para excluir lembretes",
-        variant: "destructive",
-      })
-    } catch (error: any) {
-      toast({
-        title: "Erro ao excluir lembretes",
-        description: error.message,
-        variant: "destructive",
-      })
-    }
+    await deleteAllLembretes()
   }
 
   const formatCurrency = (value: number) => {

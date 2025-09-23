@@ -14,7 +14,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { useCategories, Category } from '@/hooks/useLocalCategories';
+import { useSupabaseCategories, Category } from '@/hooks/useSupabaseCategories';
 
 interface CategoriesListProps {
   categories: Category[];
@@ -22,7 +22,7 @@ interface CategoriesListProps {
 }
 
 export function CategoriesList({ categories, onEdit }: CategoriesListProps) {
-  const { deleteCategory } = useCategories();
+  const { deleteCategory } = useSupabaseCategories();
 
   if (categories.length === 0) {
     return (

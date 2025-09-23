@@ -1,6 +1,6 @@
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { useCategories } from '@/hooks/useLocalCategories'
+import { useSupabaseCategories } from '@/hooks/useSupabaseCategories'
 
 interface CategorySelectorProps {
   value: string
@@ -9,7 +9,7 @@ interface CategorySelectorProps {
 }
 
 export function CategorySelector({ value, onValueChange, placeholder = "Selecione a categoria" }: CategorySelectorProps) {
-  const { categories, isLoading } = useCategories()
+  const { categories, isLoading } = useSupabaseCategories()
 
   if (isLoading) {
     return (
