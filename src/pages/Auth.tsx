@@ -20,8 +20,8 @@ export default function Auth() {
       {/* Left side - Image */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden rounded-3xl">
         <img 
-          src={authImages[mode]} 
-          alt="Finance Management" 
+          src="/logo-jzap-sidebar.jpeg" 
+          alt="JZAP Logo" 
           className="w-full h-full object-cover" 
         />
         <div className="absolute inset-0 bg-primary/20" />
