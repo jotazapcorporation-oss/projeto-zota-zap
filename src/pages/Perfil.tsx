@@ -59,9 +59,9 @@ export default function Perfil() {
     } catch (error: any) {
       console.error('Erro ao carregar perfil:', error)
       toast({
-        title: "Banco de dados indisponível",
-        description: "Aguarde a recriação das tabelas para usar esta funcionalidade",
-        variant: "destructive",
+        title: 'Erro ao carregar perfil',
+        description: error.message,
+        variant: 'destructive',
       })
     } finally {
       setLoading(false)

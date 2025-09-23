@@ -16,6 +16,7 @@ import { CategorySelector } from '@/components/transactions/CategorySelector'
 import { useAuth } from '@/hooks/useLocalAuth'
 import { useCategories } from '@/hooks/useLocalCategories'
 import { toast } from '@/hooks/use-toast'
+import { supabase } from '@/integrations/supabase/client'
 import { Plus, Edit, Trash2, TrendingUp, TrendingDown } from 'lucide-react'
 import { formatCurrency } from '@/utils/currency'
 
@@ -94,13 +95,19 @@ export default function Transacoes() {
 
   const fetchTransacoes = async () => {
     try {
-      // Database tables don't exist yet
-      setTransacoes([])
+      setLoading(true)
+      const { data, error } = await supabase
+        .from('transacoes')
+        .select('*')
+        .eq('userid', user?.id as string)
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      setTransacoes(data || [])
     } catch (error: any) {
       toast({
-        title: "Banco de dados indisponível",
-        description: "Aguarde a recriação das tabelas para usar esta funcionalidade",
-        variant: "destructive",
+        title: 'Erro ao carregar transações',
+        description: error.message,
+        variant: 'destructive',
       })
     } finally {
       setLoading(false)

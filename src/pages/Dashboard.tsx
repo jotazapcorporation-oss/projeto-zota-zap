@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useAuth } from '@/hooks/useLocalAuth'
 import { toast } from '@/hooks/use-toast'
+import { supabase } from '@/integrations/supabase/client'
 import { DashboardStats } from '@/components/dashboard/DashboardStats'
 import { DashboardFilters } from '@/components/dashboard/DashboardFilters'
 import { DashboardCharts } from '@/components/dashboard/DashboardCharts'
@@ -49,23 +50,40 @@ export default function Dashboard() {
   }, [user])
 
   const fetchData = async () => {
+    if (!user) return
     try {
       setLoading(true)
-      // Database tables don't exist yet
-      setTransacoes([])
-      setLembretes([])
-      toast({
-        title: "Banco de dados indisponível",
-        description: "Aguarde a recriação das tabelas para visualizar os dados",
-        variant: "destructive",
-      })
+      const [txRes, lbRes] = await Promise.all([
+        supabase
+          .from('transacoes')
+          .select('*')
+          .eq('userid', user.id)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('lembretes')
+          .select('*')
+          .eq('userid', user.id)
+          .order('created_at', { ascending: false })
+      ])
+
+      if (txRes.error) {
+        console.error('Erro ao carregar transações:', txRes.error)
+        toast({ title: 'Erro ao carregar transações', description: txRes.error.message, variant: 'destructive' })
+        setTransacoes([])
+      } else {
+        setTransacoes(txRes.data || [])
+      }
+
+      if (lbRes.error) {
+        console.error('Erro ao carregar lembretes:', lbRes.error)
+        toast({ title: 'Erro ao carregar lembretes', description: lbRes.error.message, variant: 'destructive' })
+        setLembretes([])
+      } else {
+        setLembretes(lbRes.data || [])
+      }
     } catch (error: any) {
       console.error('Erro detalhado:', error)
-      toast({
-        title: "Erro ao carregar dados",
-        description: error.message,
-        variant: "destructive",
-      })
+      toast({ title: 'Erro ao carregar dados', description: error.message, variant: 'destructive' })
     } finally {
       setLoading(false)
     }
