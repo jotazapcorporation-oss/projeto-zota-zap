@@ -199,7 +199,7 @@ export function DependentesTab() {
               </p>
             </div>
             <Badge variant={masterPlan.status_plano === "ativo" ? "default" : "destructive"}>
-              {masterPlan.status_plano}
+              {masterPlan.status_plano.charAt(0).toUpperCase() + masterPlan.status_plano.slice(1)}
             </Badge>
           </div>
 
