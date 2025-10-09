@@ -19,12 +19,14 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChangePasswordForm } from "@/components/profile/ChangePasswordForm";
 import { SubscriptionInfo } from "@/components/profile/SubscriptionInfo";
+import { DependentesTab } from "@/components/profile/DependentesTab";
 
 import { useAuth } from "@/hooks/useLocalAuth";
 import { toast } from "@/hooks/use-toast";
-import { Camera, User, Trash2, Settings, CreditCard, Shield } from "lucide-react";
+import { Camera, User, Trash2, Settings, CreditCard, Shield, Users } from "lucide-react";
 import { validateWhatsAppNumber } from "@/utils/whatsapp";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Profile {
   nome: string;
@@ -58,14 +60,53 @@ export default function Perfil() {
 
   const fetchProfile = async () => {
     try {
-      // Database tables don't exist yet - use fallback data
+      if (!user?.id) {
+        throw new Error("Usuário não autenticado");
+      }
+
+      // Buscar dados do perfil no Supabase
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("nome, phone, email, avatar_url, whatsapp")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (error && error.code !== 'PGRST116') {
+        throw error;
+      }
+
+      // Se encontrou dados, usar do banco; caso contrário, usar fallbacks
+      const nome = data?.nome || user?.email?.split("@")[0] || "";
+      const phone = data?.phone || user?.phone || "";
+      const email = data?.email || user?.email || "";
+      const avatar_url = data?.avatar_url;
+      const whatsapp = data?.whatsapp;
+
       setProfile({
-        nome: user?.email?.split("@")[0] || "",
-        phone: user?.phone,
-        email: user?.email || "",
+        nome,
+        phone,
+        email,
+        avatar_url,
+        whatsapp,
       });
-      setCurrentCountryCode("+55");
-      setCurrentPhoneNumber("");
+
+      // Processar telefone para separar DDI e número
+      if (phone) {
+        if (phone.startsWith("+55")) {
+          setCurrentCountryCode("+55");
+          setCurrentPhoneNumber(phone.substring(3).replace(/\D/g, ""));
+        } else if (phone.startsWith("+")) {
+          // Outros DDIs - por simplicidade manter +55
+          setCurrentCountryCode("+55");
+          setCurrentPhoneNumber(phone.substring(1).replace(/\D/g, ""));
+        } else {
+          setCurrentCountryCode("+55");
+          setCurrentPhoneNumber(phone.replace(/\D/g, ""));
+        }
+      } else {
+        setCurrentCountryCode("+55");
+        setCurrentPhoneNumber("");
+      }
     } catch (error: any) {
       console.error("Erro ao carregar perfil:", error);
       toast({
@@ -244,7 +285,7 @@ export default function Perfil() {
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-3 lg:w-[400px]">
+        <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="h-4 w-4" />
             Perfil
@@ -252,6 +293,10 @@ export default function Perfil() {
           <TabsTrigger value="subscription" className="flex items-center gap-2">
             <CreditCard className="h-4 w-4" />
             Assinatura
+          </TabsTrigger>
+          <TabsTrigger value="dependentes" className="flex items-center gap-2">
+            <Users className="h-4 w-4" />
+            Dependentes
           </TabsTrigger>
           <TabsTrigger value="security" className="flex items-center gap-2">
             <Shield className="h-4 w-4" />
@@ -290,7 +335,7 @@ export default function Perfil() {
                 <div className="flex-1">
                   <h3 className="text-xl font-semibold">{profile.nome || "Sem nome"}</h3>
                   <p className="text-muted-foreground">{profile.email}</p>
-                  {profile.phone && <p className="text-sm text-green-600 mt-1">WhatsApp: {profile.phone}</p>}
+                  {profile.whatsapp && <p className="text-sm text-green-600 mt-1">WhatsApp: {profile.whatsapp}</p>}
                 </div>
               </div>
 
@@ -330,6 +375,10 @@ export default function Perfil() {
 
         <TabsContent value="subscription">
           <SubscriptionInfo />
+        </TabsContent>
+
+        <TabsContent value="dependentes">
+          <DependentesTab />
         </TabsContent>
 
         <TabsContent value="security" className="space-y-6">
