@@ -187,13 +187,13 @@ export function DependentesTab() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Gerenciar Dependentes
+            Gerenciar dependentes
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
             <div>
-              <p className="text-sm text-muted-foreground">Slots Disponíveis</p>
+              <p className="text-sm text-muted-foreground">Slots disponíveis</p>
               <p className="text-2xl font-bold">
                 {slotsDisponiveis} / {masterPlan.limite_de_slots}
               </p>
@@ -240,7 +240,7 @@ export function DependentesTab() {
                 <TableRow>
                   <TableHead>Nome</TableHead>
                   <TableHead>WhatsApp</TableHead>
-                  <TableHead>Data de Cadastro</TableHead>
+                  <TableHead>Data de cadastro</TableHead>
                   <TableHead className="text-right">Status</TableHead>
                 </TableRow>
               </TableHeader>
