@@ -65,7 +65,7 @@ export default function Perfil() {
         email: user?.email || "",
       });
       setCurrentCountryCode("+55");
-      setCurrentPhoneNumber("");
+      setCurrentPhoneNumber(user?.phone);
     } catch (error: any) {
       console.error("Erro ao carregar perfil:", error);
       toast({
