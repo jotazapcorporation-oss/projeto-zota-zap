@@ -222,7 +222,7 @@ export function DependentesTab() {
 
               <Button type="submit" disabled={adding} className="w-full">
                 <UserPlus className="mr-2 h-4 w-4" />
-                {adding ? "Adicionando..." : "Adicionar Dependente"}
+                {adding ? "Adicionando..." : "Adicionar dependente"}
               </Button>
             </form>
           )}
