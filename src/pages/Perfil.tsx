@@ -1,188 +1,198 @@
-import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { PhoneInput } from '@/components/ui/phone-input'
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ChangePasswordForm } from '@/components/profile/ChangePasswordForm'
-import { SubscriptionInfo } from '@/components/profile/SubscriptionInfo'
+import { useState, useEffect } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { PhoneInput } from "@/components/ui/phone-input";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ChangePasswordForm } from "@/components/profile/ChangePasswordForm";
+import { SubscriptionInfo } from "@/components/profile/SubscriptionInfo";
 
-import { useAuth } from '@/hooks/useLocalAuth'
-import { toast } from '@/hooks/use-toast'
-import { Camera, User, Trash2, Settings, CreditCard, Shield } from 'lucide-react'
-import { validateWhatsAppNumber } from '@/utils/whatsapp'
-import { useNavigate } from 'react-router-dom'
+import { useAuth } from "@/hooks/useLocalAuth";
+import { toast } from "@/hooks/use-toast";
+import { Camera, User, Trash2, Settings, CreditCard, Shield } from "lucide-react";
+import { validateWhatsAppNumber } from "@/utils/whatsapp";
+import { useNavigate } from "react-router-dom";
 
 interface Profile {
-  nome: string
-  phone: string
-  whatsapp?: string
-  avatar_url?: string
-  email?: string
+  nome: string;
+  phone: string;
+  whatsapp?: string;
+  avatar_url?: string;
+  email?: string;
 }
 
 export default function Perfil() {
-  const { user, signOut } = useAuth()
-  const navigate = useNavigate()
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<Profile>({
-    nome: '',
-    phone: '',
-    email: ''
-  })
-  const [currentCountryCode, setCurrentCountryCode] = useState('+55')
-  const [currentPhoneNumber, setCurrentPhoneNumber] = useState('')
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [uploading, setUploading] = useState(false)
-  const [confirmEmail, setConfirmEmail] = useState('')
-  const [deleting, setDeleting] = useState(false)
+    nome: "",
+    phone: "",
+    email: "",
+  });
+  const [currentCountryCode, setCurrentCountryCode] = useState("+55");
+  const [currentPhoneNumber, setCurrentPhoneNumber] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [confirmEmail, setConfirmEmail] = useState("");
+  const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
     if (user) {
-      fetchProfile()
+      fetchProfile();
     }
-  }, [user])
+  }, [user]);
 
   const fetchProfile = async () => {
     try {
       // Database tables don't exist yet - use fallback data
       setProfile({
-        nome: user?.email?.split('@')[0] || '',
-        phone: '',
-        email: user?.email || ''
-      })
-      setCurrentCountryCode('+55')
-      setCurrentPhoneNumber('')
+        nome: user?.email?.split("@")[0] || "",
+        phone: user?.phone,
+        email: user?.email || "",
+      });
+      setCurrentCountryCode("+55");
+      setCurrentPhoneNumber("");
     } catch (error: any) {
-      console.error('Erro ao carregar perfil:', error)
+      console.error("Erro ao carregar perfil:", error);
       toast({
-        title: 'Erro ao carregar perfil',
+        title: "Erro ao carregar perfil",
         description: error.message,
-        variant: 'destructive',
-      })
+        variant: "destructive",
+      });
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setSaving(true)
+    e.preventDefault();
+    setSaving(true);
 
     try {
       // Only combine if we have both country code and phone number
-      let fullPhone = ''
-      let whatsappId = profile.whatsapp
-      
+      let fullPhone = "";
+      let whatsappId = profile.whatsapp;
+
       if (currentPhoneNumber.trim()) {
-        fullPhone = currentCountryCode + currentPhoneNumber.replace(/\D/g, '')
-        
+        fullPhone = currentCountryCode + currentPhoneNumber.replace(/\D/g, "");
+
         // Se o telefone mudou, validar o WhatsApp
         if (fullPhone !== profile.phone) {
-          console.log('Validando WhatsApp para número alterado:', fullPhone)
-          
+          console.log("Validando WhatsApp para número alterado:", fullPhone);
+
           try {
-            const whatsappValidation = await validateWhatsAppNumber(fullPhone.replace('+', ''))
-            
+            const whatsappValidation = await validateWhatsAppNumber(fullPhone.replace("+", ""));
+
             if (!whatsappValidation.exists) {
               toast({
                 title: "Erro",
                 description: "Este número não possui WhatsApp ativo",
                 variant: "destructive",
-              })
-              setSaving(false)
-              return
+              });
+              setSaving(false);
+              return;
             }
-            
-            whatsappId = whatsappValidation.whatsappId
+
+            whatsappId = whatsappValidation.whatsappId;
           } catch (error: any) {
             toast({
               title: "Erro na validação do WhatsApp",
               description: error.message,
               variant: "destructive",
-            })
-            setSaving(false)
-            return
+            });
+            setSaving(false);
+            return;
           }
         }
       }
 
-      console.log('Saving profile with phone:', fullPhone)
-      console.log('Saving profile with whatsapp:', whatsappId)
+      console.log("Saving profile with phone:", fullPhone);
+      console.log("Saving profile with whatsapp:", whatsappId);
 
       // Database tables don't exist yet
       toast({
         title: "Banco de dados indisponível",
         description: "Aguarde a recriação das tabelas para usar esta funcionalidade",
         variant: "destructive",
-      })
-      setSaving(false)
-      return
+      });
+      setSaving(false);
+      return;
     } catch (error: any) {
       toast({
         title: "Erro ao atualizar perfil",
         description: error.message,
         variant: "destructive",
-      })
+      });
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
-      setUploading(true)
-      
+      setUploading(true);
+
       if (!event.target.files || event.target.files.length === 0) {
-        throw new Error('Você deve selecionar uma imagem para fazer upload.')
+        throw new Error("Você deve selecionar uma imagem para fazer upload.");
       }
 
-      const file = event.target.files[0]
-      
+      const file = event.target.files[0];
+
       // Simulate upload and set a placeholder avatar
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
       // For demo purposes, use a data URL as placeholder
-      const reader = new FileReader()
+      const reader = new FileReader();
       reader.onload = (e) => {
         if (e.target?.result) {
-          setProfile(prev => ({ ...prev, avatar_url: e.target!.result as string }))
-          toast({ title: "Avatar atualizado com sucesso!" })
+          setProfile((prev) => ({ ...prev, avatar_url: e.target!.result as string }));
+          toast({ title: "Avatar atualizado com sucesso!" });
         }
-      }
-      reader.readAsDataURL(file)
+      };
+      reader.readAsDataURL(file);
     } catch (error: any) {
       toast({
         title: "Erro ao fazer upload da imagem",
         description: error.message,
         variant: "destructive",
-      })
+      });
     } finally {
-      setUploading(false)
+      setUploading(false);
     }
-  }
+  };
 
   const getInitials = (name: string) => {
     return name
-      .split(' ')
-      .map(n => n[0])
-      .join('')
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
       .toUpperCase()
-      .slice(0, 2)
-  }
+      .slice(0, 2);
+  };
 
   const handlePhoneChange = (phone: string) => {
-    console.log('Phone changed to:', phone)
-    setCurrentPhoneNumber(phone)
-  }
+    console.log("Phone changed to:", phone);
+    setCurrentPhoneNumber(phone);
+  };
 
   const handleCountryChange = (country_code: string) => {
-    console.log('Country code changed to:', country_code)
-    setCurrentCountryCode(country_code)
-  }
+    console.log("Country code changed to:", country_code);
+    setCurrentCountryCode(country_code);
+  };
 
   const handleDeleteAccount = async () => {
     if (confirmEmail !== user?.email) {
@@ -190,11 +200,11 @@ export default function Perfil() {
         title: "Erro",
         description: "O email de confirmação não confere",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
-    setDeleting(true)
+    setDeleting(true);
 
     try {
       // Database tables don't exist yet
@@ -202,33 +212,35 @@ export default function Perfil() {
         title: "Banco de dados indisponível",
         description: "Aguarde a recriação das tabelas para usar esta funcionalidade",
         variant: "destructive",
-      })
+      });
     } catch (error: any) {
-      console.error('Erro completo ao remover conta:', error)
+      console.error("Erro completo ao remover conta:", error);
       toast({
         title: "Erro ao remover conta",
         description: error.message,
         variant: "destructive",
-      })
+      });
     } finally {
-      setDeleting(false)
-      setConfirmEmail('')
+      setDeleting(false);
+      setConfirmEmail("");
     }
-  }
+  };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="max-w-6xl mx-auto p-6 space-y-8">
       <div className="text-center md:text-left">
         <h1 className="text-4xl font-bold tracking-tight">Meu Perfil</h1>
-        <p className="text-muted-foreground mt-2">Gerencie suas informações pessoais, assinatura e configurações de segurança</p>
+        <p className="text-muted-foreground mt-2">
+          Gerencie suas informações pessoais, assinatura e configurações de segurança
+        </p>
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
@@ -269,24 +281,16 @@ export default function Perfil() {
                     variant="outline"
                     className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
                     disabled={uploading}
-                    onClick={() => document.getElementById('avatar-upload')?.click()}
+                    onClick={() => document.getElementById("avatar-upload")?.click()}
                   >
                     <Camera className="h-4 w-4" />
                   </Button>
-                  <input
-                    id="avatar-upload"
-                    type="file"
-                    accept="image/*"
-                    onChange={uploadAvatar}
-                    className="hidden"
-                  />
+                  <input id="avatar-upload" type="file" accept="image/*" onChange={uploadAvatar} className="hidden" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-semibold">{profile.nome || 'Sem nome'}</h3>
+                  <h3 className="text-xl font-semibold">{profile.nome || "Sem nome"}</h3>
                   <p className="text-muted-foreground">{profile.email}</p>
-                  {profile.whatsapp && (
-                    <p className="text-sm text-green-600 mt-1">WhatsApp: {profile.whatsapp}</p>
-                  )}
+                  {profile.whatsapp && <p className="text-sm text-green-600 mt-1">WhatsApp: {profile.whatsapp}</p>}
                 </div>
               </div>
 
@@ -297,7 +301,7 @@ export default function Perfil() {
                     <Input
                       id="nome"
                       value={profile.nome}
-                      onChange={(e) => setProfile(prev => ({ ...prev, nome: e.target.value }))}
+                      onChange={(e) => setProfile((prev) => ({ ...prev, nome: e.target.value }))}
                       placeholder="Seu nome completo"
                       required
                     />
@@ -316,12 +320,8 @@ export default function Perfil() {
                   </div>
                 </div>
 
-                <Button 
-                  type="submit" 
-                  disabled={saving}
-                  className="w-full md:w-auto"
-                >
-                  {saving ? 'Salvando...' : 'Salvar Alterações'}
+                <Button type="submit" disabled={saving} className="w-full md:w-auto">
+                  {saving ? "Salvando..." : "Salvar Alterações"}
                 </Button>
               </form>
             </CardContent>
@@ -345,9 +345,10 @@ export default function Perfil() {
             <CardContent>
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  A remoção da conta é permanente e não pode ser desfeita. Todos os seus dados, incluindo transações e lembretes, serão permanentemente apagados.
+                  A remoção da conta é permanente e não pode ser desfeita. Todos os seus dados, incluindo transações e
+                  lembretes, serão permanentemente apagados.
                 </p>
-                
+
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant="destructive" className="w-full md:w-auto">
@@ -362,7 +363,7 @@ export default function Perfil() {
                         Esta ação é irreversível. Todos os seus dados serão permanentemente apagados.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
-                    
+
                     <div className="space-y-4">
                       <div className="space-y-2">
                         <Label htmlFor="confirm-email">
@@ -379,17 +380,13 @@ export default function Perfil() {
                     </div>
 
                     <AlertDialogFooter>
-                      <AlertDialogCancel
-                        onClick={() => setConfirmEmail('')}
-                      >
-                        Cancelar
-                      </AlertDialogCancel>
+                      <AlertDialogCancel onClick={() => setConfirmEmail("")}>Cancelar</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={handleDeleteAccount}
                         disabled={deleting || confirmEmail !== user?.email}
                         className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                       >
-                        {deleting ? 'Removendo...' : 'Remover Conta'}
+                        {deleting ? "Removendo..." : "Remover Conta"}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -400,5 +397,5 @@ export default function Perfil() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
