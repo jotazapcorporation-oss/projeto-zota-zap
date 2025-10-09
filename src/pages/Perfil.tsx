@@ -71,7 +71,7 @@ export default function Perfil() {
         .eq("id", user.id)
         .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
+      if (error && error.code !== "PGRST116") {
         throw error;
       }
 
@@ -335,7 +335,7 @@ export default function Perfil() {
                 <div className="flex-1">
                   <h3 className="text-xl font-semibold">{profile.nome || "Sem nome"}</h3>
                   <p className="text-muted-foreground">{profile.email}</p>
-                  {profile.whatsapp && <p className="text-sm text-green-600 mt-1">WhatsApp: {profile.whatsapp}</p>}
+                  {profile.phone && <p className="text-sm text-green-600 mt-1">WhatsApp: {profile.phone}</p>}
                 </div>
               </div>
 
