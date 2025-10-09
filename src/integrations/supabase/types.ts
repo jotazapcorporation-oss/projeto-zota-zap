@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      agenda_eventos: {
+        Row: {
+          created_at: string
+          event_date: string
+          event_time: string
+          id: string
+          local: string | null
+          titulo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_date: string
+          event_time: string
+          id?: string
+          local?: string | null
+          titulo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_date?: string
+          event_time?: string
+          id?: string
+          local?: string | null
+          titulo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       categorias: {
         Row: {
           created_at: string
@@ -54,7 +87,7 @@ export type Database = {
           created_at?: string
           data?: string | null
           descricao?: string | null
-          id?: never
+          id?: number
           userid: string
           valor?: number | null
         }
@@ -62,7 +95,7 @@ export type Database = {
           created_at?: string
           data?: string | null
           descricao?: string | null
-          id?: never
+          id?: number
           userid?: string
           valor?: number | null
         }
@@ -71,6 +104,44 @@ export type Database = {
             foreignKeyName: "lembretes_userid_fkey"
             columns: ["userid"]
             isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      master_users: {
+        Row: {
+          created_at: string
+          id: string
+          limite_de_slots: number
+          master_id: string
+          slots_utilizados: number
+          status_plano: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          limite_de_slots?: number
+          master_id: string
+          slots_utilizados?: number
+          status_plano?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          limite_de_slots?: number
+          master_id?: string
+          slots_utilizados?: number
+          status_plano?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "master_users_master_id_fkey"
+            columns: ["master_id"]
+            isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
@@ -85,6 +156,7 @@ export type Database = {
           customerid: string | null
           email: string | null
           id: string
+          master_id: string | null
           nome: string | null
           phone: string | null
           stripe_customer_id: string | null
@@ -103,6 +175,7 @@ export type Database = {
           customerid?: string | null
           email?: string | null
           id: string
+          master_id?: string | null
           nome?: string | null
           phone?: string | null
           stripe_customer_id?: string | null
@@ -121,6 +194,7 @@ export type Database = {
           customerid?: string | null
           email?: string | null
           id?: string
+          master_id?: string | null
           nome?: string | null
           phone?: string | null
           stripe_customer_id?: string | null
@@ -131,7 +205,15 @@ export type Database = {
           username?: string | null
           whatsapp?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_master_id_fkey"
+            columns: ["master_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       transacoes: {
         Row: {
@@ -192,7 +274,9 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      agent_action_type: "create" | "edit" | "cancel" | "remind" | "list"
+      event_status: "scheduled" | "canceled" | "completed"
+      reminder_method: "push" | "email" | "sms" | "webhook"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -319,6 +403,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      agent_action_type: ["create", "edit", "cancel", "remind", "list"],
+      event_status: ["scheduled", "canceled", "completed"],
+      reminder_method: ["push", "email", "sms", "webhook"],
+    },
   },
 } as const
