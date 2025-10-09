@@ -92,17 +92,15 @@ export default function Perfil() {
 
       // Processar telefone para separar DDI e número
       if (phone) {
-        if (phone.startsWith("+55")) {
-          setCurrentCountryCode("+55");
-          setCurrentPhoneNumber(phone.substring(3).replace(/\D/g, ""));
-        } else if (phone.startsWith("+")) {
-          // Outros DDIs - por simplicidade manter +55
-          setCurrentCountryCode("+55");
-          setCurrentPhoneNumber(phone.substring(1).replace(/\D/g, ""));
-        } else {
-          setCurrentCountryCode("+55");
-          setCurrentPhoneNumber(phone.replace(/\D/g, ""));
+        let cleanPhone = phone.replace(/\D/g, ""); // Remove tudo que não é dígito
+        
+        // Se começar com 55, remover (DDI do Brasil)
+        if (cleanPhone.startsWith("55")) {
+          cleanPhone = cleanPhone.substring(2);
         }
+        
+        setCurrentCountryCode("+55");
+        setCurrentPhoneNumber(cleanPhone);
       } else {
         setCurrentCountryCode("+55");
         setCurrentPhoneNumber("");
