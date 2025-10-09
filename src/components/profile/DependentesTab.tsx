@@ -6,14 +6,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Users, UserPlus, Trash2 } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 
 interface MasterPlan {
@@ -44,14 +37,12 @@ export function DependentesTab() {
 
   const fetchMasterPlan = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase
-        .from("master_users")
-        .select("*")
-        .eq("master_id", user.id)
-        .single();
+      const { data, error } = await supabase.from("master_users").select("*").eq("master_id", user.id).single();
 
       if (error && error.code !== "PGRST116") {
         throw error;
@@ -67,7 +58,9 @@ export function DependentesTab() {
 
   const fetchDependentes = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) return;
 
       const { data, error } = await supabase
@@ -117,7 +110,9 @@ export function DependentesTab() {
     setAdding(true);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
 
       // Chamar webhook do n8n
@@ -125,7 +120,7 @@ export function DependentesTab() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Basic VVNVQVJJTzpTRU5IQQ==",
+          Authorization: "Basic VVNVQVJJTzpTRU5IQQ==",
         },
         body: JSON.stringify({
           whatsapp: whatsappNumber,
@@ -171,12 +166,13 @@ export function DependentesTab() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Plano Família Não Disponível
+            Plano Família não disponível
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-muted-foreground">
-            Seu plano atual não possui a funcionalidade de dependentes. Entre em contato com o suporte para mais informações.
+            Seu plano atual não possui a funcionalidade de dependentes. Entre em contato com o suporte para mais
+            informações.
           </p>
         </CardContent>
       </Card>
@@ -236,7 +232,7 @@ export function DependentesTab() {
       {dependentes.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Dependentes Cadastrados</CardTitle>
+            <CardTitle>Dependentes cadastrados</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
@@ -251,13 +247,9 @@ export function DependentesTab() {
               <TableBody>
                 {dependentes.map((dep) => (
                   <TableRow key={dep.id}>
-                    <TableCell className="font-medium">
-                      {dep.nome || "Sem nome"}
-                    </TableCell>
+                    <TableCell className="font-medium">{dep.nome || "Sem nome"}</TableCell>
                     <TableCell>{dep.whatsapp || dep.phone || "Não informado"}</TableCell>
-                    <TableCell>
-                      {new Date(dep.created_at).toLocaleDateString("pt-BR")}
-                    </TableCell>
+                    <TableCell>{new Date(dep.created_at).toLocaleDateString("pt-BR")}</TableCell>
                     <TableCell className="text-right">
                       <Badge variant="outline">Ativo</Badge>
                     </TableCell>
