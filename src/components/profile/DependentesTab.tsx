@@ -18,6 +18,7 @@ interface MasterPlan {
 interface Dependente {
   id: string;
   nome: string;
+  email: string | null;
   phone: string;
   whatsapp: string | null;
   created_at: string;
@@ -26,6 +27,8 @@ interface Dependente {
 export function DependentesTab() {
   const [masterPlan, setMasterPlan] = useState<MasterPlan | null>(null);
   const [dependentes, setDependentes] = useState<Dependente[]>([]);
+  const [dependentName, setDependentName] = useState("");
+  const [dependentEmail, setDependentEmail] = useState("");
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
@@ -65,7 +68,7 @@ export function DependentesTab() {
 
       const { data, error } = await supabase
         .from("profiles")
-        .select("id, nome, phone, whatsapp, created_at")
+        .select("id, nome, email, phone, whatsapp, created_at")
         .eq("master_id", user.id)
         .order("created_at", { ascending: false });
 
@@ -80,10 +83,10 @@ export function DependentesTab() {
   const handleAddDependente = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!whatsappNumber.trim()) {
+    if (!dependentName.trim() || !dependentEmail.trim() || !whatsappNumber.trim()) {
       toast({
         title: "Erro",
-        description: "Por favor, informe o número do WhatsApp",
+        description: "Por favor, preencha nome, e-mail e número do WhatsApp do dependente",
         variant: "destructive",
       });
       return;
@@ -123,6 +126,8 @@ export function DependentesTab() {
           Authorization: "Basic VVNVQVJJTzpTRU5IQQ==",
         },
         body: JSON.stringify({
+          nome: dependentName,
+          email: dependentEmail,
           whatsapp: whatsappNumber,
           master_id: user.id,
         }),
@@ -137,6 +142,8 @@ export function DependentesTab() {
         description: "Dependente adicionado com sucesso. Ele receberá as instruções de acesso via WhatsApp.",
       });
 
+      setDependentName("");
+      setDependentEmail("");
       setWhatsappNumber("");
       fetchDependentes();
       fetchMasterPlan();
@@ -206,6 +213,30 @@ export function DependentesTab() {
           {slotsDisponiveis > 0 && (
             <form onSubmit={handleAddDependente} className="space-y-4">
               <div className="space-y-2">
+                <Label htmlFor="name">Nome do Dependente</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="Ex: João da Silva"
+                  value={dependentName}
+                  onChange={(e) => setDependentName(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="email">E-mail do Dependente</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Ex: joao@email.com"
+                  value={dependentEmail}
+                  onChange={(e) => setDependentEmail(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="whatsapp">Número do Dependente (WhatsApp)</Label>
                 <Input
                   id="whatsapp"
@@ -239,6 +270,7 @@ export function DependentesTab() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Nome</TableHead>
+                  <TableHead>E-mail</TableHead>
                   <TableHead>WhatsApp</TableHead>
                   <TableHead>Data de cadastro</TableHead>
                   <TableHead className="text-right">Status</TableHead>
@@ -248,6 +280,7 @@ export function DependentesTab() {
                 {dependentes.map((dep) => (
                   <TableRow key={dep.id}>
                     <TableCell className="font-medium">{dep.nome || "Sem nome"}</TableCell>
+                    <TableCell>{dep.email || "Não informado"}</TableCell>
                     <TableCell>{dep.whatsapp || dep.phone || "Não informado"}</TableCell>
                     <TableCell>{new Date(dep.created_at).toLocaleDateString("pt-BR")}</TableCell>
                     <TableCell className="text-right">
