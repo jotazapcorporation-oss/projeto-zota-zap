@@ -19,7 +19,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChangePasswordForm } from "@/components/profile/ChangePasswordForm";
 import { SubscriptionInfo } from "@/components/profile/SubscriptionInfo";
-import { supabase } from "@/lib/supabase";
+
 import { useAuth } from "@/hooks/useLocalAuth";
 import { toast } from "@/hooks/use-toast";
 import { Camera, User, Trash2, Settings, CreditCard, Shield } from "lucide-react";
@@ -58,38 +58,14 @@ export default function Perfil() {
 
   const fetchProfile = async () => {
     try {
-      if (!user?.id) throw new Error("Usuário não autenticado.");
-
-      // Tabela: profile, colunas: user_id (FK auth.users), nome, phone
-      const { data, error } = await supabase.from("profile").select("nome, phone").eq("user_id", user.id).single();
-
-      if (error && error.code !== "PGRST116") {
-        // PGRST116 = no rows, tratamos abaixo como fallback
-        throw error;
-      }
-
-      const found = data ?? null;
-
-      const fallbackNome = user?.email?.split("@")[0] || "";
-      const fallbackPhone = user?.phone || "";
-
+      // Database tables don't exist yet - use fallback data
       setProfile({
-        nome: found?.nome ?? fallbackNome,
-        phone: found?.phone ?? fallbackPhone,
+        nome: user?.email?.split("@")[0] || "",
+        phone: user?.phone,
         email: user?.email || "",
-        whatsapp: undefined,
-        avatar_url: undefined,
       });
-
-      // Se o phone vier do banco no formato E.164 (+551199...), aproveite
-      // e ajuste os estados do PhoneInput
-      const phoneFromDb = found?.phone ?? fallbackPhone ?? "";
-      const onlyDigits = phoneFromDb.replace(/\D/g, "");
-      const hasPlus = phoneFromDb.startsWith("+");
-
-      // Heurística simples p/ BR: se já vier com +, não mexe no DDI; senão, mantém +55 default
-      setCurrentCountryCode(hasPlus ? phoneFromDb.slice(0, 3) : "+55");
-      setCurrentPhoneNumber(hasPlus ? phoneFromDb.slice(3) : onlyDigits);
+      setCurrentCountryCode("+55");
+      setCurrentPhoneNumber("");
     } catch (error: any) {
       console.error("Erro ao carregar perfil:", error);
       toast({
