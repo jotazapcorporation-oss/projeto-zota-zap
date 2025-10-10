@@ -8,9 +8,11 @@ import { ReportFiltersComponent } from '@/components/reports/ReportFilters'
 import { ReportSummary } from '@/components/reports/ReportSummary'
 import { ReportTable } from '@/components/reports/ReportTable'
 import { ReportChart } from '@/components/reports/ReportChart'
-import { PDFExportOptions, PDFExportOptions as PDFOptions } from '@/components/reports/PDFExportOptions'
+import { PDFExportOptions as PDFOptions } from '@/components/reports/PDFExportOptions'
+import { ExportButtons } from '@/components/reports/ExportButtons'
 import { toast } from '@/hooks/use-toast'
 import { generatePDFReport } from '@/utils/pdfGenerator'
+import { generateExcelReport } from '@/utils/excelGenerator'
 
 export default function Relatorios() {
   const { user } = useAuth()
@@ -56,6 +58,31 @@ export default function Relatorios() {
     }
   }
 
+  const generateExcel = () => {
+    try {
+      const reportData = {
+        transactions,
+        summaryData,
+        filters,
+        userName: user?.email || 'Usuário'
+      }
+
+      generateExcelReport(reportData)
+      
+      toast({
+        title: "Excel gerado com sucesso!",
+        description: "O relatório foi exportado em formato Excel.",
+      })
+    } catch (error) {
+      console.error('Erro ao gerar Excel:', error)
+      toast({
+        title: "Erro ao gerar Excel",
+        description: "Ocorreu um erro ao exportar o relatório.",
+        variant: "destructive",
+      })
+    }
+  }
+
   const getPeriodLabel = () => {
     switch (filters.period) {
       case 'day':
@@ -82,9 +109,10 @@ export default function Relatorios() {
             Análises personalizadas das suas transações
           </p>
         </div>
-        <PDFExportOptions
-          onExport={generatePDF}
-          isGenerating={isGeneratingPDF}
+        <ExportButtons
+          onExportPDF={generatePDF}
+          onExportExcel={generateExcel}
+          isGeneratingPDF={isGeneratingPDF}
           disabled={transactions.length === 0}
         />
       </div>

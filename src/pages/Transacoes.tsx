@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge'
 import { CurrencyInput } from '@/components/ui/currency-input'
 import { TransactionSummaryCards } from '@/components/transactions/TransactionSummaryCards'
 import { TransactionFilters } from '@/components/transactions/TransactionFilters'
-import { CategorySelector } from '@/components/transactions/CategorySelector'
+import { CategorySelectorWithCreate } from '@/components/transactions/CategorySelectorWithCreate'
 import { useAuth } from '@/hooks/useLocalAuth'
 import { useCategories } from '@/hooks/useLocalCategories'
 import { toast } from '@/hooks/use-toast'
@@ -123,6 +123,16 @@ export default function Transacoes() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Validação: categoria é obrigatória
+    if (!formData.category_id) {
+      toast({
+        title: "Campo obrigatório",
+        description: "Por favor, selecione uma categoria para a transação.",
+        variant: "destructive",
+      })
+      return
+    }
+
     // Validação: verificar se a categoria selecionada pertence ao usuário
     if (formData.category_id) {
       const categoryBelongsToUser = categories?.some(cat => cat.id === formData.category_id)
@@ -147,13 +157,31 @@ export default function Transacoes() {
         userid: user?.id,
       }
 
-      // Database tables don't exist yet
-      toast({
-        title: "Banco de dados indisponível",
-        description: "Aguarde a recriação das tabelas para usar esta funcionalidade",
-        variant: "destructive",
-      })
-      return
+      if (editingTransaction) {
+        const { error } = await supabase
+          .from('transacoes')
+          .update(transacaoData)
+          .eq('id', editingTransaction.id)
+          .eq('userid', user?.id)
+
+        if (error) throw error
+
+        toast({
+          title: "Transação atualizada",
+          description: "A transação foi atualizada com sucesso.",
+        })
+      } else {
+        const { error } = await supabase
+          .from('transacoes')
+          .insert([transacaoData])
+
+        if (error) throw error
+
+        toast({
+          title: "Transação criada",
+          description: "A transação foi criada com sucesso.",
+        })
+      }
 
       setDialogOpen(false)
       setEditingTransaction(null)
@@ -189,19 +217,25 @@ export default function Transacoes() {
   }
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Tem certeza que deseja excluir esta transação?')) return
-
     try {
-      // Database tables don't exist yet
+      const { error } = await supabase
+        .from('transacoes')
+        .delete()
+        .eq('id', id)
+        .eq('userid', user?.id)
+
+      if (error) throw error
+
       toast({
-        title: "Banco de dados indisponível",
-        description: "Aguarde a recriação das tabelas para usar esta funcionalidade",
-        variant: "destructive",
+        title: "Transação excluída",
+        description: "A transação foi excluída com sucesso.",
       })
+      
+      fetchTransacoes()
     } catch (error: any) {
       toast({
-        title: "Banco de dados indisponível",
-        description: "Aguarde a recriação das tabelas para usar esta funcionalidade",
+        title: "Erro ao excluir transação",
+        description: error.message,
         variant: "destructive",
       })
     }
@@ -209,16 +243,23 @@ export default function Transacoes() {
 
   const handleDeleteAll = async () => {
     try {
-      // Database tables don't exist yet
+      const { error } = await supabase
+        .from('transacoes')
+        .delete()
+        .eq('userid', user?.id)
+
+      if (error) throw error
+
       toast({
-        title: "Banco de dados indisponível",
-        description: "Aguarde a recriação das tabelas para usar esta funcionalidade",
-        variant: "destructive",
+        title: "Transações excluídas",
+        description: "Todas as transações foram excluídas com sucesso.",
       })
+      
+      fetchTransacoes()
     } catch (error: any) {
       toast({
-        title: "Banco de dados indisponível",
-        description: "Aguarde a recriação das tabelas para usar esta funcionalidade",
+        title: "Erro ao excluir transações",
+        description: error.message,
         variant: "destructive",
       })
     }
@@ -311,10 +352,11 @@ export default function Transacoes() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="categoria">Categoria</Label>
-                  <CategorySelector
+                  <Label htmlFor="categoria">Categoria *</Label>
+                  <CategorySelectorWithCreate
                     value={formData.category_id}
                     onValueChange={(value) => setFormData({...formData, category_id: value})}
+                    transactionType={formData.tipo as 'receita' | 'despesa' | ''}
                     placeholder="Selecione a categoria"
                   />
                 </div>

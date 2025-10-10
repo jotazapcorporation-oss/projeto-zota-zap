@@ -7,6 +7,7 @@ export interface Category {
   id: string
   nome: string
   tags: string | null
+  tipo?: 'receita' | 'despesa' | null
   created_at: string
   updated_at: string
   userid: string
@@ -42,7 +43,7 @@ export function useSupabaseCategories() {
         setError(error.message)
         toast.error('Erro ao carregar categorias')
       } else {
-        setCategories(data || [])
+        setCategories((data || []) as Category[])
       }
     } catch (error: any) {
       console.error('Unexpected error:', error)
@@ -53,10 +54,10 @@ export function useSupabaseCategories() {
     }
   }
 
-  const createCategory = async (newCategory: { nome: string; tags?: string }) => {
+  const createCategory = async (newCategory: { nome: string; tags?: string; tipo?: 'receita' | 'despesa' }) => {
     if (!user) {
       toast.error('Usuário não autenticado')
-      return
+      return null
     }
 
     setIsLoading(true)
@@ -68,6 +69,7 @@ export function useSupabaseCategories() {
           {
             nome: newCategory.nome,
             tags: newCategory.tags || null,
+            tipo: newCategory.tipo || 'despesa',
             userid: user.id,
           },
         ])
@@ -77,19 +79,22 @@ export function useSupabaseCategories() {
       if (error) {
         console.error('Error creating category:', error)
         toast.error('Erro ao criar categoria')
+        return null
       } else {
-        setCategories(prev => [data, ...prev])
+        setCategories(prev => [data as Category, ...prev])
         toast.success('Categoria criada com sucesso!')
+        return data as Category
       }
     } catch (error: any) {
       console.error('Unexpected error:', error)
       toast.error('Erro inesperado ao criar categoria')
+      return null
     } finally {
       setIsLoading(false)
     }
   }
 
-  const updateCategory = async ({ id, updates }: { id: string; updates: { nome: string; tags?: string } }) => {
+  const updateCategory = async ({ id, updates }: { id: string; updates: { nome: string; tags?: string; tipo?: 'receita' | 'despesa' } }) => {
     setIsLoading(true)
 
     try {
@@ -110,7 +115,7 @@ export function useSupabaseCategories() {
         toast.error('Erro ao atualizar categoria')
       } else {
         setCategories(prev => 
-          prev.map(cat => cat.id === id ? data : cat)
+          prev.map(cat => cat.id === id ? data as Category : cat)
         )
         toast.success('Categoria atualizada com sucesso!')
       }

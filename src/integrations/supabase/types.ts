@@ -53,6 +53,7 @@ export type Database = {
           id: string
           nome: string
           tags: string | null
+          tipo: string | null
           updated_at: string
           userid: string
         }
@@ -61,6 +62,7 @@ export type Database = {
           id?: string
           nome: string
           tags?: string | null
+          tipo?: string | null
           updated_at?: string
           userid: string
         }
@@ -69,6 +71,7 @@ export type Database = {
           id?: string
           nome?: string
           tags?: string | null
+          tipo?: string | null
           updated_at?: string
           userid?: string
         }
