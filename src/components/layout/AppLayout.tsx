@@ -17,7 +17,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             <div className="flex items-center gap-4">
               <SidebarTrigger />
               <h1 className="text-lg font-semibold title-color hidden sm:block">
-                JSAP - Sistema de Gestão Financeira
+                VZAP - Sistema de Gestão Financeira
               </h1>
             </div>
             <ThemeToggle />
