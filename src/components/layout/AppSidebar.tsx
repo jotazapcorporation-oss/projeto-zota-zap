@@ -25,6 +25,7 @@ const items = [
   { title: 'Categorias', url: '/categorias', icon: Tag },
   { title: 'Relatórios', url: '/relatorios', icon: FileText },
   { title: 'Lembretes', url: '/lembretes', icon: Calendar },
+  { title: 'Agenda', url: '/agenda', icon: Calendar },
   { title: 'Perfil', url: '/perfil', icon: User },
 ]
 
