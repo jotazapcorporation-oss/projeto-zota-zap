@@ -14,6 +14,7 @@ import Categorias from "./pages/Categorias";
 import Relatorios from "./pages/Relatorios";
 import Perfil from "./pages/Perfil";
 import Agenda from "./pages/Agenda";
+import Caixinhas from "./pages/Caixinhas";
 import NotFound from "./pages/NotFound";
 import Plano from "./pages/Plano";
 
@@ -113,6 +114,14 @@ function AppRoutes() {
         element={
           <ProtectedRoute>
             <Agenda />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/caixinhas"
+        element={
+          <ProtectedRoute>
+            <Caixinhas />
           </ProtectedRoute>
         }
       />

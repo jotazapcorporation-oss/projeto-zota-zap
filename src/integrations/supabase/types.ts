@@ -47,6 +47,36 @@ export type Database = {
         }
         Relationships: []
       }
+      caixinhas_poupanca: {
+        Row: {
+          data_criacao: string
+          id: string
+          nome_caixinha: string
+          updated_at: string
+          user_id: string
+          valor_atual: number
+          valor_meta: number
+        }
+        Insert: {
+          data_criacao?: string
+          id?: string
+          nome_caixinha: string
+          updated_at?: string
+          user_id: string
+          valor_atual?: number
+          valor_meta: number
+        }
+        Update: {
+          data_criacao?: string
+          id?: string
+          nome_caixinha?: string
+          updated_at?: string
+          user_id?: string
+          valor_atual?: number
+          valor_meta?: number
+        }
+        Relationships: []
+      }
       categorias: {
         Row: {
           created_at: string
@@ -162,6 +192,7 @@ export type Database = {
           master_id: string | null
           nome: string | null
           phone: string | null
+          saldo: number | null
           stripe_customer_id: string | null
           subscription_end_date: string | null
           subscription_id: string | null
@@ -181,6 +212,7 @@ export type Database = {
           master_id?: string | null
           nome?: string | null
           phone?: string | null
+          saldo?: number | null
           stripe_customer_id?: string | null
           subscription_end_date?: string | null
           subscription_id?: string | null
@@ -200,6 +232,7 @@ export type Database = {
           master_id?: string | null
           nome?: string | null
           phone?: string | null
+          saldo?: number | null
           stripe_customer_id?: string | null
           subscription_end_date?: string | null
           subscription_id?: string | null
@@ -274,7 +307,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      depositar_caixinha: {
+        Args: { _caixinha_id: string; _valor: number }
+        Returns: Json
+      }
+      retirar_caixinha: {
+        Args: { _caixinha_id: string; _valor: number }
+        Returns: Json
+      }
     }
     Enums: {
       agent_action_type: "create" | "edit" | "cancel" | "remind" | "list"
