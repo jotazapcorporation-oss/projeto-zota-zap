@@ -66,6 +66,37 @@
     --sidebar-ring: 207 77% 51%; /* #1E88E5 - Azul moderno */
     --title-color: 210 40% 98%; /* White for dark theme */
   }
+
+  .vzap {
+    --background: 142 70% 25%; /* Verde VZAP escuro para fundo */
+    --foreground: 45 100% 60%; /* Dourado para texto */
+    --card: 142 65% 20%; /* Verde mais escuro para cards */
+    --card-foreground: 45 100% 70%; /* Dourado claro para texto em cards */
+    --popover: 142 65% 20%;
+    --popover-foreground: 45 100% 70%;
+    --primary: 45 100% 55%; /* Dourado vibrante como primário */
+    --primary-foreground: 142 70% 15%; /* Verde escuro para texto em primário */
+    --secondary: 142 50% 30%;
+    --secondary-foreground: 45 100% 70%;
+    --muted: 142 40% 22%;
+    --muted-foreground: 45 80% 50%;
+    --accent: 45 95% 50%; /* Dourado para acentos */
+    --accent-foreground: 142 70% 15%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 45 100% 90%;
+    --border: 142 50% 30%;
+    --input: 142 50% 30%;
+    --ring: 45 100% 55%; /* Dourado para foco */
+    --sidebar-background: 142 65% 18%;
+    --sidebar-foreground: 45 100% 75%;
+    --sidebar-primary: 45 100% 55%;
+    --sidebar-primary-foreground: 142 70% 15%;
+    --sidebar-accent: 142 50% 25%;
+    --sidebar-accent-foreground: 45 100% 70%;
+    --sidebar-border: 142 45% 28%;
+    --sidebar-ring: 45 100% 55%;
+    --title-color: 45 100% 65%; /* Dourado para títulos */
+  }
 }
 
 @layer base {

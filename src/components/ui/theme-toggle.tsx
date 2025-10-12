@@ -28,8 +28,8 @@ export function ThemeToggle() {
         <DropdownMenuItem onClick={() => setTheme('dark')}>
           Escuro
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme('system')}>
-          Sistema
+        <DropdownMenuItem onClick={() => setTheme('vzap')}>
+          V-ZAP
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

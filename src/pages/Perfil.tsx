@@ -20,6 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChangePasswordForm } from "@/components/profile/ChangePasswordForm";
 import { SubscriptionInfo } from "@/components/profile/SubscriptionInfo";
 import { DependentesTab } from "@/components/profile/DependentesTab";
+import { ProfileEditor } from "@/components/profile/ProfileEditor";
 
 import { useAuth } from "@/hooks/useLocalAuth";
 import { toast } from "@/hooks/use-toast";
@@ -310,63 +311,15 @@ export default function Perfil() {
                 Informações Pessoais
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
-                <div className="relative">
-                  <Avatar className="h-24 w-24">
-                    <AvatarImage src={profile.avatar_url} />
-                    <AvatarFallback className="bg-primary text-primary-foreground text-lg">
-                      {profile.nome ? getInitials(profile.nome) : <User className="h-8 w-8" />}
-                    </AvatarFallback>
-                  </Avatar>
-                  <Button
-                    size="icon"
-                    variant="outline"
-                    className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full border-primary text-primary hover:bg-primary hover:text-primary-foreground"
-                    disabled={uploading}
-                    onClick={() => document.getElementById("avatar-upload")?.click()}
-                  >
-                    <Camera className="h-4 w-4" />
-                  </Button>
-                  <input id="avatar-upload" type="file" accept="image/*" onChange={uploadAvatar} className="hidden" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-semibold">{profile.nome || "Sem nome"}</h3>
-                  <p className="text-muted-foreground">{profile.email}</p>
-                  {profile.phone && <p className="text-sm text-green-600 mt-1">WhatsApp: {profile.phone}</p>}
-                </div>
-              </div>
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="nome">Nome completo</Label>
-                    <Input
-                      id="nome"
-                      value={profile.nome}
-                      onChange={(e) => setProfile((prev) => ({ ...prev, nome: e.target.value }))}
-                      placeholder="Seu nome completo"
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phone">Telefone</Label>
-                    <PhoneInput
-                      id="phone"
-                      value={currentPhoneNumber}
-                      countryCode={currentCountryCode}
-                      onValueChange={handlePhoneChange}
-                      onCountryChange={handleCountryChange}
-                      required
-                    />
-                  </div>
-                </div>
-
-                <Button type="submit" disabled={saving} className="w-full md:w-auto">
-                  {saving ? "Salvando..." : "Salvar Alterações"}
-                </Button>
-              </form>
+            <CardContent>
+              <ProfileEditor
+                profile={profile}
+                onProfileUpdate={setProfile}
+                currentCountryCode={currentCountryCode}
+                currentPhoneNumber={currentPhoneNumber}
+                onCountryChange={handleCountryChange}
+                onPhoneChange={handlePhoneChange}
+              />
             </CardContent>
           </Card>
         </TabsContent>
@@ -380,6 +333,25 @@ export default function Perfil() {
         </TabsContent>
 
         <TabsContent value="security" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <User className="h-5 w-5" />
+                Mudar foto e nome
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ProfileEditor
+                profile={profile}
+                onProfileUpdate={setProfile}
+                currentCountryCode={currentCountryCode}
+                currentPhoneNumber={currentPhoneNumber}
+                onCountryChange={handleCountryChange}
+                onPhoneChange={handlePhoneChange}
+              />
+            </CardContent>
+          </Card>
+
           <ChangePasswordForm />
 
           <Card className="border-destructive/20">
