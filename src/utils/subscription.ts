@@ -54,7 +54,7 @@ export const mapSubscriptionData = (apiData: ExternalSubscriptionData): Subscrip
     id: apiData.id,
     user_id: '',
     subscription_id: apiData.id,
-    status: apiData.status.toLowerCase() as 'active' | 'inactive' | 'cancelled' | 'suspended',
+    status: apiData.status ? apiData.status.toLowerCase() as 'active' | 'inactive' | 'cancelled' | 'suspended' : 'inactive',
     plan_name: 'Plano Mensal',
     amount: apiData.valor,
     currency: 'BRL',
