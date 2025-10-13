@@ -30,6 +30,15 @@ export default function Relatorios() {
   }
 
   const generatePDF = async (options: PDFOptions) => {
+    if (transactions.length === 0) {
+      toast({
+        title: "Nenhuma transação encontrada",
+        description: "Adicione transações antes de exportar o relatório.",
+        variant: "destructive",
+      })
+      return
+    }
+
     setIsGeneratingPDF(true)
     
     try {
@@ -44,7 +53,7 @@ export default function Relatorios() {
       
       toast({
         title: "PDF gerado com sucesso!",
-        description: "O relatório foi exportado em formato PDF.",
+        description: "O relatório foi baixado para seu dispositivo.",
       })
     } catch (error) {
       console.error('Erro ao gerar PDF:', error)
@@ -59,6 +68,15 @@ export default function Relatorios() {
   }
 
   const generateExcel = () => {
+    if (transactions.length === 0) {
+      toast({
+        title: "Nenhuma transação encontrada",
+        description: "Adicione transações antes de exportar o relatório.",
+        variant: "destructive",
+      })
+      return
+    }
+
     try {
       const reportData = {
         transactions,
@@ -71,7 +89,7 @@ export default function Relatorios() {
       
       toast({
         title: "Excel gerado com sucesso!",
-        description: "O relatório foi exportado em formato Excel.",
+        description: "O relatório foi baixado para seu dispositivo.",
       })
     } catch (error) {
       console.error('Erro ao gerar Excel:', error)
