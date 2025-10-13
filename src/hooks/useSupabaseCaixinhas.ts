@@ -38,15 +38,16 @@ export function useSupabaseCaixinhas() {
       setCaixinhas(caixinhasData || []);
 
       // Buscar saldo geral do usuário
-      const { data: profileData, error: profileError } = await supabase
+      // @ts-ignore - Avoiding circular type reference in Supabase types
+      const profileResponse = await supabase
         .from("profiles")
         .select("saldo")
         .eq("user_id", user.id)
         .maybeSingle();
 
-      if (profileError) throw profileError;
+      if (profileResponse.error) throw profileResponse.error;
 
-      setSaldoGeral(profileData?.saldo || 0);
+      setSaldoGeral(profileResponse.data?.saldo || 0);
     } catch (error: any) {
       console.error("Erro ao buscar caixinhas:", error);
       toast({

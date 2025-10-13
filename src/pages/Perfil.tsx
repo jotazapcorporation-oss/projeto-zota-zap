@@ -66,22 +66,25 @@ export default function Perfil() {
       }
 
       // Buscar dados do perfil no Supabase
-      const { data, error } = await supabase
+      // @ts-ignore - Avoiding circular type reference in Supabase types
+      const profileResponse = await supabase
         .from("profiles")
         .select("nome, phone, email, avatar_url, whatsapp")
         .eq("user_id", user.id)
         .maybeSingle();
 
-      if (error && error.code !== "PGRST116") {
-        throw error;
+      if (profileResponse.error && profileResponse.error.code !== "PGRST116") {
+        throw profileResponse.error;
       }
 
+      const profileData = profileResponse.data;
+
       // Se encontrou dados, usar do banco; caso contrário, usar fallbacks
-      const nome = data?.nome || user?.email?.split("@")[0] || "";
-      const phone = data?.phone || user?.phone || "";
-      const email = data?.email || user?.email || "";
-      const avatar_url = data?.avatar_url;
-      const whatsapp = data?.whatsapp;
+      const nome = profileData?.nome || user?.email?.split("@")[0] || "";
+      const phone = profileData?.phone || user?.phone || "";
+      const email = profileData?.email || user?.email || "";
+      const avatar_url = profileData?.avatar_url;
+      const whatsapp = profileData?.whatsapp;
 
       setProfile({
         nome,
