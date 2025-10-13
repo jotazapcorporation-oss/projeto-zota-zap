@@ -70,7 +70,7 @@ export default function Perfil() {
       const profileResponse = await supabase
         .from("profiles")
         .select("nome, phone, email, avatar_url, whatsapp")
-        .eq("user_id", user.id)
+        .eq("id", user.id)
         .maybeSingle();
 
       if (profileResponse.error && profileResponse.error.code !== "PGRST116") {

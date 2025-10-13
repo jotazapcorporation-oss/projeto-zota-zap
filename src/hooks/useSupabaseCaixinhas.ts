@@ -42,7 +42,7 @@ export function useSupabaseCaixinhas() {
       const profileResponse = await supabase
         .from("profiles")
         .select("saldo")
-        .eq("user_id", user.id)
+        .eq("id", user.id)
         .maybeSingle();
 
       if (profileResponse.error) throw profileResponse.error;
