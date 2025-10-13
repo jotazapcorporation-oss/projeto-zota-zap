@@ -62,8 +62,8 @@ export const mapSubscriptionData = (apiData: ExternalSubscriptionData): Subscrip
     start_date: apiData.dataAssinatura,
     next_payment_date: apiData.proimoPagamento,
     payment_method: 'credit_card',
-    card_last_four: apiData.creditCard.creditCardNumber.slice(-4),
-    card_brand: apiData.creditCard.creditCardBrand,
+    card_last_four: apiData.creditCard ? apiData.creditCard.creditCardNumber.slice(-4) : '',
+    card_brand: apiData.creditCard ? apiData.creditCard.creditCardBrand : '',
     created_at: apiData.dataAssinatura,
     updated_at: new Date().toISOString()
   };
