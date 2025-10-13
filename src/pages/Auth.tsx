@@ -20,7 +20,7 @@ export default function Auth() {
       {/* Left side - Image */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden rounded-3xl">
         <img 
-          src="/logo-vzap.png" 
+          src="/logo-vzap-hq.jpg" 
           alt="VZAP Logo" 
           className="w-full h-full object-cover" 
         />
