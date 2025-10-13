@@ -447,7 +447,7 @@ export default function Transacoes() {
                         {transacao.estabelecimento || 'Sem estabelecimento'}
                       </h3>
                       <Badge variant={transacao.tipo === 'receita' ? 'default' : 'destructive'}>
-                        {transacao.tipo}
+                        {transacao.tipo === 'receita' ? 'Receita' : 'Despesa'}
                       </Badge>
                     </div>
                     <div className="text-sm text-muted-foreground space-y-1">
