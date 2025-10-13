@@ -102,19 +102,21 @@ export default function Relatorios() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Relatórios Financeiros</h2>
           <p className="text-muted-foreground">
-            Análises personalizadas das suas transações
+            Análises personalizadas e detalhadas das suas transações
           </p>
         </div>
-        <ExportButtons
-          onExportPDF={generatePDF}
-          onExportExcel={generateExcel}
-          isGeneratingPDF={isGeneratingPDF}
-          disabled={transactions.length === 0}
-        />
+        <div className="flex gap-2">
+          <ExportButtons
+            onExportPDF={generatePDF}
+            onExportExcel={generateExcel}
+            isGeneratingPDF={isGeneratingPDF}
+            disabled={transactions.length === 0}
+          />
+        </div>
       </div>
 
       <ReportFiltersComponent
@@ -154,10 +156,20 @@ export default function Relatorios() {
 
           {transactions.length > 0 && (
             <>
-              <ReportChart
-                chartData={summaryData.chartData}
-                categoryData={summaryData.byCategory}
-              />
+              <Card>
+                <CardHeader>
+                  <CardTitle>Análises Visuais Detalhadas</CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    Visualize seus dados financeiros através de múltiplas perspectivas
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  <ReportChart
+                    chartData={summaryData.chartData}
+                    categoryData={summaryData.byCategory}
+                  />
+                </CardContent>
+              </Card>
 
               <ReportTable transactions={transactions} />
             </>
