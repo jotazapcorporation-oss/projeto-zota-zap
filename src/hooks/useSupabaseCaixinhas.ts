@@ -41,7 +41,7 @@ export function useSupabaseCaixinhas() {
       const { data: profileData, error: profileError } = await supabase
         .from("profiles")
         .select("saldo")
-        .eq("id", user.id)
+        .eq("user_id", user.id)
         .maybeSingle();
 
       if (profileError) throw profileError;
