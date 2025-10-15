@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
-import { IconPicker } from "./IconPicker";
+import { IconPicker, getIconComponent } from "./IconPicker";
 import { ColorPicker } from "./ColorPicker";
 import { Checkbox } from "@/components/ui/checkbox";
 
@@ -35,6 +35,14 @@ export function CreateCaixinhaModal({ onCreateCaixinha }: CreateCaixinhaModalPro
   const [hasDeadline, setHasDeadline] = useState(false);
   const [deadlineDate, setDeadlineDate] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const TEMPLATES = [
+    { name: 'Viagem', icon: 'plane', color: 'sky', suggestion: 5000 },
+    { name: 'Reserva de Emergência', icon: 'piggy-bank', color: 'emerald', suggestion: 10000 },
+    { name: 'Carro', icon: 'car', color: 'orange', suggestion: 20000 },
+    { name: 'Casa', icon: 'home', color: 'blue', suggestion: 50000 },
+    { name: 'Educação', icon: 'graduation-cap', color: 'purple', suggestion: 8000 },
+  ] as const;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,6 +90,34 @@ export function CreateCaixinhaModal({ onCreateCaixinha }: CreateCaixinhaModalPro
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
+            {/* Templates pré-definidos */}
+            <div className="space-y-2">
+              <Label>Templates populares</Label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                {TEMPLATES.map((t) => {
+                  const TIcon = getIconComponent(t.icon);
+                  return (
+                    <Button
+                      key={t.name}
+                      type="button"
+                      variant="outline"
+                      className="justify-start gap-2"
+                      onClick={() => {
+                        setNome(t.name);
+                        setGoalIcon(t.icon);
+                        setCardColor(t.color);
+                        if (!valorMeta) setValorMeta(String(t.suggestion));
+                      }}
+                      title={`Usar template ${t.name}`}
+                    >
+                      <TIcon className="h-4 w-4" />
+                      <span className="truncate">{t.name}</span>
+                    </Button>
+                  );
+                })}
+              </div>
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="nome">Nome da Caixinha</Label>
               <Input

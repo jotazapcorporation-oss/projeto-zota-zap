@@ -81,14 +81,14 @@ export default function Caixinhas() {
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+    if (!over || active.id === over.id) return;
 
-    if (over && active.id !== over.id) {
-      const oldIndex = caixinhas.findIndex((c) => c.id === active.id);
-      const newIndex = caixinhas.findIndex((c) => c.id === over.id);
+    // Reordenar com base na lista visível para evitar "pular" posições
+    const oldIndex = sortedCaixinhas.findIndex((c) => c.id === active.id);
+    const newIndex = sortedCaixinhas.findIndex((c) => c.id === over.id);
 
-      const newOrder = arrayMove(caixinhas, oldIndex, newIndex);
-      reorderCaixinhas(newOrder);
-    }
+    const reordered = arrayMove(sortedCaixinhas, oldIndex, newIndex);
+    reorderCaixinhas(reordered);
   };
 
   const sortedCaixinhas = useMemo(() => {
