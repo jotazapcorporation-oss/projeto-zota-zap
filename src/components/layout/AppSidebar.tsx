@@ -1,6 +1,6 @@
 
 import { NavLink, useLocation } from 'react-router-dom'
-import { Home, CreditCard, Calendar, User, LogOut, Tag, FileText, Bell, PiggyBank } from 'lucide-react'
+import { Home, CreditCard, Calendar, User, LogOut, Tag, FileText, Bell, PiggyBank, Activity } from 'lucide-react'
 import {
   Sidebar,
   SidebarContent,
@@ -24,6 +24,7 @@ const items = [
   { title: 'Transações', url: '/transacoes', icon: CreditCard },
   { title: 'Categorias', url: '/categorias', icon: Tag },
   { title: 'Relatórios', url: '/relatorios', icon: FileText },
+  { title: 'Termômetro', url: '/termometro', icon: Activity },
   { title: 'Lembretes', url: '/lembretes', icon: Bell },
   { title: 'Agenda', url: '/agenda', icon: Calendar },
   { title: 'Caixinhas', url: '/caixinhas', icon: PiggyBank },
