@@ -7,7 +7,11 @@ export interface Category {
   id: string
   nome: string
   tags: string | null
-  tipo?: 'receita' | 'despesa' | null
+  tipo: 'receita' | 'despesa' | 'custo' | 'investimento'
+  color: string
+  icon: string
+  description?: string | null
+  display_order: number
   created_at: string
   updated_at: string
   userid: string
@@ -36,7 +40,7 @@ export function useSupabaseCategories() {
         .from('categorias')
         .select('*')
         .eq('userid', user.id)
-        .order('created_at', { ascending: false })
+        .order('display_order', { ascending: true })
 
       if (error) {
         console.error('Error fetching categories:', error)

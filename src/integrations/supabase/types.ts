@@ -171,7 +171,11 @@ export type Database = {
       }
       categorias: {
         Row: {
+          color: string | null
           created_at: string
+          description: string | null
+          display_order: number | null
+          icon: string | null
           id: string
           nome: string
           tags: string | null
@@ -180,7 +184,11 @@ export type Database = {
           userid: string
         }
         Insert: {
+          color?: string | null
           created_at?: string
+          description?: string | null
+          display_order?: number | null
+          icon?: string | null
           id?: string
           nome: string
           tags?: string | null
@@ -189,7 +197,11 @@ export type Database = {
           userid: string
         }
         Update: {
+          color?: string | null
           created_at?: string
+          description?: string | null
+          display_order?: number | null
+          icon?: string | null
           id?: string
           nome?: string
           tags?: string | null
