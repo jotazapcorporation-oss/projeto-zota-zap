@@ -28,17 +28,27 @@ serve(async (req) => {
     const username = Deno.env.get('WEBHOOK_USERNAME')
     const password = Deno.env.get('WEBHOOK_PASSWORD')
 
+    console.log('Environment check:', {
+      hasUsername: !!username,
+      hasPassword: !!password,
+      usernameLength: username?.length || 0,
+      passwordLength: password?.length || 0
+    })
+
     if (!username || !password) {
-      console.error('Missing webhook credentials')
+      console.error('Missing webhook credentials - username:', !!username, 'password:', !!password)
       return new Response(
-        JSON.stringify({ error: 'Webhook credentials not configured' }),
+        JSON.stringify({ 
+          error: 'Webhook credentials not configured',
+          details: 'Please ensure WEBHOOK_USERNAME and WEBHOOK_PASSWORD are set in Supabase secrets'
+        }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
     // Create Basic Auth credentials
     const credentials = btoa(`${username}:${password}`)
-    console.log('Calling webhook with credentials')
+    console.log('Calling webhook - auth header will be:', credentials.substring(0, 10) + '...')
 
     // Call the external webhook
     const response = await fetch('https://webhook.jzap.net/webhook/assinatura/info', {
