@@ -24,25 +24,26 @@ export const fetchSubscriptionInfoWithJWT = async (): Promise<ExternalSubscripti
 
 export const fetchSubscriptionInfo = async (userId: string): Promise<ExternalSubscriptionData | null> => {
   try {
-    const credentials = btoa('USUARIO:SENHA');
+    const { supabase } = await import('@/integrations/supabase/client');
     
-    const response = await fetch('https://webhook.jzap.net/webhook/assinatura/info', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Basic ${credentials}`
-      },
-      body: JSON.stringify({
-        userId: userId
-      })
+    console.log('Calling edge function to fetch subscription info for userId:', userId);
+    
+    const { data, error } = await supabase.functions.invoke('get-subscription-info', {
+      body: { userId }
     });
 
-    if (!response.ok) {
+    if (error) {
+      console.error('Edge function error:', error);
       throw new Error('Erro ao buscar informações da assinatura');
     }
 
-    const data: ExternalSubscriptionData = await response.json();
-    return data;
+    if (!data) {
+      console.warn('No subscription data returned from edge function');
+      return null;
+    }
+
+    console.log('Subscription data received:', data);
+    return data as ExternalSubscriptionData;
   } catch (error) {
     console.error('Erro na busca das informações de assinatura:', error);
     throw new Error('Não foi possível carregar as informações da assinatura');
