@@ -47,6 +47,39 @@ export type Database = {
         }
         Relationships: []
       }
+      boards: {
+        Row: {
+          created_at: string
+          descricao: string | null
+          display_order: number | null
+          icone: string | null
+          id: string
+          titulo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          descricao?: string | null
+          display_order?: number | null
+          icone?: string | null
+          id?: string
+          titulo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          descricao?: string | null
+          display_order?: number | null
+          icone?: string | null
+          id?: string
+          titulo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       caixinhas_poupanca: {
         Row: {
           card_color: string | null
@@ -88,6 +121,53 @@ export type Database = {
           valor_meta?: number
         }
         Relationships: []
+      }
+      cards: {
+        Row: {
+          checklist: Json | null
+          created_at: string
+          data_vencimento: string | null
+          descricao: string | null
+          display_order: number | null
+          etiquetas: Json | null
+          id: string
+          lista_id: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          checklist?: Json | null
+          created_at?: string
+          data_vencimento?: string | null
+          descricao?: string | null
+          display_order?: number | null
+          etiquetas?: Json | null
+          id?: string
+          lista_id: string
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          checklist?: Json | null
+          created_at?: string
+          data_vencimento?: string | null
+          descricao?: string | null
+          display_order?: number | null
+          etiquetas?: Json | null
+          id?: string
+          lista_id?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cards_lista_id_fkey"
+            columns: ["lista_id"]
+            isOneToOne: false
+            referencedRelation: "listas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       categorias: {
         Row: {
@@ -150,6 +230,41 @@ export type Database = {
             columns: ["userid"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      listas: {
+        Row: {
+          board_id: string
+          created_at: string
+          display_order: number | null
+          id: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          board_id: string
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          board_id?: string
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listas_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "boards"
             referencedColumns: ["id"]
           },
         ]

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { Home, CreditCard, Calendar, User, LogOut, Tag, FileText, Bell, PiggyBank, Activity, GripVertical } from 'lucide-react'
+import { Home, CreditCard, Calendar, User, LogOut, Tag, FileText, Bell, PiggyBank, Activity, GripVertical, LayoutGrid } from 'lucide-react'
 import {
   Sidebar,
   SidebarContent,
@@ -53,6 +53,7 @@ const defaultItems: MenuItem[] = [
   { id: 'lembretes', title: 'Lembretes', url: '/lembretes', icon: Bell },
   { id: 'agenda', title: 'Agenda', url: '/agenda', icon: Calendar },
   { id: 'caixinhas', title: 'Caixinhas', url: '/caixinhas', icon: PiggyBank },
+  { id: 'metas', title: 'Metas', url: '/metas', icon: LayoutGrid },
   { id: 'perfil', title: 'Perfil', url: '/perfil', icon: User },
 ]
 
