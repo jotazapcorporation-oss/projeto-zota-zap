@@ -236,6 +236,10 @@ export function useSupabaseCaixinhas() {
   };
 
   const deleteCaixinha = async (caixinhaId: string) => {
+    // Otimista: remove da UI imediatamente e tenta no banco
+    const prev = [...caixinhas];
+    setCaixinhas((curr) => curr.filter((c) => c.id !== caixinhaId));
+
     try {
       const { error } = await supabase
         .from("caixinhas_poupanca")
@@ -249,9 +253,12 @@ export function useSupabaseCaixinhas() {
         description: "A caixinha foi removida com sucesso.",
       });
 
+      // Recarrega para garantir consistência com o servidor
       await fetchCaixinhas();
     } catch (error: any) {
       console.error("Erro ao excluir caixinha:", error);
+      // Rollback otimista
+      setCaixinhas(prev);
       toast({
         title: "Erro ao excluir caixinha",
         description: error.message,
