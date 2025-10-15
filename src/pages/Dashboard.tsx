@@ -10,6 +10,8 @@ import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar'
 import { TutorialButton } from '@/components/ui/tutorial-button'
 import { TutorialModal } from '@/components/ui/tutorial-modal'
 import { useTutorial } from '@/hooks/useTutorial'
+import { PageTransition } from '@/components/layout/PageTransition'
+import { Home } from 'lucide-react'
 
 interface Transacao {
   id: number
@@ -152,19 +154,22 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex-1">
-          <DashboardFilters 
-            filterMonth={filterMonth}
-            filterYear={filterYear}
-            setFilterMonth={setFilterMonth}
-            setFilterYear={setFilterYear}
-            transactionCount={filteredTransacoes.length}
-          />
-        </div>
+    <PageTransition
+      title="Dashboard"
+      description="Visão geral das suas finanças"
+      icon={Home}
+    >
+      <div className="flex items-center justify-end mb-4">
         <TutorialButton onClick={() => tutorial.setIsOpen(true)} />
       </div>
+
+      <DashboardFilters 
+        filterMonth={filterMonth}
+        filterYear={filterYear}
+        setFilterMonth={setFilterMonth}
+        setFilterYear={setFilterYear}
+        transactionCount={filteredTransacoes.length}
+      />
       
       <DashboardStats stats={stats} />
       
@@ -185,6 +190,6 @@ export default function Dashboard() {
         onToggleStep={tutorial.toggleStep}
         onReset={tutorial.resetProgress}
       />
-    </div>
+    </PageTransition>
   )
 }

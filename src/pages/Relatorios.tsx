@@ -16,6 +16,7 @@ import { generateExcelReport } from '@/utils/excelGenerator'
 import { TutorialButton } from '@/components/ui/tutorial-button'
 import { TutorialModal } from '@/components/ui/tutorial-modal'
 import { useTutorial } from '@/hooks/useTutorial'
+import { PageTransition } from '@/components/layout/PageTransition'
 
 export default function Relatorios() {
   const { user } = useAuth()
@@ -123,23 +124,19 @@ export default function Relatorios() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Relatórios Financeiros</h2>
-          <p className="text-muted-foreground">
-            Análises personalizadas e detalhadas das suas transações
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <TutorialButton onClick={() => tutorial.setIsOpen(true)} />
-          <ExportButtons
-            onExportPDF={generatePDF}
-            onExportExcel={generateExcel}
-            isGeneratingPDF={isGeneratingPDF}
-            disabled={transactions.length === 0}
-          />
-        </div>
+    <PageTransition
+      title="Relatórios Financeiros"
+      description="Análises personalizadas e detalhadas das suas transações"
+      icon={FileText}
+    >
+      <div className="flex justify-end gap-2 mb-4">
+        <TutorialButton onClick={() => tutorial.setIsOpen(true)} />
+        <ExportButtons
+          onExportPDF={generatePDF}
+          onExportExcel={generateExcel}
+          isGeneratingPDF={isGeneratingPDF}
+          disabled={transactions.length === 0}
+        />
       </div>
 
       <ReportFiltersComponent
@@ -221,6 +218,6 @@ export default function Relatorios() {
         onToggleStep={tutorial.toggleStep}
         onReset={tutorial.resetProgress}
       />
-    </div>
+    </PageTransition>
   )
 }

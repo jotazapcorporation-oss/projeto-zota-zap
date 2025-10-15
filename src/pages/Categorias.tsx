@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Plus, Search, Sparkles } from 'lucide-react';
+import { Plus, Search, Sparkles, Tag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { CategoryCard } from '@/components/categories/CategoryCard';
@@ -11,6 +11,7 @@ import { useTutorial } from '@/hooks/useTutorial';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
+import { PageTransition } from '@/components/layout/PageTransition';
 import {
   DndContext,
   DragEndEvent,
@@ -216,117 +217,104 @@ export default function Categorias() {
   }
 
   return (
-    <div className="min-h-[calc(100vh-8rem)] flex flex-col space-y-6 animate-fade-in">
-      {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent flex items-center gap-3">
-              <Sparkles className="h-10 w-10 text-primary" />
-              Categorias
-            </h1>
-            <p className="text-muted-foreground mt-2 text-lg">
-              Organize suas transações com categorias personalizadas e coloridas
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <TutorialButton onClick={() => tutorial.setIsOpen(true)} />
-            <Button 
-              onClick={() => {
-                setEditingCategory(null);
-                setIsFormOpen(true);
-              }} 
-              className="gap-2 h-12 px-6 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 shadow-lg hover:shadow-xl transition-all"
-              size="lg"
-            >
-              <Plus className="h-5 w-5" />
-              Nova Categoria
-            </Button>
-          </div>
-        </div>
+    <PageTransition
+      title="Categorias"
+      description="Organize suas transações com categorias personalizadas e coloridas"
+      icon={Tag}
+    >
+      <div className="flex items-center justify-end gap-2 mb-4">
+        <TutorialButton onClick={() => tutorial.setIsOpen(true)} />
+        <Button 
+          onClick={() => {
+            setEditingCategory(null);
+            setIsFormOpen(true);
+          }} 
+          className="gap-2 h-12 px-6 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 shadow-lg hover:shadow-xl transition-all"
+          size="lg"
+        >
+          <Plus className="h-5 w-5" />
+          Nova Categoria
+        </Button>
+      </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1 }}
-            className="bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/20 rounded-xl p-4 text-center"
-          >
-            <p className="text-3xl font-bold text-primary">{categoryStats.total}</p>
-            <p className="text-xs text-muted-foreground mt-1">Total</p>
-          </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.15 }}
-            className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-2 border-green-500/20 rounded-xl p-4 text-center"
-          >
-            <p className="text-3xl font-bold text-green-600">{categoryStats.receitas}</p>
-            <p className="text-xs text-muted-foreground mt-1">Receitas</p>
-          </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2 }}
-            className="bg-gradient-to-br from-red-500/10 to-red-500/5 border-2 border-red-500/20 rounded-xl p-4 text-center"
-          >
-            <p className="text-3xl font-bold text-red-600">{categoryStats.despesas}</p>
-            <p className="text-xs text-muted-foreground mt-1">Despesas</p>
-          </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.25 }}
-            className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 border-2 border-amber-500/20 rounded-xl p-4 text-center"
-          >
-            <p className="text-3xl font-bold text-amber-600">{categoryStats.custos}</p>
-            <p className="text-xs text-muted-foreground mt-1">Custos</p>
-          </motion.div>
-          
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.3 }}
-            className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-2 border-blue-500/20 rounded-xl p-4 text-center"
-          >
-            <p className="text-3xl font-bold text-blue-600">{categoryStats.investimentos}</p>
-            <p className="text-xs text-muted-foreground mt-1">Investimentos</p>
-          </motion.div>
-        </div>
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1 }}
+          className="bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/20 rounded-xl p-4 text-center"
+        >
+          <p className="text-3xl font-bold text-primary">{categoryStats.total}</p>
+          <p className="text-xs text-muted-foreground mt-1">Total</p>
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.15 }}
+          className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-2 border-green-500/20 rounded-xl p-4 text-center"
+        >
+          <p className="text-3xl font-bold text-green-600">{categoryStats.receitas}</p>
+          <p className="text-xs text-muted-foreground mt-1">Receitas</p>
+        </motion.div>
 
-        {/* Filters */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Buscar categorias..."
-              className="pl-10 h-11 bg-background/50 backdrop-blur-sm"
-            />
-          </div>
-          
-          <Select value={filterType} onValueChange={setFilterType}>
-            <SelectTrigger className="w-full sm:w-[200px] h-11">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas</SelectItem>
-              <SelectItem value="receita">💚 Receitas</SelectItem>
-              <SelectItem value="despesa">❤️ Despesas</SelectItem>
-              <SelectItem value="custo">🟠 Custos</SelectItem>
-              <SelectItem value="investimento">💙 Investimentos</SelectItem>
-            </SelectContent>
-          </Select>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2 }}
+          className="bg-gradient-to-br from-red-500/10 to-red-500/5 border-2 border-red-500/20 rounded-xl p-4 text-center"
+        >
+          <p className="text-3xl font-bold text-red-600">{categoryStats.despesas}</p>
+          <p className="text-xs text-muted-foreground mt-1">Despesas</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.25 }}
+          className="bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-2 border-orange-500/20 rounded-xl p-4 text-center"
+        >
+          <p className="text-3xl font-bold text-orange-600">{categoryStats.custos}</p>
+          <p className="text-xs text-muted-foreground mt-1">Custos</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3 }}
+          className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-2 border-blue-500/20 rounded-xl p-4 text-center"
+        >
+          <p className="text-3xl font-bold text-blue-600">{categoryStats.investimentos}</p>
+          <p className="text-xs text-muted-foreground mt-1">Investimentos</p>
+        </motion.div>
+      </div>
+
+      {/* Search and Filter */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-6">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="text"
+          placeholder="Pesquisar categorias..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="pl-10 h-11"
+          />
         </div>
-      </motion.div>
+        <Select value={filterType} onValueChange={setFilterType}>
+          <SelectTrigger className="w-full sm:w-[200px] h-11">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas</SelectItem>
+            <SelectItem value="receita">💚 Receitas</SelectItem>
+            <SelectItem value="despesa">❤️ Despesas</SelectItem>
+            <SelectItem value="custo">🟠 Custos</SelectItem>
+            <SelectItem value="investimento">💙 Investimentos</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
       {/* Categories List */}
       {categories.length === 0 ? (
@@ -438,6 +426,6 @@ export default function Categorias() {
         onToggleStep={tutorial.toggleStep}
         onReset={tutorial.resetProgress}
       />
-    </div>
+    </PageTransition>
   );
 }

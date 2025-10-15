@@ -17,11 +17,12 @@ import { useAuth } from '@/hooks/useLocalAuth'
 import { useCategories } from '@/hooks/useLocalCategories'
 import { toast } from '@/hooks/use-toast'
 import { supabase } from '@/integrations/supabase/client'
-import { Plus, Edit, Trash2, TrendingUp, TrendingDown } from 'lucide-react'
+import { Plus, Edit, Trash2, TrendingUp, TrendingDown, CreditCard } from 'lucide-react'
 import { formatCurrency } from '@/utils/currency'
 import { TutorialButton } from '@/components/ui/tutorial-button'
 import { TutorialModal } from '@/components/ui/tutorial-modal'
 import { useTutorial } from '@/hooks/useTutorial'
+import { PageTransition } from '@/components/layout/PageTransition'
 
 interface Transacao {
   id: number
@@ -274,125 +275,123 @@ export default function Transacoes() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-3xl font-bold tracking-tight">Transações</h2>
-          <p className="text-muted-foreground">Gerencie suas receitas e despesas</p>
-        </div>
-        <div className="flex gap-2">
-          <TutorialButton onClick={() => tutorial.setIsOpen(true)} />
-          {transacoes.length > 0 && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive">
-                  <Trash2 className="mr-2 h-4 w-4" />
-                  Remover Todas
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Remover todas as transações</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Esta ação não pode ser desfeita. Isso irá remover permanentemente todas as suas transações.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDeleteAll} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                    Remover Todas
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button className="bg-primary hover:bg-primary/90">
-                <Plus className="mr-2 h-4 w-4" />
-                Nova Transação
+    <PageTransition
+      title="Transações"
+      description="Gerencie suas receitas e despesas"
+      icon={CreditCard}
+    >
+      <div className="flex justify-end items-center gap-2 mb-4">
+        <TutorialButton onClick={() => tutorial.setIsOpen(true)} />
+        {transacoes.length > 0 && (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive">
+                <Trash2 className="mr-2 h-4 w-4" />
+                Remover Todas
               </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>
-                  {editingTransaction ? 'Editar Transação' : 'Nova Transação'}
-                </DialogTitle>
-                <DialogDescription>
-                  {editingTransaction 
-                    ? 'Faça as alterações necessárias na transação.' 
-                    : 'Adicione uma nova receita ou despesa.'}
-                </DialogDescription>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="tipo">Tipo</Label>
-                    <Select value={formData.tipo} onValueChange={(value) => setFormData({...formData, tipo: value})}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o tipo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="receita">Receita</SelectItem>
-                        <SelectItem value="despesa">Despesa</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="valor">Valor</Label>
-                    <CurrencyInput
-                      value={formData.valor}
-                      onChange={(value) => setFormData({...formData, valor: value})}
-                      required
-                    />
-                  </div>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Remover todas as transações</AlertDialogTitle>
+                <AlertDialogDescription>
+                  Esta ação não pode ser desfeita. Isso irá remover permanentemente todas as suas transações.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDeleteAll} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                  Remover Todas
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+        </AlertDialog>
+        )}
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-primary hover:bg-primary/90">
+              <Plus className="mr-2 h-4 w-4" />
+              Nova Transação
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>
+                {editingTransaction ? 'Editar Transação' : 'Nova Transação'}
+              </DialogTitle>
+              <DialogDescription>
+                {editingTransaction 
+                  ? 'Faça as alterações necessárias na transação.' 
+                  : 'Adicione uma nova receita ou despesa.'}
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="tipo">Tipo</Label>
+                  <Select value={formData.tipo} onValueChange={(value) => setFormData({...formData, tipo: value})}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione o tipo" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="receita">Receita</SelectItem>
+                      <SelectItem value="despesa">Despesa</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="estabelecimento">Estabelecimento</Label>
-                  <Input
-                    id="estabelecimento"
-                    placeholder="Ex: Supermercado, Salário, etc."
-                    value={formData.estabelecimento}
-                    onChange={(e) => setFormData({...formData, estabelecimento: e.target.value})}
+                  <Label htmlFor="valor">Valor</Label>
+                  <CurrencyInput
+                    value={formData.valor}
+                    onChange={(value) => setFormData({...formData, valor: value})}
+                    required
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="categoria">Categoria *</Label>
-                  <CategorySelectorWithCreate
-                    value={formData.category_id}
-                    onValueChange={(value) => setFormData({...formData, category_id: value})}
-                    transactionType={formData.tipo as 'receita' | 'despesa' | ''}
-                    placeholder="Selecione a categoria"
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="quando">Data</Label>
-                  <Input
-                    id="quando"
-                    type="date"
-                    value={formData.quando}
-                    onChange={(e) => setFormData({...formData, quando: e.target.value})}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="detalhes">Detalhes</Label>
-                  <Textarea
-                    id="detalhes"
-                    placeholder="Informações adicionais..."
-                    value={formData.detalhes}
-                    onChange={(e) => setFormData({...formData, detalhes: e.target.value})}
-                  />
-                </div>
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
-                  {editingTransaction ? 'Atualizar' : 'Adicionar'} Transação
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="estabelecimento">Estabelecimento</Label>
+                <Input
+                  id="estabelecimento"
+                  placeholder="Ex: Supermercado, Salário, etc."
+                  value={formData.estabelecimento}
+                  onChange={(e) => setFormData({...formData, estabelecimento: e.target.value})}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="categoria">Categoria *</Label>
+                <CategorySelectorWithCreate
+                  value={formData.category_id}
+                  onValueChange={(value) => setFormData({...formData, category_id: value})}
+                  transactionType={formData.tipo as 'receita' | 'despesa' | ''}
+                  placeholder="Selecione a categoria"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="quando">Data</Label>
+                <Input
+                  id="quando"
+                  type="date"
+                  value={formData.quando}
+                  onChange={(e) => setFormData({...formData, quando: e.target.value})}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="detalhes">Detalhes</Label>
+                <Textarea
+                  id="detalhes"
+                  placeholder="Informações adicionais..."
+                  value={formData.detalhes}
+                  onChange={(e) => setFormData({...formData, detalhes: e.target.value})}
+                />
+              </div>
+              <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
+                {editingTransaction ? 'Atualizar' : 'Adicionar'} Transação
+              </Button>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
-      <TransactionSummaryCards 
+      <TransactionSummaryCards
         receitas={receitas}
         despesas={despesas}
         saldo={saldo}
@@ -508,6 +507,6 @@ export default function Transacoes() {
         onToggleStep={tutorial.toggleStep}
         onReset={tutorial.resetProgress}
       />
-    </div>
+    </PageTransition>
   )
 }

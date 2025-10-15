@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { Home, CreditCard, Calendar, User, LogOut, Tag, FileText, Bell, PiggyBank, Activity, GripVertical, LayoutGrid } from 'lucide-react'
+import { motion } from 'framer-motion'
 import {
   Sidebar,
   SidebarContent,
@@ -85,18 +86,27 @@ function SortableMenuItem({
       <SidebarMenuButton
         asChild
         className={cn(
-          "group relative transition-all",
+          "group relative transition-all duration-200",
           isActive
             ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-            : 'hover:bg-accent',
+            : 'hover:bg-accent hover:translate-x-1',
           isDragging && 'opacity-50 scale-105 shadow-lg z-50'
         )}
       >
         <NavLink to={item.url} end className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <item.icon className="h-4 w-4" />
+          <motion.div 
+            className="flex items-center gap-2"
+            whileHover={{ x: 2 }}
+            transition={{ duration: 0.2 }}
+          >
+            <motion.div
+              whileHover={{ rotate: 5, scale: 1.1 }}
+              transition={{ duration: 0.2 }}
+            >
+              <item.icon className="h-4 w-4" />
+            </motion.div>
             <span>{item.title}</span>
-          </div>
+          </motion.div>
           
           {!isCollapsed && (
             <button
