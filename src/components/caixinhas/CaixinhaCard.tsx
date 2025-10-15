@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "@/hooks/use-toast";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -61,6 +62,7 @@ export function CaixinhaCard({
   const [editName, setEditName] = useState(caixinha.nome_caixinha);
   const [editIcon, setEditIcon] = useState(caixinha.goal_icon || 'piggy-bank');
   const [editColor, setEditColor] = useState(caixinha.card_color || 'default');
+  const [editValorMeta, setEditValorMeta] = useState(String(caixinha.valor_meta));
   const [editHasDeadline, setEditHasDeadline] = useState(!!caixinha.deadline_date);
   const [editDeadlineDate, setEditDeadlineDate] = useState(caixinha.deadline_date || '');
 
@@ -138,12 +140,33 @@ export function CaixinhaCard({
   };
 
   const handleEdit = async () => {
+    const valorMetaNum = parseFloat(editValorMeta);
+    
+    if (!editName.trim()) {
+      toast({
+        title: "Nome obrigatório",
+        description: "O nome da caixinha não pode estar vazio.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (isNaN(valorMetaNum) || valorMetaNum <= 0) {
+      toast({
+        title: "Valor inválido",
+        description: "O valor da meta deve ser maior que zero.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setLoading(true);
     try {
       await onUpdate(caixinha.id, {
         nome_caixinha: editName,
         goal_icon: editIcon,
         card_color: editColor,
+        valor_meta: valorMetaNum,
         deadline_date: editHasDeadline ? editDeadlineDate : null,
       });
       setEditDialogOpen(false);
@@ -208,6 +231,19 @@ export function CaixinhaCard({
                     />
                   </div>
 
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-valor-meta">Valor da Meta (R$)</Label>
+                    <Input
+                      id="edit-valor-meta"
+                      type="number"
+                      step="0.01"
+                      min="0.01"
+                      value={editValorMeta}
+                      onChange={(e) => setEditValorMeta(e.target.value)}
+                      placeholder="0.00"
+                    />
+                  </div>
+
                   <IconPicker value={editIcon} onChange={setEditIcon} />
                   
                   <ColorPicker value={editColor} onChange={setEditColor} />
@@ -240,7 +276,7 @@ export function CaixinhaCard({
                   <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
                     Cancelar
                   </Button>
-                  <Button onClick={handleEdit} disabled={loading || !editName.trim()}>
+                  <Button onClick={handleEdit} disabled={loading || !editName.trim() || !editValorMeta}>
                     {loading ? "Salvando..." : "Salvar Alterações"}
                   </Button>
                 </DialogFooter>
