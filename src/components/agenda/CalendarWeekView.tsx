@@ -1,0 +1,128 @@
+import { AgendaEvent } from '@/hooks/useSupabaseAgenda';
+import { format, startOfWeek, addDays, isSameDay, parseISO, addMinutes, startOfDay } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
+import { useState } from 'react';
+
+interface CalendarWeekViewProps {
+  events: AgendaEvent[];
+  selectedDate: Date;
+  onDateClick: (date: Date) => void;
+  onTimeSlotClick: (date: Date, time: string) => void;
+  onEventClick: (event: AgendaEvent) => void;
+}
+
+export const CalendarWeekView = ({
+  events,
+  selectedDate,
+  onDateClick,
+  onTimeSlotClick,
+  onEventClick,
+}: CalendarWeekViewProps) => {
+  const weekStart = startOfWeek(selectedDate, { weekStartsOn: 0 });
+  const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
+  
+  // Horas de 0 a 23
+  const hours = Array.from({ length: 24 }, (_, i) => i);
+
+  const getEventsForDateAndHour = (date: Date, hour: number) => {
+    return events.filter(event => {
+      if (!isSameDay(parseISO(event.event_date), date)) return false;
+      
+      const eventHour = parseInt(event.event_time.split(':')[0]);
+      return eventHour === hour;
+    });
+  };
+
+  const isToday = (date: Date) => isSameDay(date, new Date());
+
+  return (
+    <div className="flex flex-col h-full bg-background rounded-lg border shadow-lg overflow-hidden">
+      {/* Header com dias da semana */}
+      <div className="grid grid-cols-8 border-b bg-card sticky top-0 z-10">
+        <div className="p-2 border-r text-xs text-center text-muted-foreground font-medium">
+          GMT-3
+        </div>
+        {weekDays.map((day, idx) => (
+          <div
+            key={idx}
+            onClick={() => onDateClick(day)}
+            className={cn(
+              "p-3 border-r cursor-pointer transition-colors hover:bg-accent",
+              isToday(day) && "bg-primary/10"
+            )}
+          >
+            <div className="text-center">
+              <div className="text-xs uppercase text-muted-foreground font-medium">
+                {format(day, 'EEE', { locale: ptBR })}
+              </div>
+              <div className={cn(
+                "text-2xl font-semibold mt-1",
+                isToday(day) && "text-primary"
+              )}>
+                {format(day, 'd')}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Grid de horários */}
+      <div className="flex-1 overflow-auto">
+        <div className="grid grid-cols-8">
+          {hours.map((hour) => (
+            <div key={hour} className="contents">
+              {/* Coluna de hora */}
+              <div className="p-2 border-r border-b text-xs text-right text-muted-foreground sticky left-0 bg-card z-5">
+                {hour === 0 ? 'Meia-noite' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`}
+              </div>
+              
+              {/* Células de cada dia */}
+              {weekDays.map((day, dayIdx) => {
+                const dayEvents = getEventsForDateAndHour(day, hour);
+                const timeString = `${hour.toString().padStart(2, '0')}:00`;
+                
+                return (
+                  <div
+                    key={`${hour}-${dayIdx}`}
+                    onClick={() => onTimeSlotClick(day, timeString)}
+                    className={cn(
+                      "min-h-[60px] border-r border-b p-1 cursor-pointer transition-colors hover:bg-accent/50 relative",
+                      isToday(day) && "bg-primary/5"
+                    )}
+                  >
+                    {dayEvents.map((event) => (
+                      <div
+                        key={event.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEventClick(event);
+                        }}
+                        className={cn(
+                          "text-xs p-2 mb-1 rounded cursor-pointer",
+                          "bg-primary text-primary-foreground",
+                          "hover:opacity-90 transition-opacity",
+                          "truncate font-medium shadow-sm"
+                        )}
+                        title={`${event.titulo} - ${event.event_time}${event.local ? ` • ${event.local}` : ''}`}
+                      >
+                        <div className="flex items-center gap-1">
+                          <span className="truncate">{event.titulo}</span>
+                        </div>
+                        {event.local && (
+                          <div className="text-[10px] opacity-90 truncate">
+                            📍 {event.local}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};

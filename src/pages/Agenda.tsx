@@ -2,11 +2,21 @@ import { useState } from 'react';
 import { useAuth } from '@/hooks/useLocalAuth';
 import { useSupabaseAgenda, AgendaEvent } from '@/hooks/useSupabaseAgenda';
 import { Button } from '@/components/ui/button';
-import { EventCalendar } from '@/components/agenda/EventCalendar';
-import { EventList } from '@/components/agenda/EventList';
 import { EventModal } from '@/components/agenda/EventModal';
-import { Plus, RefreshCw, Sparkles } from 'lucide-react';
+import { CalendarDayView } from '@/components/agenda/CalendarDayView';
+import { CalendarWeekView } from '@/components/agenda/CalendarWeekView';
+import { CalendarMonthView } from '@/components/agenda/CalendarMonthView';
+import { CalendarYearView } from '@/components/agenda/CalendarYearView';
+import { TasksPanel } from '@/components/agenda/TasksPanel';
+import { Plus, ChevronLeft, ChevronRight, Calendar as CalendarIcon, Settings } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -17,35 +27,36 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { addDays, addMonths, addYears, subDays, subMonths, subYears, format, startOfWeek, endOfWeek } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
+
+type ViewMode = 'day' | 'week' | 'month' | 'year';
 
 export default function Agenda() {
   const { user } = useAuth();
   const { events, loading, fetchEvents, createEvent, updateEvent, deleteEvent } = useSupabaseAgenda(user?.id);
   const { toast } = useToast();
+  
+  const [viewMode, setViewMode] = useState<ViewMode>('week');
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [modalOpen, setModalOpen] = useState(false);
   const [editEvent, setEditEvent] = useState<AgendaEvent | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [prefilledDate, setPrefilledDate] = useState<Date | null>(null);
+  const [prefilledTime, setPrefilledTime] = useState<string | null>(null);
 
-  const handleSync = async () => {
-    toast({
-      title: '🔄 Sincronizando...',
-      description: 'Atualizando eventos do WhatsApp',
-    });
-    await fetchEvents();
-    toast({
-      title: '✅ Sincronizado!',
-      description: 'Agenda atualizada com sucesso',
-    });
-  };
-
-  const handleNewEvent = () => {
+  const handleNewEvent = (date?: Date, time?: string) => {
     setEditEvent(null);
+    setPrefilledDate(date || null);
+    setPrefilledTime(time || null);
     setModalOpen(true);
   };
 
   const handleEditEvent = (event: AgendaEvent) => {
     setEditEvent(event);
+    setPrefilledDate(null);
+    setPrefilledTime(null);
     setModalOpen(true);
   };
 
@@ -55,6 +66,75 @@ export default function Agenda() {
       setDeleteId(null);
     }
   };
+
+  const handleDateClick = (date: Date) => {
+    setSelectedDate(date);
+    setViewMode('day');
+  };
+
+  const handleTimeSlotClick = (date: Date, time: string) => {
+    handleNewEvent(date, time);
+  };
+
+  const handleDayTimeSlotClick = (time: string) => {
+    handleNewEvent(selectedDate, time);
+  };
+
+  const navigatePrevious = () => {
+    switch (viewMode) {
+      case 'day':
+        setSelectedDate(subDays(selectedDate, 1));
+        break;
+      case 'week':
+        setSelectedDate(subDays(selectedDate, 7));
+        break;
+      case 'month':
+        setSelectedDate(subMonths(selectedDate, 1));
+        break;
+      case 'year':
+        setSelectedDate(subYears(selectedDate, 1));
+        break;
+    }
+  };
+
+  const navigateNext = () => {
+    switch (viewMode) {
+      case 'day':
+        setSelectedDate(addDays(selectedDate, 1));
+        break;
+      case 'week':
+        setSelectedDate(addDays(selectedDate, 7));
+        break;
+      case 'month':
+        setSelectedDate(addMonths(selectedDate, 1));
+        break;
+      case 'year':
+        setSelectedDate(addYears(selectedDate, 1));
+        break;
+    }
+  };
+
+  const goToToday = () => {
+    setSelectedDate(new Date());
+  };
+
+  const getHeaderTitle = () => {
+    switch (viewMode) {
+      case 'day':
+        return format(selectedDate, "d 'de' MMMM 'de' yyyy", { locale: ptBR });
+      case 'week':
+        const weekStart = startOfWeek(selectedDate, { weekStartsOn: 0 });
+        const weekEnd = endOfWeek(selectedDate, { weekStartsOn: 0 });
+        return `${format(weekStart, 'd MMM', { locale: ptBR })} - ${format(weekEnd, 'd MMM yyyy', { locale: ptBR })}`;
+      case 'month':
+        return format(selectedDate, 'MMMM yyyy', { locale: ptBR });
+      case 'year':
+        return format(selectedDate, 'yyyy');
+    }
+  };
+
+  const upcomingEvents = events.filter(e => new Date(e.event_date) >= new Date()).length;
+  const activeMonths = new Set(events.map(e => e.event_date.split('-')[1])).size;
 
   if (loading) {
     return (
@@ -68,80 +148,125 @@ export default function Agenda() {
   }
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b-2 border-primary/20">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary via-primary to-primary/60 bg-clip-text text-transparent flex items-center gap-2">
-            <Sparkles className="h-8 w-8 text-primary animate-pulse" />
-            Agenda VZAP
-          </h1>
-          <p className="text-muted-foreground">
-            Organize seus eventos e compromissos de forma inteligente
-          </p>
-        </div>
-
-        <div className="flex gap-2">
-          <Button
-            onClick={handleSync}
-            variant="outline"
-            className="hover:bg-primary/10 hover:border-primary transition-all"
-          >
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Sincronizar
-          </Button>
-          <Button
-            onClick={handleNewEvent}
-            className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all hover:scale-105"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Novo Evento
-          </Button>
-        </div>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-4 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/20 hover:shadow-lg transition-all">
+    <div className="h-[calc(100vh-4rem)] flex flex-col gap-4 animate-fade-in">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="p-3 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/20">
           <div className="text-center space-y-1">
-            <p className="text-3xl font-bold text-primary">{events.length}</p>
-            <p className="text-sm text-muted-foreground">Total de Eventos</p>
+            <p className="text-2xl font-bold text-primary">{events.length}</p>
+            <p className="text-xs text-muted-foreground">Total de Eventos</p>
           </div>
         </div>
-        <div className="p-4 rounded-lg bg-gradient-to-br from-green-500/10 to-green-500/5 border-2 border-green-500/20 hover:shadow-lg transition-all">
+        <div className="p-3 rounded-lg bg-gradient-to-br from-green-500/10 to-green-500/5 border-2 border-green-500/20">
           <div className="text-center space-y-1">
-            <p className="text-3xl font-bold text-green-600">
-              {events.filter(e => new Date(e.event_date) >= new Date()).length}
-            </p>
-            <p className="text-sm text-muted-foreground">Próximos</p>
+            <p className="text-2xl font-bold text-green-600">{upcomingEvents}</p>
+            <p className="text-xs text-muted-foreground">Próximos</p>
           </div>
         </div>
-        <div className="p-4 rounded-lg bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-2 border-blue-500/20 hover:shadow-lg transition-all">
+        <div className="p-3 rounded-lg bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-2 border-blue-500/20">
           <div className="text-center space-y-1">
-            <p className="text-3xl font-bold text-blue-600">
-              {new Set(events.map(e => e.event_date.split('-')[1])).size}
-            </p>
-            <p className="text-sm text-muted-foreground">Meses Ativos</p>
+            <p className="text-2xl font-bold text-blue-600">{activeMonths}</p>
+            <p className="text-xs text-muted-foreground">Meses Ativos</p>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <EventCalendar
-            events={events}
-            onDateSelect={setSelectedDate}
-            onEventClick={handleEditEvent}
-          />
+      {/* Toolbar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-card p-3 rounded-lg border shadow-sm">
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={() => handleNewEvent()}
+            className="gap-2 bg-primary hover:bg-primary/90"
+          >
+            <Plus className="h-4 w-4" />
+            <span className="hidden sm:inline">Criar</span>
+          </Button>
+
+          <Button variant="outline" size="icon" onClick={goToToday}>
+            <CalendarIcon className="h-4 w-4" />
+          </Button>
+
+          <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1">
+            <Button variant="ghost" size="icon" onClick={navigatePrevious} className="h-8 w-8">
+              <ChevronLeft className="h-4 w-4" />
+            </Button>
+            <Button variant="ghost" size="icon" onClick={navigateNext} className="h-8 w-8">
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
-        <div className="lg:col-span-1">
-          <EventList
-            events={events}
-            onEdit={handleEditEvent}
-            onDelete={setDeleteId}
-          />
+        <div className="flex-1 min-w-[200px] text-center">
+          <h2 className="text-lg font-semibold capitalize">{getHeaderTitle()}</h2>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Select value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
+            <SelectTrigger className="w-32">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="day">Dia</SelectItem>
+              <SelectItem value="week">Semana</SelectItem>
+              <SelectItem value="month">Mês</SelectItem>
+              <SelectItem value="year">Ano</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Button variant="outline" size="icon">
+            <Settings className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Main Content with Tasks Panel */}
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 overflow-hidden">
+        {/* Calendar View */}
+        <div className="lg:col-span-3 overflow-hidden">
+          {viewMode === 'day' && (
+            <CalendarDayView
+              events={events}
+              selectedDate={selectedDate}
+              onTimeSlotClick={handleDayTimeSlotClick}
+              onEventClick={handleEditEvent}
+            />
+          )}
+
+          {viewMode === 'week' && (
+            <CalendarWeekView
+              events={events}
+              selectedDate={selectedDate}
+              onDateClick={handleDateClick}
+              onTimeSlotClick={handleTimeSlotClick}
+              onEventClick={handleEditEvent}
+            />
+          )}
+
+          {viewMode === 'month' && (
+            <CalendarMonthView
+              events={events}
+              selectedDate={selectedDate}
+              onDateClick={handleDateClick}
+              onEventClick={handleEditEvent}
+            />
+          )}
+
+          {viewMode === 'year' && (
+            <CalendarYearView
+              events={events}
+              selectedDate={selectedDate}
+              onMonthClick={(date) => {
+                setSelectedDate(date);
+                setViewMode('month');
+              }}
+              onDateClick={handleDateClick}
+            />
+          )}
+        </div>
+
+        {/* Tasks Panel */}
+        <div className="lg:col-span-1 overflow-hidden">
+          <TasksPanel />
         </div>
       </div>
 
@@ -152,6 +277,8 @@ export default function Agenda() {
         onSave={createEvent}
         onUpdate={updateEvent}
         editEvent={editEvent}
+        prefilledDate={prefilledDate}
+        prefilledTime={prefilledTime}
       />
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>

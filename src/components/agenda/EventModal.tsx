@@ -12,9 +12,11 @@ interface EventModalProps {
   onSave: (eventData: Omit<AgendaEvent, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => Promise<any>;
   onUpdate?: (id: string, eventData: Partial<AgendaEvent>) => Promise<void>;
   editEvent?: AgendaEvent | null;
+  prefilledDate?: Date | null;
+  prefilledTime?: string | null;
 }
 
-export const EventModal = ({ open, onOpenChange, onSave, onUpdate, editEvent }: EventModalProps) => {
+export const EventModal = ({ open, onOpenChange, onSave, onUpdate, editEvent, prefilledDate, prefilledTime }: EventModalProps) => {
   const [titulo, setTitulo] = useState('');
   const [eventDate, setEventDate] = useState('');
   const [eventTime, setEventTime] = useState('');
@@ -29,11 +31,19 @@ export const EventModal = ({ open, onOpenChange, onSave, onUpdate, editEvent }: 
       setLocal(editEvent.local || '');
     } else {
       setTitulo('');
-      setEventDate(format(new Date(), 'yyyy-MM-dd'));
-      setEventTime('12:00');
+      if (prefilledDate) {
+        setEventDate(format(prefilledDate, 'yyyy-MM-dd'));
+      } else {
+        setEventDate(format(new Date(), 'yyyy-MM-dd'));
+      }
+      if (prefilledTime) {
+        setEventTime(prefilledTime);
+      } else {
+        setEventTime('12:00');
+      }
       setLocal('');
     }
-  }, [editEvent, open]);
+  }, [editEvent, open, prefilledDate, prefilledTime]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
