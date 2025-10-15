@@ -263,6 +263,51 @@ export type Database = {
           },
         ]
       }
+      tarefas: {
+        Row: {
+          concluida: boolean | null
+          created_at: string
+          descricao: string | null
+          display_order: number | null
+          horario: string | null
+          id: string
+          local: string | null
+          prioridade: string | null
+          subtarefas: Json | null
+          titulo: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          concluida?: boolean | null
+          created_at?: string
+          descricao?: string | null
+          display_order?: number | null
+          horario?: string | null
+          id?: string
+          local?: string | null
+          prioridade?: string | null
+          subtarefas?: Json | null
+          titulo: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          concluida?: boolean | null
+          created_at?: string
+          descricao?: string | null
+          display_order?: number | null
+          horario?: string | null
+          id?: string
+          local?: string | null
+          prioridade?: string | null
+          subtarefas?: Json | null
+          titulo?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       transacoes: {
         Row: {
           category_id: string
