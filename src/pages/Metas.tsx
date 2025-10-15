@@ -107,9 +107,33 @@ export default function Metas() {
     }
   };
 
-  const handleAddCard = (listaId: string) => {
-    setNewCardListaId(listaId);
-    setCardModalOpen(true);
+  const handleAddCard = async (listaId: string, titulo: string) => {
+    if (!titulo.trim()) return;
+    await createCard(listaId, {
+      titulo: titulo.trim(),
+      descricao: '',
+      data_vencimento: null,
+      etiquetas: [],
+      checklist: [],
+      display_order: listas.find(l => l.id === listaId)?.cards?.length || 0,
+    });
+  };
+
+  const handleUpdateListTitle = async (id: string, titulo: string) => {
+    const listaToUpdate = listas.find(l => l.id === id);
+    if (!listaToUpdate) return;
+    
+    // Update via Supabase
+    const { supabase } = await import('@/integrations/supabase/client');
+    const { error } = await supabase
+      .from('listas')
+      .update({ titulo })
+      .eq('id', id);
+    
+    if (!error) {
+      // Update local state
+      setListas(listas.map(l => l.id === id ? { ...l, titulo } : l));
+    }
   };
 
   const handleEditCard = (card: Card) => {
@@ -172,7 +196,50 @@ export default function Metas() {
   };
 
   const handleDragOver = (event: DragOverEvent) => {
-    // Handle card moving between lists
+    const { active, over } = event;
+    
+    if (!over) return;
+
+    const activeId = active.id as string;
+    const overId = over.id as string;
+
+    // Find the active card
+    const activeCard = listas.flatMap(l => l.cards).find(c => c.id === activeId);
+    if (!activeCard) return; // If not a card, it's a list, skip
+
+    // Find which list the card is over
+    let overListaId: string | undefined;
+    const overCard = listas.flatMap(l => l.cards).find(c => c.id === overId);
+    
+    if (overCard) {
+      overListaId = overCard.lista_id;
+    } else {
+      // Check if over is a list itself
+      overListaId = listas.find(l => l.id === overId)?.id;
+    }
+
+    if (!overListaId || activeCard.lista_id === overListaId) return;
+
+    // Move card between lists in local state for immediate feedback
+    setListas(prevListas => {
+      const sourceLista = prevListas.find(l => l.id === activeCard.lista_id);
+      const destLista = prevListas.find(l => l.id === overListaId);
+      
+      if (!sourceLista || !destLista) return prevListas;
+
+      const sourceCards = sourceLista.cards.filter(c => c.id !== activeId);
+      const destCards = [...destLista.cards, { ...activeCard, lista_id: overListaId }];
+
+      return prevListas.map(lista => {
+        if (lista.id === sourceLista.id) {
+          return { ...lista, cards: sourceCards };
+        }
+        if (lista.id === destLista.id) {
+          return { ...lista, cards: destCards };
+        }
+        return lista;
+      });
+    });
   };
 
   const handleDragEnd = async (event: DragEndEvent) => {
@@ -411,11 +478,13 @@ export default function Metas() {
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
-                size="icon"
+                size="sm"
                 onClick={() => setSelectedBoard(null)}
-                className="hover:bg-accent h-10 w-10"
+                className="hover:bg-accent h-10 gap-2"
+                aria-label="Voltar para Quadros"
               >
                 <ArrowLeft className="h-5 w-5" />
+                Voltar para Quadros
               </Button>
               
               <div>
@@ -503,6 +572,7 @@ export default function Metas() {
                     onAddCard={handleAddCard}
                     onEditCard={handleEditCard}
                     onDeleteList={setDeleteListaId}
+                    onUpdateListTitle={handleUpdateListTitle}
                   />
                 ))}
               </SortableContext>
