@@ -12,25 +12,21 @@ interface Lembrete {
   valor: number | null
 }
 
-interface DashboardSidebarProps {
-  lembretes: Lembrete[]
+interface FraseDiaria {
+  id: string
+  mensagem: string
+  autor: string | null
 }
 
-const dicas = [
-  "💡 Sempre registre suas despesas no mesmo dia para não esquecer",
-  "💡 Defina metas mensais de economia e acompanhe seu progresso",
-  "💡 Categorize suas despesas para identificar onde gasta mais",
-  "💡 Configure lembretes para não perder datas de pagamento",
-  "💡 Revise seus gastos semanalmente para manter o controle",
-  "💡 Separe uma quantia fixa para emergências todo mês"
-]
+interface DashboardSidebarProps {
+  lembretes: Lembrete[]
+  fraseDiaria: FraseDiaria | null
+}
 
-export function DashboardSidebar({ lembretes }: DashboardSidebarProps) {
+export function DashboardSidebar({ lembretes, fraseDiaria }: DashboardSidebarProps) {
   const proximoLembrete = lembretes
     .filter(l => l.data && new Date(l.data) >= new Date())
     .sort((a, b) => new Date(a.data!).getTime() - new Date(b.data!).getTime())[0]
-
-  const dicaDoDia = dicas[new Date().getDate() % dicas.length]
 
   return (
     <div className="space-y-6">
@@ -68,7 +64,16 @@ export function DashboardSidebar({ lembretes }: DashboardSidebarProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm">{dicaDoDia}</p>
+          {fraseDiaria ? (
+            <div className="space-y-2">
+              <p className="text-sm">{fraseDiaria.mensagem}</p>
+              {fraseDiaria.autor && (
+                <p className="text-xs text-muted-foreground italic">— {fraseDiaria.autor}</p>
+              )}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Ainda não há frases cadastradas.</p>
+          )}
         </CardContent>
       </Card>
     </div>

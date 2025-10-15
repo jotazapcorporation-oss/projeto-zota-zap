@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useToast } from '@/hooks/use-toast';
 
 const COR_ETIQUETAS = [
   { nome: 'Verde', cor: '#22c55e' },
@@ -30,6 +31,7 @@ interface EnhancedCardModalProps {
   open: boolean;
   onClose: () => void;
   onSave: (card: Partial<Card>) => void;
+  onDuplicate?: (cardId: string) => Promise<void>;
   card?: Card | null;
 }
 

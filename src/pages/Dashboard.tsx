@@ -38,10 +38,17 @@ interface Lembrete {
   valor: number | null
 }
 
+interface FraseDiaria {
+  id: string
+  mensagem: string
+  autor: string | null
+}
+
 export default function Dashboard() {
   const { user } = useAuth()
   const [transacoes, setTransacoes] = useState<Transacao[]>([])
   const [lembretes, setLembretes] = useState<Lembrete[]>([])
+  const [fraseDiaria, setFraseDiaria] = useState<FraseDiaria | null>(null)
   const [loading, setLoading] = useState(true)
   const tutorial = useTutorial('dashboard')
   
@@ -59,7 +66,7 @@ export default function Dashboard() {
     if (!user) return
     try {
       setLoading(true)
-      const [txRes, lbRes] = await Promise.all([
+      const [txRes, lbRes, fraseRes] = await Promise.all([
         supabase
           .from('transacoes')
           .select('*')
@@ -69,7 +76,11 @@ export default function Dashboard() {
           .from('lembretes')
           .select('*')
           .eq('userid', user.id)
-          .order('created_at', { ascending: false })
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('fraseDiaria')
+          .select('*')
+          .limit(100)
       ])
 
       if (txRes.error) {
@@ -86,6 +97,16 @@ export default function Dashboard() {
         setLembretes([])
       } else {
         setLembretes(lbRes.data || [])
+      }
+
+      if (fraseRes.error) {
+        console.error('Erro ao carregar frase diária:', fraseRes.error)
+        setFraseDiaria(null)
+      } else if (fraseRes.data && fraseRes.data.length > 0) {
+        const randomIndex = Math.floor(Math.random() * fraseRes.data.length)
+        setFraseDiaria(fraseRes.data[randomIndex])
+      } else {
+        setFraseDiaria(null)
       }
     } catch (error: any) {
       console.error('Erro detalhado:', error)
@@ -178,7 +199,7 @@ export default function Dashboard() {
           <DashboardCharts transacoes={filteredTransacoes} />
         </div>
         <div>
-          <DashboardSidebar lembretes={lembretes} />
+          <DashboardSidebar lembretes={lembretes} fraseDiaria={fraseDiaria} />
         </div>
       </div>
 

@@ -358,6 +358,27 @@ export type Database = {
         }
         Relationships: []
       }
+      frasediaria: {
+        Row: {
+          autor: string | null
+          created_at: string | null
+          id: string
+          mensagem: string
+        }
+        Insert: {
+          autor?: string | null
+          created_at?: string | null
+          id?: string
+          mensagem: string
+        }
+        Update: {
+          autor?: string | null
+          created_at?: string | null
+          id?: string
+          mensagem?: string
+        }
+        Relationships: []
+      }
       lembretes: {
         Row: {
           created_at: string
