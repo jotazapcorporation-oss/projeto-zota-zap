@@ -66,22 +66,26 @@ export default function Dashboard() {
     if (!user) return
     try {
       setLoading(true)
-      const [txRes, lbRes, fraseRes] = await Promise.all([
-        supabase
-          .from('transacoes')
-          .select('*')
-          .eq('userid', user.id)
-          .order('created_at', { ascending: false }),
-        supabase
-          .from('lembretes')
-          .select('*')
-          .eq('userid', user.id)
-          .order('created_at', { ascending: false }),
-        supabase
-          .from('fraseDiaria')
-          .select('*')
-          .limit(100)
-      ])
+      
+      // Buscar transações
+      const txRes = await supabase
+        .from('transacoes')
+        .select('*')
+        .eq('userid', user.id)
+        .order('created_at', { ascending: false })
+
+      // Buscar lembretes
+      const lbRes = await supabase
+        .from('lembretes')
+        .select('*')
+        .eq('userid', user.id)
+        .order('created_at', { ascending: false })
+
+      // Buscar frase diária com tipagem explícita
+      const fraseRes = await supabase
+        .from('fraseDiaria' as any)
+        .select('*')
+        .limit(100) as { data: FraseDiaria[] | null; error: any }
 
       if (txRes.error) {
         console.error('Erro ao carregar transações:', txRes.error)
