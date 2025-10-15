@@ -25,7 +25,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { TrendingUp, TrendingDown, Trash2, Pencil, AlertTriangle, Clock } from "lucide-react";
+import { TrendingUp, TrendingDown, Trash2, Pencil, AlertTriangle, Clock, GripVertical } from "lucide-react";
 import { Caixinha } from "@/hooks/useSupabaseCaixinhas";
 import { formatCurrency } from "@/utils/currency";
 import { getIconComponent } from "./IconPicker";
@@ -42,6 +42,7 @@ interface CaixinhaCardProps {
   onRetirar: (id: string, valor: number) => Promise<any>;
   onDelete: (id: string) => Promise<any>;
   onUpdate: (id: string, updates: Partial<Caixinha>) => Promise<any>;
+  dragHandleProps?: React.HTMLAttributes<HTMLButtonElement>;
 }
 
 export function CaixinhaCard({
@@ -50,6 +51,7 @@ export function CaixinhaCard({
   onRetirar,
   onDelete,
   onUpdate,
+  dragHandleProps,
 }: CaixinhaCardProps) {
   const [depositValue, setDepositValue] = useState("");
   const [withdrawValue, setWithdrawValue] = useState("");
@@ -208,6 +210,18 @@ export function CaixinhaCard({
             </div>
           </div>
           <div className="flex gap-1">
+            {dragHandleProps && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="cursor-grab active:cursor-grabbing touch-none"
+                {...dragHandleProps}
+                aria-label="Arrastar para reordenar"
+                title="Arrastar para reordenar"
+              >
+                <GripVertical className="h-4 w-4" />
+              </Button>
+            )}
             <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="ghost" size="icon">

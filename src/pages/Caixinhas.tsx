@@ -50,8 +50,12 @@ function SortableCaixinhaCard({ caixinha, ...props }: any) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <CaixinhaCard caixinha={caixinha} {...props} />
+    <div ref={setNodeRef} style={style}>
+      <CaixinhaCard 
+        caixinha={caixinha} 
+        dragHandleProps={{ ...attributes, ...listeners }}
+        {...props} 
+      />
     </div>
   );
 }
@@ -73,7 +77,9 @@ export default function Caixinhas() {
   const [sortBy, setSortBy] = useState<SortOption>('manual');
 
   const sensors = useSensors(
-    useSensor(PointerSensor),
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
     })

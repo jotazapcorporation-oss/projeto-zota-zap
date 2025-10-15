@@ -211,21 +211,34 @@ export function useSupabaseCaixinhas() {
   };
 
   const reorderCaixinhas = async (newOrder: Caixinha[]) => {
+    const prevOrder = [...caixinhas];
+    
+    // Atualização otimista
+    setCaixinhas(newOrder);
+
     try {
       const updates = newOrder.map((caixinha, index) => ({
         id: caixinha.id,
         display_order: index,
+        user_id: caixinha.user_id,
+        nome_caixinha: caixinha.nome_caixinha,
+        valor_meta: caixinha.valor_meta,
+        valor_atual: caixinha.valor_atual,
+        data_criacao: caixinha.data_criacao,
+        updated_at: new Date().toISOString(),
+        goal_icon: caixinha.goal_icon,
+        card_color: caixinha.card_color,
+        deadline_date: caixinha.deadline_date,
       }));
 
-      for (const update of updates) {
-        await supabase
-          .from("caixinhas_poupanca")
-          .update({ display_order: update.display_order })
-          .eq("id", update.id);
-      }
+      const { error } = await supabase
+        .from("caixinhas_poupanca")
+        .upsert(updates, { onConflict: 'id' });
 
-      setCaixinhas(newOrder);
+      if (error) throw error;
     } catch (error: any) {
+      // Rollback em caso de erro
+      setCaixinhas(prevOrder);
       console.error("Erro ao reordenar caixinhas:", error);
       toast({
         title: "Erro ao reordenar",
