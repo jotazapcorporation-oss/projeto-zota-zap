@@ -179,18 +179,6 @@ export function CaixinhaCard({
 
   return (
     <Card className={cn("relative hover-lift transition-all", colorClass)}>
-      {dragHandleProps && (
-        <Button
-          variant="secondary"
-          size="icon"
-          className="absolute left-2 top-2 cursor-grab active:cursor-grabbing touch-none shadow"
-          {...dragHandleProps}
-          aria-label="Arrastar para reordenar"
-          title="Arrastar para reordenar"
-        >
-          <Hand className="h-4 w-4" />
-        </Button>
-      )}
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
@@ -222,6 +210,18 @@ export function CaixinhaCard({
             </div>
           </div>
           <div className="flex gap-1">
+            {dragHandleProps && (
+              <Button
+                variant="secondary"
+                size="icon"
+                className="cursor-grab active:cursor-grabbing touch-none shadow-sm"
+                {...dragHandleProps}
+                aria-label="Arrastar para reordenar"
+                title="Arrastar para reordenar"
+              >
+                <Hand className="h-4 w-4" />
+              </Button>
+            )}
             <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="ghost" size="icon">
