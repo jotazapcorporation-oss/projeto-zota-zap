@@ -33,7 +33,8 @@ interface EnhancedCardModalProps {
   card?: Card | null;
 }
 
-export const EnhancedCardModal = ({ open, onClose, onSave, card }: EnhancedCardModalProps) => {
+export const EnhancedCardModal = ({ open, onClose, onSave, onDuplicate, card }: EnhancedCardModalProps) => {
+  const { toast } = useToast();
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
   const [dataVencimento, setDataVencimento] = useState('');
