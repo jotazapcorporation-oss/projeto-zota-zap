@@ -12,15 +12,28 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Plus } from "lucide-react";
+import { IconPicker } from "./IconPicker";
+import { ColorPicker } from "./ColorPicker";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface CreateCaixinhaModalProps {
-  onCreateCaixinha: (nome: string, valorMeta: number) => Promise<any>;
+  onCreateCaixinha: (
+    nome: string, 
+    valorMeta: number, 
+    goalIcon?: string, 
+    cardColor?: string, 
+    deadlineDate?: string
+  ) => Promise<any>;
 }
 
 export function CreateCaixinhaModal({ onCreateCaixinha }: CreateCaixinhaModalProps) {
   const [open, setOpen] = useState(false);
   const [nome, setNome] = useState("");
   const [valorMeta, setValorMeta] = useState("");
+  const [goalIcon, setGoalIcon] = useState("piggy-bank");
+  const [cardColor, setCardColor] = useState("default");
+  const [hasDeadline, setHasDeadline] = useState(false);
+  const [deadlineDate, setDeadlineDate] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -33,9 +46,19 @@ export function CreateCaixinhaModal({ onCreateCaixinha }: CreateCaixinhaModalPro
 
     setLoading(true);
     try {
-      await onCreateCaixinha(nome.trim(), valor);
+      await onCreateCaixinha(
+        nome.trim(), 
+        valor, 
+        goalIcon, 
+        cardColor, 
+        hasDeadline ? deadlineDate : undefined
+      );
       setNome("");
       setValorMeta("");
+      setGoalIcon("piggy-bank");
+      setCardColor("default");
+      setHasDeadline(false);
+      setDeadlineDate("");
       setOpen(false);
     } finally {
       setLoading(false);
@@ -58,7 +81,7 @@ export function CreateCaixinhaModal({ onCreateCaixinha }: CreateCaixinhaModalPro
               Defina um nome e uma meta de valor para sua nova caixinha de poupança.
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4 py-4">
+          <div className="space-y-4 py-4 max-h-[60vh] overflow-y-auto">
             <div className="space-y-2">
               <Label htmlFor="nome">Nome da Caixinha</Label>
               <Input
@@ -69,6 +92,11 @@ export function CreateCaixinhaModal({ onCreateCaixinha }: CreateCaixinhaModalPro
                 required
               />
             </div>
+
+            <IconPicker value={goalIcon} onChange={setGoalIcon} />
+            
+            <ColorPicker value={cardColor} onChange={setCardColor} />
+
             <div className="space-y-2">
               <Label htmlFor="valor-meta">Valor Total da Meta (R$)</Label>
               <Input
@@ -82,6 +110,31 @@ export function CreateCaixinhaModal({ onCreateCaixinha }: CreateCaixinhaModalPro
                 required
               />
             </div>
+
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="has-deadline"
+                checked={hasDeadline}
+                onCheckedChange={(checked) => setHasDeadline(checked as boolean)}
+              />
+              <Label htmlFor="has-deadline" className="cursor-pointer">
+                Definir data-limite para alcançar a meta
+              </Label>
+            </div>
+
+            {hasDeadline && (
+              <div className="space-y-2 animate-fade-in">
+                <Label htmlFor="deadline-date">Data-Limite</Label>
+                <Input
+                  id="deadline-date"
+                  type="date"
+                  value={deadlineDate}
+                  onChange={(e) => setDeadlineDate(e.target.value)}
+                  min={new Date().toISOString().split('T')[0]}
+                  required={hasDeadline}
+                />
+              </div>
+            )}
           </div>
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>

@@ -1,9 +1,60 @@
+import { useState, useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Wallet, PiggyBank, TrendingUp } from "lucide-react";
+import { Wallet, PiggyBank, TrendingUp, ArrowUpDown } from "lucide-react";
 import { useSupabaseCaixinhas } from "@/hooks/useSupabaseCaixinhas";
 import { CaixinhaCard } from "@/components/caixinhas/CaixinhaCard";
 import { CreateCaixinhaModal } from "@/components/caixinhas/CreateCaixinhaModal";
 import { formatCurrency } from "@/utils/currency";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Caixinha } from "@/hooks/useSupabaseCaixinhas";
+
+type SortOption = 'manual' | 'meta' | 'progresso' | 'prazo';
+
+function SortableCaixinhaCard({ caixinha, ...props }: any) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: caixinha.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <CaixinhaCard caixinha={caixinha} {...props} />
+    </div>
+  );
+}
 
 export default function Caixinhas() {
   const {
@@ -14,7 +65,55 @@ export default function Caixinhas() {
     depositar,
     retirar,
     deleteCaixinha,
+    updateCaixinha,
+    reorderCaixinhas,
+    setCaixinhas,
   } = useSupabaseCaixinhas();
+
+  const [sortBy, setSortBy] = useState<SortOption>('manual');
+
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      const oldIndex = caixinhas.findIndex((c) => c.id === active.id);
+      const newIndex = caixinhas.findIndex((c) => c.id === over.id);
+
+      const newOrder = arrayMove(caixinhas, oldIndex, newIndex);
+      reorderCaixinhas(newOrder);
+    }
+  };
+
+  const sortedCaixinhas = useMemo(() => {
+    if (sortBy === 'manual') return caixinhas;
+
+    const sorted = [...caixinhas].sort((a, b) => {
+      switch (sortBy) {
+        case 'meta':
+          return b.valor_meta - a.valor_meta;
+        case 'progresso':
+          const progressoA = (a.valor_atual / a.valor_meta) * 100;
+          const progressoB = (b.valor_atual / b.valor_meta) * 100;
+          return progressoB - progressoA;
+        case 'prazo':
+          if (!a.deadline_date && !b.deadline_date) return 0;
+          if (!a.deadline_date) return 1;
+          if (!b.deadline_date) return -1;
+          return new Date(a.deadline_date).getTime() - new Date(b.deadline_date).getTime();
+        default:
+          return 0;
+      }
+    });
+
+    return sorted;
+  }, [caixinhas, sortBy]);
 
   const totalPoupado = caixinhas.reduce((acc, c) => acc + c.valor_atual, 0);
   const totalMetas = caixinhas.reduce((acc, c) => acc + c.valor_meta, 0);
@@ -94,6 +193,25 @@ export default function Caixinhas() {
         </Card>
       </div>
 
+      {/* Controles de Ordenação */}
+      {caixinhas.length > 0 && (
+        <div className="flex items-center gap-2">
+          <ArrowUpDown className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm text-muted-foreground">Ordenar por:</span>
+          <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
+            <SelectTrigger className="w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="manual">Ordem Manual (Arrastar)</SelectItem>
+              <SelectItem value="meta">Valor da Meta</SelectItem>
+              <SelectItem value="progresso">Progresso (%)</SelectItem>
+              <SelectItem value="prazo">Data-Limite</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      )}
+
       {/* Lista de Caixinhas */}
       {caixinhas.length === 0 ? (
         <Card className="p-12">
@@ -110,15 +228,40 @@ export default function Caixinhas() {
             <CreateCaixinhaModal onCreateCaixinha={createCaixinha} />
           </div>
         </Card>
+      ) : sortBy === 'manual' ? (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={sortedCaixinhas.map(c => c.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {sortedCaixinhas.map((caixinha) => (
+                <SortableCaixinhaCard
+                  key={caixinha.id}
+                  caixinha={caixinha}
+                  onDepositar={depositar}
+                  onRetirar={retirar}
+                  onDelete={deleteCaixinha}
+                  onUpdate={updateCaixinha}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {caixinhas.map((caixinha) => (
+          {sortedCaixinhas.map((caixinha) => (
             <CaixinhaCard
               key={caixinha.id}
               caixinha={caixinha}
               onDepositar={depositar}
               onRetirar={retirar}
               onDelete={deleteCaixinha}
+              onUpdate={updateCaixinha}
             />
           ))}
         </div>

@@ -10,6 +10,10 @@ export interface Caixinha {
   valor_atual: number;
   data_criacao: string;
   updated_at: string;
+  goal_icon?: string;
+  card_color?: string;
+  deadline_date?: string;
+  display_order?: number;
 }
 
 export function useSupabaseCaixinhas() {
@@ -31,7 +35,7 @@ export function useSupabaseCaixinhas() {
         .from("caixinhas_poupanca")
         .select("*")
         .eq("user_id", user.id)
-        .order("data_criacao", { ascending: false });
+        .order("display_order", { ascending: true });
 
       if (caixinhasError) throw caixinhasError;
 
@@ -60,13 +64,31 @@ export function useSupabaseCaixinhas() {
     }
   };
 
-  const createCaixinha = async (nome: string, valorMeta: number) => {
+  const createCaixinha = async (
+    nome: string, 
+    valorMeta: number, 
+    goalIcon?: string, 
+    cardColor?: string, 
+    deadlineDate?: string
+  ) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
         throw new Error("Usuário não autenticado");
       }
+
+      // Obter o próximo display_order
+      const { data: existingCaixinhas } = await supabase
+        .from("caixinhas_poupanca")
+        .select("display_order")
+        .eq("user_id", user.id)
+        .order("display_order", { ascending: false })
+        .limit(1);
+
+      const nextOrder = existingCaixinhas && existingCaixinhas.length > 0 
+        ? (existingCaixinhas[0].display_order || 0) + 1 
+        : 0;
 
       const { data, error } = await supabase
         .from("caixinhas_poupanca")
@@ -76,6 +98,10 @@ export function useSupabaseCaixinhas() {
             nome_caixinha: nome,
             valor_meta: valorMeta,
             valor_atual: 0,
+            goal_icon: goalIcon || 'piggy-bank',
+            card_color: cardColor || 'default',
+            deadline_date: deadlineDate || null,
+            display_order: nextOrder,
           },
         ])
         .select()
@@ -155,6 +181,60 @@ export function useSupabaseCaixinhas() {
     }
   };
 
+  const updateCaixinha = async (
+    caixinhaId: string, 
+    updates: Partial<Caixinha>
+  ) => {
+    try {
+      const { error } = await supabase
+        .from("caixinhas_poupanca")
+        .update(updates)
+        .eq("id", caixinhaId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Caixinha atualizada!",
+        description: "As alterações foram salvas com sucesso.",
+      });
+
+      await fetchCaixinhas();
+    } catch (error: any) {
+      console.error("Erro ao atualizar caixinha:", error);
+      toast({
+        title: "Erro ao atualizar",
+        description: error.message,
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
+  const reorderCaixinhas = async (newOrder: Caixinha[]) => {
+    try {
+      const updates = newOrder.map((caixinha, index) => ({
+        id: caixinha.id,
+        display_order: index,
+      }));
+
+      for (const update of updates) {
+        await supabase
+          .from("caixinhas_poupanca")
+          .update({ display_order: update.display_order })
+          .eq("id", update.id);
+      }
+
+      setCaixinhas(newOrder);
+    } catch (error: any) {
+      console.error("Erro ao reordenar caixinhas:", error);
+      toast({
+        title: "Erro ao reordenar",
+        description: "Não foi possível salvar a nova ordem.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const deleteCaixinha = async (caixinhaId: string) => {
     try {
       const { error } = await supabase
@@ -194,5 +274,8 @@ export function useSupabaseCaixinhas() {
     depositar,
     retirar,
     deleteCaixinha,
+    updateCaixinha,
+    reorderCaixinhas,
+    setCaixinhas,
   };
 }

@@ -17,39 +17,43 @@ export type Database = {
       agenda_eventos: {
         Row: {
           created_at: string
-          event_date: string
+          event_date: string | null
+          event_id: string
           event_time: string
           id: string
           local: string | null
           titulo: string
           updated_at: string
-          user_id: string
         }
         Insert: {
           created_at?: string
-          event_date: string
+          event_date?: string | null
+          event_id?: string
           event_time: string
-          id?: string
+          id: string
           local?: string | null
           titulo: string
           updated_at?: string
-          user_id: string
         }
         Update: {
           created_at?: string
-          event_date?: string
+          event_date?: string | null
+          event_id?: string
           event_time?: string
           id?: string
           local?: string | null
           titulo?: string
           updated_at?: string
-          user_id?: string
         }
         Relationships: []
       }
       caixinhas_poupanca: {
         Row: {
+          card_color: string | null
           data_criacao: string
+          deadline_date: string | null
+          display_order: number | null
+          goal_icon: string | null
           id: string
           nome_caixinha: string
           updated_at: string
@@ -58,7 +62,11 @@ export type Database = {
           valor_meta: number
         }
         Insert: {
+          card_color?: string | null
           data_criacao?: string
+          deadline_date?: string | null
+          display_order?: number | null
+          goal_icon?: string | null
           id?: string
           nome_caixinha: string
           updated_at?: string
@@ -67,7 +75,11 @@ export type Database = {
           valor_meta: number
         }
         Update: {
+          card_color?: string | null
           data_criacao?: string
+          deadline_date?: string | null
+          display_order?: number | null
+          goal_icon?: string | null
           id?: string
           nome_caixinha?: string
           updated_at?: string
@@ -301,6 +313,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      users: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string | null
+          timezone: string
+          whatsapp_e164: string | null
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          is_active?: boolean
+          name?: string | null
+          timezone?: string
+          whatsapp_e164?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string | null
+          timezone?: string
+          whatsapp_e164?: string | null
+        }
+        Relationships: []
       }
     }
     Views: {
