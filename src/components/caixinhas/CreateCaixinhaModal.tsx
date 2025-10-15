@@ -15,6 +15,8 @@ import { Plus } from "lucide-react";
 import { IconPicker, getIconComponent } from "./IconPicker";
 import { ColorPicker } from "./ColorPicker";
 import { Checkbox } from "@/components/ui/checkbox";
+import { CurrencyInput } from "@/components/ui/currency-input";
+import { parseCurrency } from "@/utils/currency";
 
 interface CreateCaixinhaModalProps {
   onCreateCaixinha: (
@@ -29,7 +31,7 @@ interface CreateCaixinhaModalProps {
 export function CreateCaixinhaModal({ onCreateCaixinha }: CreateCaixinhaModalProps) {
   const [open, setOpen] = useState(false);
   const [nome, setNome] = useState("");
-  const [valorMeta, setValorMeta] = useState("");
+  const [valorMeta, setValorMeta] = useState<number>(0);
   const [goalIcon, setGoalIcon] = useState("piggy-bank");
   const [cardColor, setCardColor] = useState("default");
   const [hasDeadline, setHasDeadline] = useState(false);
@@ -47,8 +49,7 @@ export function CreateCaixinhaModal({ onCreateCaixinha }: CreateCaixinhaModalPro
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    const valor = parseFloat(valorMeta);
-    if (!nome.trim() || isNaN(valor) || valor <= 0) {
+    if (!nome.trim() || valorMeta <= 0) {
       return;
     }
 
@@ -56,13 +57,13 @@ export function CreateCaixinhaModal({ onCreateCaixinha }: CreateCaixinhaModalPro
     try {
       await onCreateCaixinha(
         nome.trim(), 
-        valor, 
+        valorMeta, 
         goalIcon, 
         cardColor, 
         hasDeadline ? deadlineDate : undefined
       );
       setNome("");
-      setValorMeta("");
+      setValorMeta(0);
       setGoalIcon("piggy-bank");
       setCardColor("default");
       setHasDeadline(false);
@@ -106,7 +107,7 @@ export function CreateCaixinhaModal({ onCreateCaixinha }: CreateCaixinhaModalPro
                         setNome(t.name);
                         setGoalIcon(t.icon);
                         setCardColor(t.color);
-                        if (!valorMeta) setValorMeta(String(t.suggestion));
+                        if (!valorMeta) setValorMeta(t.suggestion);
                       }}
                       title={`Usar template ${t.name}`}
                     >
@@ -134,15 +135,11 @@ export function CreateCaixinhaModal({ onCreateCaixinha }: CreateCaixinhaModalPro
             <ColorPicker value={cardColor} onChange={setCardColor} />
 
             <div className="space-y-2">
-              <Label htmlFor="valor-meta">Valor Total da Meta (R$)</Label>
-              <Input
+              <Label htmlFor="valor-meta">Valor Total da Meta</Label>
+              <CurrencyInput
                 id="valor-meta"
-                type="number"
-                step="0.01"
-                min="0.01"
-                placeholder="0.00"
                 value={valorMeta}
-                onChange={(e) => setValorMeta(e.target.value)}
+                onChange={(value) => setValorMeta(value)}
                 required
               />
             </div>
@@ -176,7 +173,7 @@ export function CreateCaixinhaModal({ onCreateCaixinha }: CreateCaixinhaModalPro
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>
               Cancelar
             </Button>
-            <Button type="submit" disabled={loading || !nome.trim() || !valorMeta}>
+            <Button type="submit" disabled={loading || !nome.trim() || valorMeta <= 0}>
               {loading ? "Criando..." : "Criar Caixinha"}
             </Button>
           </DialogFooter>

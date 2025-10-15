@@ -35,6 +35,7 @@ import { ColorPicker } from "./ColorPicker";
 import { Checkbox } from "@/components/ui/checkbox";
 import { differenceInDays, parseISO } from "date-fns";
 import { cn } from "@/lib/utils";
+import { CurrencyInput } from "@/components/ui/currency-input";
 
 interface CaixinhaCardProps {
   caixinha: Caixinha;
@@ -53,8 +54,8 @@ export function CaixinhaCard({
   onUpdate,
   dragHandleProps,
 }: CaixinhaCardProps) {
-  const [depositValue, setDepositValue] = useState("");
-  const [withdrawValue, setWithdrawValue] = useState("");
+  const [depositValue, setDepositValue] = useState<number>(0);
+  const [withdrawValue, setWithdrawValue] = useState<number>(0);
   const [depositDialogOpen, setDepositDialogOpen] = useState(false);
   const [withdrawDialogOpen, setWithdrawDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -64,7 +65,7 @@ export function CaixinhaCard({
   const [editName, setEditName] = useState(caixinha.nome_caixinha);
   const [editIcon, setEditIcon] = useState(caixinha.goal_icon || 'piggy-bank');
   const [editColor, setEditColor] = useState(caixinha.card_color || 'default');
-  const [editValorMeta, setEditValorMeta] = useState(String(caixinha.valor_meta));
+  const [editValorMeta, setEditValorMeta] = useState<number>(caixinha.valor_meta);
   const [editHasDeadline, setEditHasDeadline] = useState(!!caixinha.deadline_date);
   const [editDeadlineDate, setEditDeadlineDate] = useState(caixinha.deadline_date || '');
 
@@ -105,13 +106,12 @@ export function CaixinhaCard({
   };
 
   const handleDeposit = async () => {
-    const valor = parseFloat(depositValue);
-    if (isNaN(valor) || valor <= 0) return;
+    if (depositValue <= 0) return;
 
     setLoading(true);
     try {
-      await onDepositar(caixinha.id, valor);
-      setDepositValue("");
+      await onDepositar(caixinha.id, depositValue);
+      setDepositValue(0);
       setDepositDialogOpen(false);
     } finally {
       setLoading(false);
@@ -119,13 +119,12 @@ export function CaixinhaCard({
   };
 
   const handleWithdraw = async () => {
-    const valor = parseFloat(withdrawValue);
-    if (isNaN(valor) || valor <= 0) return;
+    if (withdrawValue <= 0) return;
 
     setLoading(true);
     try {
-      await onRetirar(caixinha.id, valor);
-      setWithdrawValue("");
+      await onRetirar(caixinha.id, withdrawValue);
+      setWithdrawValue(0);
       setWithdrawDialogOpen(false);
     } finally {
       setLoading(false);
@@ -142,8 +141,6 @@ export function CaixinhaCard({
   };
 
   const handleEdit = async () => {
-    const valorMetaNum = parseFloat(editValorMeta);
-    
     if (!editName.trim()) {
       toast({
         title: "Nome obrigatório",
@@ -153,7 +150,7 @@ export function CaixinhaCard({
       return;
     }
 
-    if (isNaN(valorMetaNum) || valorMetaNum <= 0) {
+    if (editValorMeta <= 0) {
       toast({
         title: "Valor inválido",
         description: "O valor da meta deve ser maior que zero.",
@@ -168,7 +165,7 @@ export function CaixinhaCard({
         nome_caixinha: editName,
         goal_icon: editIcon,
         card_color: editColor,
-        valor_meta: valorMetaNum,
+        valor_meta: editValorMeta,
         deadline_date: editHasDeadline ? editDeadlineDate : null,
       });
       setEditDialogOpen(false);
@@ -246,15 +243,11 @@ export function CaixinhaCard({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="edit-valor-meta">Valor da Meta (R$)</Label>
-                    <Input
+                    <Label htmlFor="edit-valor-meta">Valor da Meta</Label>
+                    <CurrencyInput
                       id="edit-valor-meta"
-                      type="number"
-                      step="0.01"
-                      min="0.01"
                       value={editValorMeta}
-                      onChange={(e) => setEditValorMeta(e.target.value)}
-                      placeholder="0.00"
+                      onChange={(value) => setEditValorMeta(value)}
                     />
                   </div>
 
@@ -287,10 +280,10 @@ export function CaixinhaCard({
                   )}
                 </div>
                 <DialogFooter>
-                  <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
-                    Cancelar
-                  </Button>
-                  <Button onClick={handleEdit} disabled={loading || !editName.trim() || !editValorMeta}>
+                <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
+                  Cancelar
+                </Button>
+                <Button onClick={handleEdit} disabled={loading || !editName.trim() || editValorMeta <= 0}>
                     {loading ? "Salvando..." : "Salvar Alterações"}
                   </Button>
                 </DialogFooter>
@@ -384,14 +377,10 @@ export function CaixinhaCard({
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="deposit-value">Valor</Label>
-                  <Input
+                  <CurrencyInput
                     id="deposit-value"
-                    type="number"
-                    step="0.01"
-                    min="0.01"
-                    placeholder="0.00"
                     value={depositValue}
-                    onChange={(e) => setDepositValue(e.target.value)}
+                    onChange={(value) => setDepositValue(value)}
                   />
                 </div>
               </div>
@@ -399,7 +388,7 @@ export function CaixinhaCard({
                 <Button variant="outline" onClick={() => setDepositDialogOpen(false)}>
                   Cancelar
                 </Button>
-                <Button onClick={handleDeposit} disabled={loading || !depositValue}>
+                <Button onClick={handleDeposit} disabled={loading || depositValue <= 0}>
                   {loading ? "Depositando..." : "Confirmar Depósito"}
                 </Button>
               </DialogFooter>
@@ -424,15 +413,10 @@ export function CaixinhaCard({
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="withdraw-value">Valor</Label>
-                  <Input
+                  <CurrencyInput
                     id="withdraw-value"
-                    type="number"
-                    step="0.01"
-                    min="0.01"
-                    max={caixinha.valor_atual}
-                    placeholder="0.00"
                     value={withdrawValue}
-                    onChange={(e) => setWithdrawValue(e.target.value)}
+                    onChange={(value) => setWithdrawValue(value)}
                   />
                 </div>
               </div>
@@ -440,7 +424,7 @@ export function CaixinhaCard({
                 <Button variant="outline" onClick={() => setWithdrawDialogOpen(false)}>
                   Cancelar
                 </Button>
-                <Button onClick={handleWithdraw} disabled={loading || !withdrawValue}>
+                <Button onClick={handleWithdraw} disabled={loading || withdrawValue <= 0}>
                   {loading ? "Retirando..." : "Confirmar Retirada"}
                 </Button>
               </DialogFooter>
