@@ -164,7 +164,7 @@ export type Database = {
             foreignKeyName: "cards_lista_id_fkey"
             columns: ["lista_id"]
             isOneToOne: false
-            referencedRelation: "listas"
+            referencedRelation: "Trello"
             referencedColumns: ["id"]
           },
         ]
@@ -246,41 +246,6 @@ export type Database = {
           },
         ]
       }
-      listas: {
-        Row: {
-          board_id: string
-          created_at: string
-          display_order: number | null
-          id: string
-          titulo: string
-          updated_at: string
-        }
-        Insert: {
-          board_id: string
-          created_at?: string
-          display_order?: number | null
-          id?: string
-          titulo: string
-          updated_at?: string
-        }
-        Update: {
-          board_id?: string
-          created_at?: string
-          display_order?: number | null
-          id?: string
-          titulo?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "listas_board_id_fkey"
-            columns: ["board_id"]
-            isOneToOne: false
-            referencedRelation: "boards"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       master_users: {
         Row: {
           created_at: string
@@ -324,6 +289,7 @@ export type Database = {
           assinaturaid: string | null
           ativo: boolean | null
           avatar_url: string | null
+          card_form_field_order: Json | null
           created_at: string
           customerid: string | null
           email: string | null
@@ -344,6 +310,7 @@ export type Database = {
           assinaturaid?: string | null
           ativo?: boolean | null
           avatar_url?: string | null
+          card_form_field_order?: Json | null
           created_at?: string
           customerid?: string | null
           email?: string | null
@@ -364,6 +331,7 @@ export type Database = {
           assinaturaid?: string | null
           ativo?: boolean | null
           avatar_url?: string | null
+          card_form_field_order?: Json | null
           created_at?: string
           customerid?: string | null
           email?: string | null
@@ -482,6 +450,41 @@ export type Database = {
             columns: ["userid"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      Trello: {
+        Row: {
+          board_id: string
+          created_at: string
+          display_order: number | null
+          id: string
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          board_id: string
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          board_id?: string
+          created_at?: string
+          display_order?: number | null
+          id?: string
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "listas_board_id_fkey"
+            columns: ["board_id"]
+            isOneToOne: false
+            referencedRelation: "boards"
             referencedColumns: ["id"]
           },
         ]
