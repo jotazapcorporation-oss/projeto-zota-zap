@@ -263,6 +263,7 @@ export type Database = {
       cards: {
         Row: {
           checklist: Json | null
+          cover_image: string | null
           created_at: string
           data_vencimento: string | null
           descricao: string | null
@@ -277,6 +278,7 @@ export type Database = {
         }
         Insert: {
           checklist?: Json | null
+          cover_image?: string | null
           created_at?: string
           data_vencimento?: string | null
           descricao?: string | null
@@ -291,6 +293,7 @@ export type Database = {
         }
         Update: {
           checklist?: Json | null
+          cover_image?: string | null
           created_at?: string
           data_vencimento?: string | null
           descricao?: string | null
@@ -668,6 +671,14 @@ export type Database = {
       depositar_caixinha: {
         Args: { _caixinha_id: string; _valor: number }
         Returns: Json
+      }
+      duplicate_card: {
+        Args: { _card_id: string }
+        Returns: string
+      }
+      duplicate_lista: {
+        Args: { _lista_id: string }
+        Returns: string
       }
       retirar_caixinha: {
         Args: { _caixinha_id: string; _valor: number }
