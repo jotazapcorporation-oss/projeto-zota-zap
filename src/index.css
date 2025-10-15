@@ -124,7 +124,11 @@
   }
   
   .hover-lift {
-    @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-1;
+    @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:scale-[1.02];
+  }
+
+  .hover-impulse {
+    @apply transition-all duration-200 ease-out hover:scale-105 hover:shadow-lg;
   }
 
   .title-color {

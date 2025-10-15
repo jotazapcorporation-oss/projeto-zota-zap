@@ -278,12 +278,21 @@ export default function Perfil() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-8">
-      <div className="text-center md:text-left">
-        <h1 className="text-4xl font-bold tracking-tight">Meu Perfil</h1>
-        <p className="text-muted-foreground mt-2">
-          Gerencie suas informações pessoais, assinatura e configurações de segurança
-        </p>
+    <div className="max-w-6xl mx-auto p-6 space-y-8 animate-fade-in">
+      {/* Header com Avatar */}
+      <div className="flex items-center gap-6 pb-6 border-b">
+        <Avatar className="h-24 w-24 ring-4 ring-primary/20">
+          <AvatarImage src={profile.avatar_url} />
+          <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
+            {getInitials(profile.nome || user?.email || "U")}
+          </AvatarFallback>
+        </Avatar>
+        <div className="flex-1">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">Meu Perfil</h1>
+          <p className="text-muted-foreground mt-2">
+            Gerencie suas informações pessoais, assinatura e configurações de segurança
+          </p>
+        </div>
       </div>
 
       <Tabs defaultValue="profile" className="w-full">
@@ -307,7 +316,7 @@ export default function Perfil() {
         </TabsList>
 
         <TabsContent value="profile" className="space-y-6">
-          <Card>
+          <Card className="hover-lift">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <User className="h-5 w-5" />

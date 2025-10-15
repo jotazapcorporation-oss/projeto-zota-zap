@@ -7,10 +7,10 @@ export type FormFieldId = 'titulo' | 'descricao' | 'data_vencimento' | 'etiqueta
 
 const DEFAULT_FIELD_ORDER: FormFieldId[] = [
   'titulo',
-  'descricao', 
+  'descricao',
+  'checklist',
   'data_vencimento',
-  'etiquetas',
-  'checklist'
+  'etiquetas'
 ];
 
 export const useCardFormLayout = () => {

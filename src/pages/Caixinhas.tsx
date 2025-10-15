@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Wallet, PiggyBank, TrendingUp, ArrowUpDown } from "lucide-react";
 import { useSupabaseCaixinhas } from "@/hooks/useSupabaseCaixinhas";
@@ -8,6 +8,8 @@ import { formatCurrency } from "@/utils/currency";
 import { TutorialButton } from "@/components/ui/tutorial-button";
 import { TutorialModal } from "@/components/ui/tutorial-modal";
 import { useTutorial } from "@/hooks/useTutorial";
+import { DEFAULT_TEMPLATES } from "@/components/caixinhas/DefaultTemplates";
+import { toast } from "@/hooks/use-toast";
 import {
   DndContext,
   closestCenter,
@@ -78,7 +80,41 @@ export default function Caixinhas() {
   } = useSupabaseCaixinhas();
 
   const [sortBy, setSortBy] = useState<SortOption>('manual');
+  const [templatesCreated, setTemplatesCreated] = useState(false);
   const tutorial = useTutorial('caixinhas');
+
+  // Criar templates padrão no primeiro acesso
+  useEffect(() => {
+    const hasCreatedTemplates = localStorage.getItem('caixinhas_templates_created');
+    
+    if (!loading && caixinhas.length === 0 && !hasCreatedTemplates && !templatesCreated) {
+      createDefaultTemplates();
+    }
+  }, [loading, caixinhas.length]);
+
+  const createDefaultTemplates = async () => {
+    setTemplatesCreated(true);
+    
+    try {
+      for (const template of DEFAULT_TEMPLATES) {
+        await createCaixinha(
+          template.nome,
+          template.valorMetaSugerido,
+          template.icon,
+          template.color
+        );
+      }
+      
+      localStorage.setItem('caixinhas_templates_created', 'true');
+      
+      toast({
+        title: "Metas criadas!",
+        description: "Criamos 4 metas iniciais para você começar. Personalize como quiser!",
+      });
+    } catch (error) {
+      console.error("Erro ao criar templates:", error);
+    }
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -157,7 +193,7 @@ export default function Caixinhas() {
 
       {/* Cards de Resumo */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="hover-lift">
+        <Card className="hover-impulse">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -173,7 +209,7 @@ export default function Caixinhas() {
           </CardContent>
         </Card>
 
-        <Card className="hover-lift">
+        <Card className="hover-impulse">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -189,7 +225,7 @@ export default function Caixinhas() {
           </CardContent>
         </Card>
 
-        <Card className="hover-lift">
+        <Card className="hover-impulse">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
