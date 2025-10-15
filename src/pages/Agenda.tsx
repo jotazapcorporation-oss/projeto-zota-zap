@@ -10,6 +10,9 @@ import { CalendarYearView } from '@/components/agenda/CalendarYearView';
 import { TasksPanel } from '@/components/agenda/TasksPanel';
 import { Plus, ChevronLeft, ChevronRight, Calendar as CalendarIcon, Settings } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { TutorialButton } from '@/components/ui/tutorial-button';
+import { TutorialModal } from '@/components/ui/tutorial-modal';
+import { useTutorial } from '@/hooks/useTutorial';
 import {
   Select,
   SelectContent,
@@ -47,6 +50,7 @@ export default function Agenda() {
   const { user } = useAuth();
   const { events, loading, fetchEvents, createEvent, updateEvent, deleteEvent } = useSupabaseAgenda(user?.id);
   const { toast } = useToast();
+  const tutorial = useTutorial('agenda');
   
   const [viewMode, setViewMode] = useState<ViewMode>('week');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -184,6 +188,8 @@ export default function Agenda() {
       {/* Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 bg-card p-3 rounded-lg border shadow-sm">
         <div className="flex items-center gap-2">
+          <TutorialButton onClick={() => tutorial.setIsOpen(true)} />
+          
           <Button
             onClick={() => handleNewEvent()}
             className="gap-2 bg-primary hover:bg-primary/90"
@@ -371,6 +377,15 @@ export default function Agenda() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <TutorialModal
+        isOpen={tutorial.isOpen}
+        onClose={() => tutorial.setIsOpen(false)}
+        sectionId="agenda"
+        progress={tutorial.progress}
+        onToggleStep={tutorial.toggleStep}
+        onReset={tutorial.resetProgress}
+      />
     </div>
   );
 }

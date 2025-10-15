@@ -5,6 +5,9 @@ import { useSupabaseCaixinhas } from "@/hooks/useSupabaseCaixinhas";
 import { CaixinhaCard } from "@/components/caixinhas/CaixinhaCard";
 import { CreateCaixinhaModal } from "@/components/caixinhas/CreateCaixinhaModal";
 import { formatCurrency } from "@/utils/currency";
+import { TutorialButton } from "@/components/ui/tutorial-button";
+import { TutorialModal } from "@/components/ui/tutorial-modal";
+import { useTutorial } from "@/hooks/useTutorial";
 import {
   DndContext,
   closestCenter,
@@ -75,6 +78,7 @@ export default function Caixinhas() {
   } = useSupabaseCaixinhas();
 
   const [sortBy, setSortBy] = useState<SortOption>('manual');
+  const tutorial = useTutorial('caixinhas');
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -145,7 +149,10 @@ export default function Caixinhas() {
             Organize suas economias e alcance suas metas financeiras
           </p>
         </div>
-        <CreateCaixinhaModal onCreateCaixinha={createCaixinha} />
+        <div className="flex gap-2">
+          <TutorialButton onClick={() => tutorial.setIsOpen(true)} />
+          <CreateCaixinhaModal onCreateCaixinha={createCaixinha} />
+        </div>
       </div>
 
       {/* Cards de Resumo */}
@@ -272,6 +279,15 @@ export default function Caixinhas() {
           ))}
         </div>
       )}
+
+      <TutorialModal
+        isOpen={tutorial.isOpen}
+        onClose={() => tutorial.setIsOpen(false)}
+        sectionId="caixinhas"
+        progress={tutorial.progress}
+        onToggleStep={tutorial.toggleStep}
+        onReset={tutorial.resetProgress}
+      />
     </div>
   );
 }

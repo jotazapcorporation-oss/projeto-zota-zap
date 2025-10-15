@@ -9,6 +9,9 @@ import { BoardModal } from '@/components/kanban/BoardModal';
 import { CardModal } from '@/components/kanban/CardModal';
 import { KanbanList } from '@/components/kanban/KanbanList';
 import { Plus, ArrowLeft, Search, LayoutGrid } from 'lucide-react';
+import { TutorialButton } from '@/components/ui/tutorial-button';
+import { TutorialModal } from '@/components/ui/tutorial-modal';
+import { useTutorial } from '@/hooks/useTutorial';
 import {
   DndContext,
   DragEndEvent,
@@ -38,6 +41,7 @@ export default function Metas() {
   const [selectedBoard, setSelectedBoard] = useState<Board | null>(null);
   const { listas, loading: loadingListas, setListas, createLista, deleteLista, updateListasOrder } = useSupabaseListas(selectedBoard?.id || null);
   const { createCard, updateCard, deleteCard, moveCard } = useSupabaseCards();
+  const tutorial = useTutorial('metas');
   
   const [boardModalOpen, setBoardModalOpen] = useState(false);
   const [cardModalOpen, setCardModalOpen] = useState(false);
@@ -251,10 +255,13 @@ export default function Metas() {
               Organize suas metas e projetos de forma visual
             </p>
           </div>
-          <Button onClick={() => setBoardModalOpen(true)} className="gap-2">
-            <Plus className="h-4 w-4" />
-            Novo Quadro
-          </Button>
+          <div className="flex gap-2">
+            <TutorialButton onClick={() => tutorial.setIsOpen(true)} />
+            <Button onClick={() => setBoardModalOpen(true)} className="gap-2">
+              <Plus className="h-4 w-4" />
+              Novo Quadro
+            </Button>
+          </div>
         </div>
 
         {boards.length === 0 ? (
@@ -425,6 +432,15 @@ export default function Metas() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <TutorialModal
+        isOpen={tutorial.isOpen}
+        onClose={() => tutorial.setIsOpen(false)}
+        sectionId="metas"
+        progress={tutorial.progress}
+        onToggleStep={tutorial.toggleStep}
+        onReset={tutorial.resetProgress}
+      />
     </div>
   );
 }

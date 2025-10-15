@@ -19,6 +19,9 @@ import { toast } from '@/hooks/use-toast'
 import { supabase } from '@/integrations/supabase/client'
 import { Plus, Edit, Trash2, TrendingUp, TrendingDown } from 'lucide-react'
 import { formatCurrency } from '@/utils/currency'
+import { TutorialButton } from '@/components/ui/tutorial-button'
+import { TutorialModal } from '@/components/ui/tutorial-modal'
+import { useTutorial } from '@/hooks/useTutorial'
 
 interface Transacao {
   id: number
@@ -43,6 +46,7 @@ export default function Transacoes() {
   const [loading, setLoading] = useState(true)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingTransaction, setEditingTransaction] = useState<Transacao | null>(null)
+  const tutorial = useTutorial('transacoes')
   
   // Filtros
   const [searchTerm, setSearchTerm] = useState('')
@@ -277,6 +281,7 @@ export default function Transacoes() {
           <p className="text-muted-foreground">Gerencie suas receitas e despesas</p>
         </div>
         <div className="flex gap-2">
+          <TutorialButton onClick={() => tutorial.setIsOpen(true)} />
           {transacoes.length > 0 && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -494,6 +499,15 @@ export default function Transacoes() {
           ))
         )}
       </div>
+
+      <TutorialModal
+        isOpen={tutorial.isOpen}
+        onClose={() => tutorial.setIsOpen(false)}
+        sectionId="transacoes"
+        progress={tutorial.progress}
+        onToggleStep={tutorial.toggleStep}
+        onReset={tutorial.resetProgress}
+      />
     </div>
   )
 }

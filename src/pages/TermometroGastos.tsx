@@ -21,6 +21,9 @@ import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, subMonths } f
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { DateRange } from "react-day-picker";
+import { TutorialButton } from "@/components/ui/tutorial-button";
+import { TutorialModal } from "@/components/ui/tutorial-modal";
+import { useTutorial } from "@/hooks/useTutorial";
 
 interface Transacao {
   id: number;
@@ -46,6 +49,7 @@ export default function TermometroGastos() {
   const [loading, setLoading] = useState(true);
   const [periodFilter, setPeriodFilter] = useState<PeriodFilter>("este-mes");
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const tutorial = useTutorial('termometro');
 
   useEffect(() => {
     if (user) {
@@ -173,14 +177,17 @@ export default function TermometroGastos() {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
-      <div>
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight flex items-center gap-3">
-          <Activity className="h-8 w-8 text-primary" />
-          Termômetro de Gastos
-        </h1>
-        <p className="text-muted-foreground mt-2">
-          Análise completa da sua saúde financeira
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-tight flex items-center gap-3">
+            <Activity className="h-8 w-8 text-primary" />
+            Termômetro de Gastos
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            Análise completa da sua saúde financeira
+          </p>
+        </div>
+        <TutorialButton onClick={() => tutorial.setIsOpen(true)} />
       </div>
 
       {/* Filtros de Período */}
@@ -430,6 +437,15 @@ export default function TermometroGastos() {
           </CardContent>
         </Card>
       )}
+
+      <TutorialModal
+        isOpen={tutorial.isOpen}
+        onClose={() => tutorial.setIsOpen(false)}
+        sectionId="termometro"
+        progress={tutorial.progress}
+        onToggleStep={tutorial.toggleStep}
+        onReset={tutorial.resetProgress}
+      />
     </div>
   );
 }

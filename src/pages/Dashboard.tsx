@@ -7,6 +7,9 @@ import { DashboardStats } from '@/components/dashboard/DashboardStats'
 import { DashboardFilters } from '@/components/dashboard/DashboardFilters'
 import { DashboardCharts } from '@/components/dashboard/DashboardCharts'
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar'
+import { TutorialButton } from '@/components/ui/tutorial-button'
+import { TutorialModal } from '@/components/ui/tutorial-modal'
+import { useTutorial } from '@/hooks/useTutorial'
 
 interface Transacao {
   id: number
@@ -38,6 +41,7 @@ export default function Dashboard() {
   const [transacoes, setTransacoes] = useState<Transacao[]>([])
   const [lembretes, setLembretes] = useState<Lembrete[]>([])
   const [loading, setLoading] = useState(true)
+  const tutorial = useTutorial('dashboard')
   
   // Estados dos filtros
   const [filterMonth, setFilterMonth] = useState(new Date().getMonth().toString())
@@ -149,13 +153,18 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6">
-      <DashboardFilters 
-        filterMonth={filterMonth}
-        filterYear={filterYear}
-        setFilterMonth={setFilterMonth}
-        setFilterYear={setFilterYear}
-        transactionCount={filteredTransacoes.length}
-      />
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex-1">
+          <DashboardFilters 
+            filterMonth={filterMonth}
+            filterYear={filterYear}
+            setFilterMonth={setFilterMonth}
+            setFilterYear={setFilterYear}
+            transactionCount={filteredTransacoes.length}
+          />
+        </div>
+        <TutorialButton onClick={() => tutorial.setIsOpen(true)} />
+      </div>
       
       <DashboardStats stats={stats} />
       
@@ -167,6 +176,15 @@ export default function Dashboard() {
           <DashboardSidebar lembretes={lembretes} />
         </div>
       </div>
+
+      <TutorialModal
+        isOpen={tutorial.isOpen}
+        onClose={() => tutorial.setIsOpen(false)}
+        sectionId="dashboard"
+        progress={tutorial.progress}
+        onToggleStep={tutorial.toggleStep}
+        onReset={tutorial.resetProgress}
+      />
     </div>
   )
 }

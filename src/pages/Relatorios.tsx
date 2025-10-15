@@ -13,11 +13,15 @@ import { ExportButtons } from '@/components/reports/ExportButtons'
 import { toast } from '@/hooks/use-toast'
 import { generatePDFReport } from '@/utils/pdfGenerator'
 import { generateExcelReport } from '@/utils/excelGenerator'
+import { TutorialButton } from '@/components/ui/tutorial-button'
+import { TutorialModal } from '@/components/ui/tutorial-modal'
+import { useTutorial } from '@/hooks/useTutorial'
 
 export default function Relatorios() {
   const { user } = useAuth()
   const { transactions, isLoading, filters, setFilters, summaryData } = useReports()
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
+  const tutorial = useTutorial('relatorios')
 
   const clearFilters = () => {
     setFilters({
@@ -128,6 +132,7 @@ export default function Relatorios() {
           </p>
         </div>
         <div className="flex gap-2">
+          <TutorialButton onClick={() => tutorial.setIsOpen(true)} />
           <ExportButtons
             onExportPDF={generatePDF}
             onExportExcel={generateExcel}
@@ -207,6 +212,15 @@ export default function Relatorios() {
           )}
         </>
       )}
+
+      <TutorialModal
+        isOpen={tutorial.isOpen}
+        onClose={() => tutorial.setIsOpen(false)}
+        sectionId="relatorios"
+        progress={tutorial.progress}
+        onToggleStep={tutorial.toggleStep}
+        onReset={tutorial.resetProgress}
+      />
     </div>
   )
 }

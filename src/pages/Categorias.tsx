@@ -5,11 +5,15 @@ import { Button } from '@/components/ui/button';
 import { CategoriesList } from '@/components/categories/CategoriesList';
 import { CategoryForm } from '@/components/categories/CategoryForm';
 import { useSupabaseCategories } from '@/hooks/useSupabaseCategories';
+import { TutorialButton } from '@/components/ui/tutorial-button';
+import { TutorialModal } from '@/components/ui/tutorial-modal';
+import { useTutorial } from '@/hooks/useTutorial';
 
 export default function Categorias() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<any>(null);
   const { categories, isLoading } = useSupabaseCategories();
+  const tutorial = useTutorial('categorias');
 
   const handleEditCategory = (category: any) => {
     setEditingCategory(category);
@@ -38,10 +42,13 @@ export default function Categorias() {
             Organize suas transações com categorias personalizadas
           </p>
         </div>
-        <Button onClick={() => setIsFormOpen(true)} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Nova Categoria
-        </Button>
+        <div className="flex gap-2">
+          <TutorialButton onClick={() => tutorial.setIsOpen(true)} />
+          <Button onClick={() => setIsFormOpen(true)} className="gap-2">
+            <Plus className="h-4 w-4" />
+            Nova Categoria
+          </Button>
+        </div>
       </div>
 
       <CategoriesList 
@@ -55,6 +62,15 @@ export default function Categorias() {
           onClose={handleCloseForm}
         />
       )}
+
+      <TutorialModal
+        isOpen={tutorial.isOpen}
+        onClose={() => tutorial.setIsOpen(false)}
+        sectionId="categorias"
+        progress={tutorial.progress}
+        onToggleStep={tutorial.toggleStep}
+        onReset={tutorial.resetProgress}
+      />
     </div>
   );
 }
