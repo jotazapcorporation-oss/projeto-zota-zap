@@ -25,7 +25,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { TrendingUp, TrendingDown, Trash2, Pencil, AlertTriangle, Clock, GripVertical } from "lucide-react";
+import { TrendingUp, TrendingDown, Trash2, Pencil, AlertTriangle, Clock, Hand } from "lucide-react";
 import { Caixinha } from "@/hooks/useSupabaseCaixinhas";
 import { formatCurrency } from "@/utils/currency";
 import { getIconComponent } from "./IconPicker";
@@ -178,7 +178,19 @@ export function CaixinhaCard({
   };
 
   return (
-    <Card className={cn("hover-lift transition-all", colorClass)}>
+    <Card className={cn("relative hover-lift transition-all", colorClass)}>
+      {dragHandleProps && (
+        <Button
+          variant="secondary"
+          size="icon"
+          className="absolute left-2 top-2 cursor-grab active:cursor-grabbing touch-none shadow"
+          {...dragHandleProps}
+          aria-label="Arrastar para reordenar"
+          title="Arrastar para reordenar"
+        >
+          <Hand className="h-4 w-4" />
+        </Button>
+      )}
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
@@ -210,18 +222,6 @@ export function CaixinhaCard({
             </div>
           </div>
           <div className="flex gap-1">
-            {dragHandleProps && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="cursor-grab active:cursor-grabbing touch-none"
-                {...dragHandleProps}
-                aria-label="Arrastar para reordenar"
-                title="Arrastar para reordenar"
-              >
-                <GripVertical className="h-4 w-4" />
-              </Button>
-            )}
             <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="ghost" size="icon">
