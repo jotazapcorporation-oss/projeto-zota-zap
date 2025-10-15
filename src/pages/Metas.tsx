@@ -126,7 +126,7 @@ export default function Metas() {
     // Update via Supabase
     const { supabase } = await import('@/integrations/supabase/client');
     const { error } = await supabase
-      .from('listas')
+      .from('Trello')
       .update({ titulo })
       .eq('id', id);
     

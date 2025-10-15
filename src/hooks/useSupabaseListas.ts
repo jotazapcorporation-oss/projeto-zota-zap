@@ -19,7 +19,7 @@ export const useSupabaseListas = (boardId: string | null) => {
       
       // Fetch listas
       const { data: listasData, error: listasError } = await supabase
-        .from('listas')
+        .from('Trello')
         .select('*')
         .eq('board_id', boardId)
         .order('display_order', { ascending: true });
@@ -30,7 +30,7 @@ export const useSupabaseListas = (boardId: string | null) => {
       const { data: cardsData, error: cardsError } = await supabase
         .from('cards')
         .select('*')
-        .in('lista_id', (listasData || []).map(l => l.id))
+        .in('lista_id', (listasData || []).map(l => l.id as string))
         .order('display_order', { ascending: true });
 
       if (cardsError) throw cardsError;
@@ -66,7 +66,7 @@ export const useSupabaseListas = (boardId: string | null) => {
 
     try {
       const { data, error } = await supabase
-        .from('listas')
+        .from('Trello')
         .insert({
           board_id: boardId,
           titulo,
@@ -97,7 +97,7 @@ export const useSupabaseListas = (boardId: string | null) => {
   const updateLista = async (id: string, updates: Partial<Lista>) => {
     try {
       const { error } = await supabase
-        .from('listas')
+        .from('Trello')
         .update(updates)
         .eq('id', id);
 
@@ -119,7 +119,7 @@ export const useSupabaseListas = (boardId: string | null) => {
   const deleteLista = async (id: string) => {
     try {
       const { error } = await supabase
-        .from('listas')
+        .from('Trello')
         .delete()
         .eq('id', id);
 
@@ -149,7 +149,7 @@ export const useSupabaseListas = (boardId: string | null) => {
 
       for (const update of updates) {
         await supabase
-          .from('listas')
+          .from('Trello')
           .update({ display_order: update.display_order })
           .eq('id', update.id);
       }
