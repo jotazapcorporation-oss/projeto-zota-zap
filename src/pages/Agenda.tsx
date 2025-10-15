@@ -27,6 +27,16 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { addDays, addMonths, addYears, subDays, subMonths, subYears, format, startOfWeek, endOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -182,9 +192,31 @@ export default function Agenda() {
             <span className="hidden sm:inline">Criar</span>
           </Button>
 
-          <Button variant="outline" size="icon" onClick={goToToday}>
-            <CalendarIcon className="h-4 w-4" />
-          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="icon"
+                className="hover:bg-accent"
+              >
+                <CalendarIcon className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={(date) => {
+                  if (date) {
+                    setSelectedDate(date);
+                    setViewMode('day');
+                  }
+                }}
+                initialFocus
+                className="pointer-events-auto"
+              />
+            </PopoverContent>
+          </Popover>
 
           <div className="flex items-center gap-1 bg-muted/50 rounded-lg p-1">
             <Button variant="ghost" size="icon" onClick={navigatePrevious} className="h-8 w-8">
@@ -194,6 +226,15 @@ export default function Agenda() {
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
+
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={goToToday}
+            className="hidden sm:flex"
+          >
+            Hoje
+          </Button>
         </div>
 
         <div className="flex-1 min-w-[200px] text-center">
@@ -213,9 +254,42 @@ export default function Agenda() {
             </SelectContent>
           </Select>
 
-          <Button variant="outline" size="icon">
-            <Settings className="h-4 w-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button 
+                variant="outline" 
+                size="icon"
+                className="hover:bg-accent"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuLabel>Configurações da Agenda</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setViewMode('day')}>
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                Ir para visualização diária
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setViewMode('week')}>
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                Ir para visualização semanal
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setViewMode('month')}>
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                Ir para visualização mensal
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={goToToday}>
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                Voltar para hoje
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => handleNewEvent()}>
+                <Plus className="mr-2 h-4 w-4" />
+                Criar novo evento
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
