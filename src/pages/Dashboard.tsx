@@ -83,7 +83,7 @@ export default function Dashboard() {
 
       // Buscar frase diária com tipagem explícita
       const fraseRes = await supabase
-        .from('fraseDiaria' as any)
+        .from('frasediaria' as any)
         .select('*')
         .limit(100) as { data: FraseDiaria[] | null; error: any }
 
