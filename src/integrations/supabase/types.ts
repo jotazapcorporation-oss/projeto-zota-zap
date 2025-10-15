@@ -358,6 +358,44 @@ export type Database = {
         }
         Relationships: []
       }
+      family_plan: {
+        Row: {
+          created_at: string
+          id: string
+          limite_de_slots: number
+          master_id: string
+          slots_utilizados: number
+          status_plano: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          limite_de_slots?: number
+          master_id: string
+          slots_utilizados?: number
+          status_plano?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          limite_de_slots?: number
+          master_id?: string
+          slots_utilizados?: number
+          status_plano?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "master_users_master_id_fkey"
+            columns: ["master_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       frasediaria: {
         Row: {
           autor: string | null
@@ -409,44 +447,6 @@ export type Database = {
             foreignKeyName: "lembretes_userid_fkey"
             columns: ["userid"]
             isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      master_users: {
-        Row: {
-          created_at: string
-          id: string
-          limite_de_slots: number
-          master_id: string
-          slots_utilizados: number
-          status_plano: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          limite_de_slots?: number
-          master_id: string
-          slots_utilizados?: number
-          status_plano?: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          limite_de_slots?: number
-          master_id?: string
-          slots_utilizados?: number
-          status_plano?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "master_users_master_id_fkey"
-            columns: ["master_id"]
-            isOneToOne: true
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },

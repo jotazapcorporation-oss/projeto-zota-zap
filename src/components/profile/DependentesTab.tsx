@@ -45,7 +45,7 @@ export function DependentesTab() {
       } = await supabase.auth.getUser();
       if (!user) return;
 
-      const { data, error } = await supabase.from("master_users").select("*").eq("master_id", user.id).single();
+      const { data, error } = await supabase.from("family_plan").select("*").eq("master_id", user.id).single();
 
       if (error && error.code !== "PGRST116") {
         throw error;
