@@ -108,12 +108,12 @@ export const EnhancedKanbanCard = ({ card, onEdit }: EnhancedKanbanCardProps) =>
 
         {/* Labels */}
         {card.etiquetas && card.etiquetas.length > 0 && (
-          <div className="flex flex-wrap gap-1.5">
+          <div className="flex flex-wrap gap-2">
             {card.etiquetas.map((etiqueta) => (
               <motion.div
                 key={etiqueta.id}
                 whileHover={{ scale: 1.05 }}
-                className="px-2.5 py-1 rounded-full text-[10px] font-medium text-white shadow-sm"
+                className="px-4 py-2 rounded-full text-sm font-bold text-white shadow-md"
                 style={{ backgroundColor: etiqueta.cor }}
               >
                 {etiqueta.texto}
