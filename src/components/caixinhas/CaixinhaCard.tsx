@@ -175,8 +175,8 @@ export function CaixinhaCard({
   };
 
   return (
-    <Card className={cn("relative hover-lift transition-all", colorClass)}>
-      <CardHeader>
+    <Card className={cn("relative hover-lift transition-all h-full flex flex-col", colorClass)}>
+      <CardHeader className="flex-shrink-0">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div className="p-3 bg-primary/10 rounded-lg">
@@ -314,7 +314,7 @@ export function CaixinhaCard({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-6">
+      <CardContent className="space-y-6 flex-1 flex flex-col justify-between">
         {progressStatus !== 'normal' && (
           <div className={cn(
             "flex items-center gap-2 p-3 rounded-lg text-sm",
