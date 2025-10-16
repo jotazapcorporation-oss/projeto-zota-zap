@@ -149,7 +149,7 @@ export default function Agenda() {
         </div>
       </div>;
   }
-  return <div className="h-[calc(100vh-4rem)] flex flex-col gap-4 animate-fade-in">
+  return <div className="h-[calc(100vh-6rem)] flex flex-col gap-3 animate-fade-in">
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         
@@ -158,7 +158,7 @@ export default function Agenda() {
       </div>
 
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-card p-3 rounded-lg border shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-card p-2 rounded-lg border shadow-sm">
         <div className="flex items-center gap-2">
           <TutorialButton onClick={() => tutorial.setIsOpen(true)} />
           
@@ -192,9 +192,6 @@ export default function Agenda() {
             </Button>
           </div>
 
-          <Button variant="outline" size="sm" onClick={goToToday} className="hidden sm:flex">
-            Hoje
-          </Button>
         </div>
 
         <div className="flex-1 min-w-[200px] text-center">
@@ -247,7 +244,7 @@ export default function Agenda() {
       </div>
 
       {/* Modals */}
-      <EventModal open={modalOpen} onOpenChange={setModalOpen} onSave={createEvent} onUpdate={updateEvent} editEvent={editEvent} prefilledDate={prefilledDate} prefilledTime={prefilledTime} />
+      <EventModal open={modalOpen} onOpenChange={setModalOpen} onSave={createEvent} onUpdate={updateEvent} onDelete={deleteEvent} editEvent={editEvent} prefilledDate={prefilledDate} prefilledTime={prefilledTime} />
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>

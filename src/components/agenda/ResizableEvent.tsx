@@ -34,6 +34,8 @@ export const ResizableEvent = ({
     if (!isResizing) return;
 
     const handleMouseMove = (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
       const deltaY = e.clientY - startY.current;
       const newHeight = Math.max(60, startHeight.current + deltaY);
       setHeight(newHeight);
@@ -45,8 +47,8 @@ export const ResizableEvent = ({
       if (height !== null && eventRef.current) {
         // Calculate new duration based on height (30min increments)
         // Assuming 60px = 1 hour
-        const hours = Math.round(height / 60);
-        const minutes = Math.round((height % 60) / 60 * 60);
+        const hours = Math.floor(height / 60);
+        const minutes = (height % 60);
         
         // Round to nearest 30 min
         const roundedMinutes = Math.round(minutes / 30) * 30;
@@ -68,7 +70,7 @@ export const ResizableEvent = ({
       }
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mousemove', handleMouseMove, { passive: false });
     document.addEventListener('mouseup', handleMouseUp);
 
     return () => {

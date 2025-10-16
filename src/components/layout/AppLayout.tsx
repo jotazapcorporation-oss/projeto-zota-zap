@@ -22,7 +22,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             </div>
             <ThemeToggle />
           </header>
-          <div className="flex-1 p-6 bg-background">
+          <div className="flex-1 p-4 bg-background">
             {children}
           </div>
         </SidebarInset>

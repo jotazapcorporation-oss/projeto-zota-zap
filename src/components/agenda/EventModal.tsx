@@ -5,23 +5,27 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { AgendaEvent } from '@/hooks/useSupabaseAgenda';
 import { format } from 'date-fns';
+import { Trash2 } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 interface EventModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSave: (eventData: Omit<AgendaEvent, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => Promise<any>;
   onUpdate?: (id: string, eventData: Partial<AgendaEvent>) => Promise<void>;
+  onDelete?: (id: string) => Promise<void>;
   editEvent?: AgendaEvent | null;
   prefilledDate?: Date | null;
   prefilledTime?: string | null;
 }
 
-export const EventModal = ({ open, onOpenChange, onSave, onUpdate, editEvent, prefilledDate, prefilledTime }: EventModalProps) => {
+export const EventModal = ({ open, onOpenChange, onSave, onUpdate, onDelete, editEvent, prefilledDate, prefilledTime }: EventModalProps) => {
   const [titulo, setTitulo] = useState('');
   const [eventDate, setEventDate] = useState('');
   const [eventTime, setEventTime] = useState('');
   const [local, setLocal] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     if (editEvent) {
@@ -66,6 +70,21 @@ export const EventModal = ({ open, onOpenChange, onSave, onUpdate, editEvent, pr
       onOpenChange(false);
     } catch (error) {
       console.error('Error saving event:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!editEvent || !onDelete) return;
+    
+    setLoading(true);
+    try {
+      await onDelete(editEvent.id);
+      setShowDeleteConfirm(false);
+      onOpenChange(false);
+    } catch (error) {
+      console.error('Error deleting event:', error);
     } finally {
       setLoading(false);
     }
@@ -139,25 +158,60 @@ export const EventModal = ({ open, onOpenChange, onSave, onUpdate, editEvent, pr
           </div>
 
           <div className="flex gap-3 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              className="flex-1 hover:bg-muted"
-              disabled={loading}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              className="flex-1 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all"
-              disabled={loading}
-            >
-              {loading ? '💾 Salvando...' : '💾 Salvar Evento'}
-            </Button>
+            {editEvent && onDelete && (
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={() => setShowDeleteConfirm(true)}
+                className="gap-2"
+                disabled={loading}
+              >
+                <Trash2 className="h-4 w-4" />
+                Excluir
+              </Button>
+            )}
+            <div className="flex-1 flex gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                className="flex-1 hover:bg-muted"
+                disabled={loading}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                className="flex-1 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all"
+                disabled={loading}
+              >
+                {loading ? '💾 Salvando...' : '💾 Salvar Evento'}
+              </Button>
+            </div>
           </div>
         </form>
       </DialogContent>
+
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir evento?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir este evento? Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={loading}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDelete} 
+              className="bg-destructive hover:bg-destructive/90"
+              disabled={loading}
+            >
+              {loading ? 'Excluindo...' : 'Excluir'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 };
