@@ -55,7 +55,7 @@ function SortableCaixinhaCard({ caixinha, ...props }: any) {
   };
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div ref={setNodeRef} style={style} className="h-full">
       <CaixinhaCard 
         caixinha={caixinha} 
         dragHandleProps={{ ...attributes, ...listeners }}
@@ -287,7 +287,7 @@ export default function Caixinhas() {
             items={sortedCaixinhas.map(c => c.id)}
             strategy={verticalListSortingStrategy}
           >
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
               {sortedCaixinhas.map((caixinha) => (
                 <SortableCaixinhaCard
                   key={caixinha.id}
@@ -302,16 +302,17 @@ export default function Caixinhas() {
           </SortableContext>
         </DndContext>
       ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
           {sortedCaixinhas.map((caixinha) => (
-            <CaixinhaCard
-              key={caixinha.id}
-              caixinha={caixinha}
-              onDepositar={depositar}
-              onRetirar={retirar}
-              onDelete={deleteCaixinha}
-              onUpdate={updateCaixinha}
-            />
+            <div key={caixinha.id} className="h-full">
+              <CaixinhaCard
+                caixinha={caixinha}
+                onDepositar={depositar}
+                onRetirar={retirar}
+                onDelete={deleteCaixinha}
+                onUpdate={updateCaixinha}
+              />
+            </div>
           ))}
         </div>
       )}

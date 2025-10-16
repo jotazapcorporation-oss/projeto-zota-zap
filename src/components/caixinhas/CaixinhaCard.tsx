@@ -175,7 +175,7 @@ export function CaixinhaCard({
   };
 
   return (
-    <Card className={cn("relative hover-lift transition-all h-full flex flex-col", colorClass)}>
+    <Card className={cn("relative hover-lift transition-all h-[22rem] flex flex-col", colorClass)}>
       <CardHeader className="flex-shrink-0">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
