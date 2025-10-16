@@ -195,24 +195,34 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <div className="flex items-center justify-between px-3 mb-2">
-            <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground">
-              Menu
-            </SidebarGroupLabel>
-            <Button
-              onClick={toggleSidebar}
-              variant="ghost"
-              size="icon"
-              className="h-6 w-6 hover:bg-accent"
-              aria-label={isCollapsed ? "Expandir menu" : "Minimizar menu"}
-            >
-              {isCollapsed ? (
+          {isCollapsed ? (
+            <div className="flex items-center justify-center px-2 mb-2">
+              <Button
+                onClick={toggleSidebar}
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 hover:bg-accent"
+                aria-label="Expandir menu"
+              >
                 <PanelLeft className="h-4 w-4" />
-              ) : (
+              </Button>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between px-3 mb-2">
+              <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground">
+                Menu
+              </SidebarGroupLabel>
+              <Button
+                onClick={toggleSidebar}
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 hover:bg-accent"
+                aria-label="Minimizar menu"
+              >
                 <PanelLeftClose className="h-4 w-4" />
-              )}
-            </Button>
-          </div>
+              </Button>
+            </div>
+          )}
           <SidebarGroupContent>
             <DndContext
               sensors={sensors}
