@@ -41,20 +41,20 @@ export const CalendarDayView = ({
     <div className="flex flex-col h-full bg-background rounded-lg border shadow-lg overflow-hidden">
       {/* Header */}
       <div className={cn(
-        "p-4 border-b bg-card sticky top-0 z-10",
+        "p-2 border-b bg-card sticky top-0 z-10",
         isToday && "bg-primary/10"
       )}>
         <div className="text-center">
-          <div className="text-sm uppercase text-muted-foreground font-medium">
+          <div className="text-xs uppercase text-muted-foreground font-medium">
             {format(selectedDate, 'EEEE', { locale: ptBR })}
           </div>
           <div className={cn(
-            "text-4xl font-bold mt-1",
+            "text-2xl font-bold",
             isToday && "text-primary"
           )}>
             {format(selectedDate, 'd')}
           </div>
-          <div className="text-sm text-muted-foreground mt-1">
+          <div className="text-xs text-muted-foreground">
             {format(selectedDate, 'MMMM yyyy', { locale: ptBR })}
           </div>
         </div>

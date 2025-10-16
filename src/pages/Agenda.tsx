@@ -149,14 +149,7 @@ export default function Agenda() {
         </div>
       </div>;
   }
-  return <div className="h-[calc(100vh-6rem)] flex flex-col gap-3 animate-fade-in">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        
-        
-        
-      </div>
-
+  return <div className="h-[calc(100vh-4rem)] flex flex-col gap-2 animate-fade-in">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center justify-between gap-3 bg-card p-2 rounded-lg border shadow-sm">
         <div className="flex items-center gap-2">

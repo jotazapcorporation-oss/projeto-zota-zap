@@ -47,7 +47,7 @@ export const CalendarWeekView = ({
     <div className="flex flex-col h-full bg-background rounded-lg border shadow-lg overflow-hidden">
       {/* Header com dias da semana */}
       <div className="grid grid-cols-8 border-b bg-card sticky top-0 z-10">
-        <div className="p-2 border-r text-xs text-center text-muted-foreground font-medium">
+        <div className="p-1 border-r text-xs text-center text-muted-foreground font-medium">
           GMT-3
         </div>
         {weekDays.map((day, idx) => (
@@ -55,7 +55,7 @@ export const CalendarWeekView = ({
             key={idx}
             onClick={() => onDateClick(day)}
             className={cn(
-              "p-3 border-r cursor-pointer transition-colors hover:bg-accent",
+              "p-2 border-r cursor-pointer transition-colors hover:bg-accent",
               isToday(day) && "bg-primary/10"
             )}
           >
@@ -64,7 +64,7 @@ export const CalendarWeekView = ({
                 {format(day, 'EEE', { locale: ptBR })}
               </div>
               <div className={cn(
-                "text-2xl font-semibold mt-1",
+                "text-xl font-semibold",
                 isToday(day) && "text-primary"
               )}>
                 {format(day, 'd')}

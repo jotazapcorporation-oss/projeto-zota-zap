@@ -63,7 +63,7 @@ export const CalendarMonthView = ({
       {/* Header com dias da semana */}
       <div className="grid grid-cols-7 border-b bg-card">
         {['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'].map((day) => (
-          <div key={day} className="p-3 text-center text-sm font-semibold text-muted-foreground border-r last:border-r-0">
+          <div key={day} className="p-2 text-center text-sm font-semibold text-muted-foreground border-r last:border-r-0">
             {day}
           </div>
         ))}
