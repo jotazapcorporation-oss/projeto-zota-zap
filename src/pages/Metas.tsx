@@ -6,7 +6,7 @@ import { useSupabaseCards } from '@/hooks/useSupabaseCards';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { EnhancedBoardModal } from '@/components/kanban/EnhancedBoardModal';
-import { CardModal } from '@/components/kanban/CardModal';
+import { EnhancedCardModal } from '@/components/kanban/EnhancedCardModal';
 import { EnhancedKanbanList } from '@/components/kanban/EnhancedKanbanList';
 import { BoardCard } from '@/components/kanban/BoardCard';
 import { Plus, ArrowLeft, Search, Sparkles } from 'lucide-react';
@@ -42,8 +42,8 @@ export default function Metas() {
   const { user } = useAuth();
   const { boards, loading, createBoard, updateBoard, deleteBoard } = useSupabaseBoards(user?.id);
   const [selectedBoard, setSelectedBoard] = useState<Board | null>(null);
-  const { listas, loading: loadingListas, setListas, createLista, deleteLista, updateListasOrder } = useSupabaseListas(selectedBoard?.id || null);
-  const { createCard, updateCard, deleteCard, moveCard } = useSupabaseCards();
+  const { listas, loading: loadingListas, setListas, createLista, deleteLista, updateListasOrder, duplicateLista } = useSupabaseListas(selectedBoard?.id || null);
+  const { createCard, updateCard, deleteCard, moveCard, duplicateCard, uploadCoverImage, removeCoverImage } = useSupabaseCards();
   const tutorial = useTutorial('metas');
   
   const [boardModalOpen, setBoardModalOpen] = useState(false);
@@ -573,6 +573,9 @@ export default function Metas() {
                     onEditCard={handleEditCard}
                     onDeleteList={setDeleteListaId}
                     onUpdateListTitle={handleUpdateListTitle}
+                    onDuplicateList={async (listaId) => {
+                      await duplicateLista(listaId);
+                    }}
                   />
                 ))}
               </SortableContext>
@@ -581,7 +584,7 @@ export default function Metas() {
         </div>
 
         {/* Modals */}
-        <CardModal
+        <EnhancedCardModal
           open={cardModalOpen}
           onClose={() => {
             setCardModalOpen(false);
@@ -589,6 +592,11 @@ export default function Metas() {
             setNewCardListaId(null);
           }}
           onSave={handleSaveCard}
+          onDuplicate={async (cardId) => {
+            await duplicateCard(cardId);
+          }}
+          onUploadCover={uploadCoverImage}
+          onRemoveCover={removeCoverImage}
           card={editingCard}
         />
 

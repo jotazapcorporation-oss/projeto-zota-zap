@@ -20,6 +20,7 @@ export interface Card {
   titulo: string;
   descricao?: string;
   data_vencimento?: string;
+  cover_image?: string | null;
   etiquetas: Etiqueta[];
   checklist: ChecklistItem[];
   display_order: number;

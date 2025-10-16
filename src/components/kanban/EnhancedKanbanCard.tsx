@@ -66,23 +66,34 @@ export const EnhancedKanbanCard = ({ card, onEdit }: EnhancedKanbanCardProps) =>
       transition={{ duration: 0.2 }}
       onClick={() => onEdit(card)}
       className={cn(
-        "group relative bg-card rounded-xl border-2 shadow-sm p-4 cursor-pointer transition-all",
+        "group relative bg-card rounded-xl border-2 shadow-sm overflow-hidden cursor-pointer transition-all",
         "hover:shadow-lg hover:border-primary/50",
         isDragging && "shadow-2xl ring-2 ring-primary/50 border-primary",
         dateStatus?.urgent && "border-l-4 border-l-destructive"
       )}
     >
+      {/* Cover Image */}
+      {card.cover_image && (
+        <div className="w-full h-32 bg-muted relative overflow-hidden">
+          <img 
+            src={card.cover_image} 
+            alt="Card cover" 
+            className="w-full h-full object-cover"
+          />
+        </div>
+      )}
+
       {/* Drag Handle */}
       <div
         {...attributes}
         {...listeners}
-        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-1.5 hover:bg-accent rounded-lg"
+        className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity cursor-grab active:cursor-grabbing p-1.5 hover:bg-accent rounded-lg bg-background/80 backdrop-blur-sm"
         onClick={(e) => e.stopPropagation()}
       >
         <GripVertical className="h-4 w-4 text-muted-foreground" />
       </div>
 
-      <div className="space-y-3 pr-8">
+      <div className="space-y-3 p-4">
         {/* Title */}
         <h4 className="font-semibold text-sm leading-tight group-hover:text-primary transition-colors">
           {card.titulo}
@@ -144,14 +155,15 @@ export const EnhancedKanbanCard = ({ card, onEdit }: EnhancedKanbanCardProps) =>
         </div>
       </div>
 
-      {/* Completion Animation Trigger */}
-      {progress === 100 && (
+      {/* Completion Badge - Green Checkmark */}
+      {checklistTotal > 0 && progress === 100 && (
         <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: [0, 1.2, 1] }}
-          className="absolute -top-2 -right-2 bg-green-500 text-white rounded-full p-1.5 shadow-lg"
+          initial={{ scale: 0, rotate: -180 }}
+          animate={{ scale: [0, 1.3, 1], rotate: 0 }}
+          transition={{ type: "spring", stiffness: 200, damping: 15 }}
+          className="absolute -top-3 -right-3 bg-green-500 text-white rounded-full p-2 shadow-lg border-4 border-background z-10"
         >
-          <CheckCircle2 className="h-4 w-4" />
+          <CheckCircle2 className="h-5 w-5" />
         </motion.div>
       )}
     </motion.div>

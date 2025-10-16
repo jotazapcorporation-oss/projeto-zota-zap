@@ -165,6 +165,31 @@ export const useSupabaseListas = (boardId: string | null) => {
     }
   };
 
+  const duplicateLista = async (listaId: string) => {
+    try {
+      const { data, error } = await supabase.rpc('duplicate_lista', {
+        _lista_id: listaId
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Lista duplicada",
+        description: "A lista foi duplicada com sucesso!",
+      });
+
+      await fetchListas();
+      return data;
+    } catch (error: any) {
+      console.error('Error duplicating lista:', error);
+      toast({
+        title: "Erro ao duplicar lista",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   useEffect(() => {
     fetchListas();
   }, [boardId]);
@@ -178,5 +203,6 @@ export const useSupabaseListas = (boardId: string | null) => {
     updateLista,
     deleteLista,
     updateListasOrder,
+    duplicateLista,
   };
 };

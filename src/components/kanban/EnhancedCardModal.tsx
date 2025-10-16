@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, ChecklistItem, Etiqueta } from '@/hooks/useSupabaseBoards';
 import { useCardEnhancements } from '@/hooks/useCardEnhancements';
-import { Plus, Trash2, Tag, Calendar, Send, Paperclip, Users, Clock, MessageSquare, Activity } from 'lucide-react';
+import { Plus, Trash2, Tag, Calendar, Send, Paperclip, Users, Clock, MessageSquare, Activity, Image, Copy, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -32,10 +32,12 @@ interface EnhancedCardModalProps {
   onClose: () => void;
   onSave: (card: Partial<Card>) => void;
   onDuplicate?: (cardId: string) => Promise<void>;
+  onUploadCover?: (cardId: string, file: File) => Promise<string | undefined>;
+  onRemoveCover?: (cardId: string, imageUrl: string) => Promise<void>;
   card?: Card | null;
 }
 
-export const EnhancedCardModal = ({ open, onClose, onSave, onDuplicate, card }: EnhancedCardModalProps) => {
+export const EnhancedCardModal = ({ open, onClose, onSave, onDuplicate, onUploadCover, onRemoveCover, card }: EnhancedCardModalProps) => {
   const { toast } = useToast();
   const [titulo, setTitulo] = useState('');
   const [descricao, setDescricao] = useState('');
@@ -49,6 +51,8 @@ export const EnhancedCardModal = ({ open, onClose, onSave, onDuplicate, card }: 
   const [novoChecklistItem, setNovoChecklistItem] = useState('');
   const [newComment, setNewComment] = useState('');
   const [newAttachmentUrl, setNewAttachmentUrl] = useState('');
+  const [coverImage, setCoverImage] = useState<string | null>(null);
+  const [isUploadingCover, setIsUploadingCover] = useState(false);
   
   const {
     comments,
@@ -71,6 +75,7 @@ export const EnhancedCardModal = ({ open, onClose, onSave, onDuplicate, card }: 
       setReminderDays((card as any).reminder_days || 1);
       setEtiquetas(card.etiquetas || []);
       setChecklist(card.checklist || []);
+      setCoverImage(card.cover_image || null);
     } else {
       resetForm();
     }
@@ -88,6 +93,7 @@ export const EnhancedCardModal = ({ open, onClose, onSave, onDuplicate, card }: 
     setNovoChecklistItem('');
     setNewComment('');
     setNewAttachmentUrl('');
+    setCoverImage(null);
   };
 
   const adicionarEtiqueta = () => {
@@ -133,6 +139,7 @@ export const EnhancedCardModal = ({ open, onClose, onSave, onDuplicate, card }: 
       titulo: titulo.trim(),
       descricao: descricao.trim() || undefined,
       data_vencimento: dataVencimento || undefined,
+      cover_image: coverImage,
       etiquetas,
       checklist,
       display_order: card?.display_order || 0,
@@ -143,6 +150,33 @@ export const EnhancedCardModal = ({ open, onClose, onSave, onDuplicate, card }: 
     onSave(cardData);
     onClose();
     resetForm();
+  };
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !card?.id || !onUploadCover) return;
+
+    setIsUploadingCover(true);
+    try {
+      const url = await onUploadCover(card.id, file);
+      if (url) {
+        setCoverImage(url);
+      }
+    } finally {
+      setIsUploadingCover(false);
+    }
+  };
+
+  const handleRemoveCover = async () => {
+    if (!card?.id || !coverImage || !onRemoveCover) return;
+    await onRemoveCover(card.id, coverImage);
+    setCoverImage(null);
+  };
+
+  const handleDuplicate = async () => {
+    if (!card?.id || !onDuplicate) return;
+    await onDuplicate(card.id);
+    onClose();
   };
 
   const handleAddComment = async () => {
@@ -166,7 +200,20 @@ export const EnhancedCardModal = ({ open, onClose, onSave, onDuplicate, card }: 
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="max-w-5xl max-h-[95vh] overflow-hidden flex flex-col">
         <DialogHeader>
-          <DialogTitle>{card ? 'Editar Card' : 'Novo Card'}</DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle>{card ? 'Editar Card' : 'Novo Card'}</DialogTitle>
+            {card && onDuplicate && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleDuplicate}
+                className="gap-2"
+              >
+                <Copy className="h-4 w-4" />
+                Duplicar Card
+              </Button>
+            )}
+          </div>
         </DialogHeader>
 
         <div className="flex-1 overflow-hidden">
@@ -189,6 +236,52 @@ export const EnhancedCardModal = ({ open, onClose, onSave, onDuplicate, card }: 
 
             <div className="flex-1 overflow-y-auto mt-4">
               <TabsContent value="details" className="space-y-4 mt-0">
+                {/* Cover Image */}
+                <div>
+                  <Label className="flex items-center gap-2">
+                    <Image className="h-4 w-4" />
+                    Imagem de Capa
+                  </Label>
+                  {coverImage ? (
+                    <div className="relative mt-2 rounded-lg overflow-hidden">
+                      <img
+                        src={coverImage}
+                        alt="Cover"
+                        className="w-full h-48 object-cover"
+                      />
+                      <Button
+                        size="sm"
+                        variant="destructive"
+                        className="absolute top-2 right-2 gap-1"
+                        onClick={handleRemoveCover}
+                      >
+                        <X className="h-3 w-3" />
+                        Remover
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="mt-2">
+                      <Input
+                        id="cover-upload"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleCoverUpload}
+                        disabled={!card || isUploadingCover}
+                        className="hidden"
+                      />
+                      <Button
+                        variant="outline"
+                        onClick={() => document.getElementById('cover-upload')?.click()}
+                        disabled={!card || isUploadingCover}
+                        className="w-full gap-2"
+                      >
+                        <Image className="h-4 w-4" />
+                        {isUploadingCover ? 'Enviando...' : card ? 'Adicionar Imagem' : 'Salve o card primeiro'}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
                 <div>
                   <Label htmlFor="titulo">Título *</Label>
                   <Input

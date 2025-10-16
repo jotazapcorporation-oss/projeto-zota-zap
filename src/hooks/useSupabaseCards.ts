@@ -114,10 +114,112 @@ export const useSupabaseCards = () => {
     }
   };
 
+  const duplicateCard = async (cardId: string) => {
+    try {
+      const { data, error } = await supabase.rpc('duplicate_card', {
+        _card_id: cardId
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Card duplicado",
+        description: "O card foi duplicado com sucesso!",
+      });
+
+      return data;
+    } catch (error: any) {
+      console.error('Error duplicating card:', error);
+      toast({
+        title: "Erro ao duplicar card",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const uploadCoverImage = async (cardId: string, file: File) => {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${cardId}-${Date.now()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('card-covers')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('card-covers')
+        .getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from('cards')
+        .update({ cover_image: publicUrl })
+        .eq('id', cardId);
+
+      if (updateError) throw updateError;
+
+      toast({
+        title: "Imagem adicionada",
+        description: "A imagem de capa foi adicionada com sucesso!",
+      });
+
+      return publicUrl;
+    } catch (error: any) {
+      console.error('Error uploading cover image:', error);
+      toast({
+        title: "Erro ao enviar imagem",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const removeCoverImage = async (cardId: string, imageUrl: string) => {
+    try {
+      // Extract file path from URL
+      const urlParts = imageUrl.split('/');
+      const fileName = urlParts[urlParts.length - 1];
+
+      const { error: deleteError } = await supabase.storage
+        .from('card-covers')
+        .remove([fileName]);
+
+      if (deleteError) throw deleteError;
+
+      const { error: updateError } = await supabase
+        .from('cards')
+        .update({ cover_image: null })
+        .eq('id', cardId);
+
+      if (updateError) throw updateError;
+
+      toast({
+        title: "Imagem removida",
+        description: "A imagem de capa foi removida com sucesso!",
+      });
+    } catch (error: any) {
+      console.error('Error removing cover image:', error);
+      toast({
+        title: "Erro ao remover imagem",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
   return {
     createCard,
     updateCard,
     deleteCard,
     moveCard,
+    duplicateCard,
+    uploadCoverImage,
+    removeCoverImage,
   };
 };

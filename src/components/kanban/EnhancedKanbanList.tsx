@@ -3,7 +3,7 @@ import { Lista, Card } from '@/hooks/useSupabaseBoards';
 import { EnhancedKanbanCard } from './EnhancedKanbanCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Plus, MoreVertical, Trash2, GripVertical, Pencil } from 'lucide-react';
+import { Plus, MoreVertical, Trash2, GripVertical, Pencil, Copy } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,9 +23,10 @@ interface EnhancedKanbanListProps {
   onEditCard: (card: Card) => void;
   onDeleteList: (id: string) => void;
   onUpdateListTitle: (id: string, titulo: string) => void;
+  onDuplicateList: (id: string) => void;
 }
 
-export const EnhancedKanbanList = ({ lista, onAddCard, onEditCard, onDeleteList, onUpdateListTitle }: EnhancedKanbanListProps) => {
+export const EnhancedKanbanList = ({ lista, onAddCard, onEditCard, onDeleteList, onUpdateListTitle, onDuplicateList }: EnhancedKanbanListProps) => {
   const [isAddingCard, setIsAddingCard] = useState(false);
   const [newCardTitle, setNewCardTitle] = useState('');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -131,6 +132,10 @@ export const EnhancedKanbanList = ({ lista, onAddCard, onEditCard, onDeleteList,
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => onDuplicateList(lista.id)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Duplicar lista
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => onDeleteList(lista.id)}
                 className="text-destructive focus:text-destructive"
