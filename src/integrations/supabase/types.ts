@@ -274,6 +274,7 @@ export type Database = {
           etiquetas: Json | null
           id: string
           lista_id: string
+          priority: string | null
           reminder_days: number | null
           start_date: string | null
           titulo: string
@@ -289,6 +290,7 @@ export type Database = {
           etiquetas?: Json | null
           id?: string
           lista_id: string
+          priority?: string | null
           reminder_days?: number | null
           start_date?: string | null
           titulo: string
@@ -304,6 +306,7 @@ export type Database = {
           etiquetas?: Json | null
           id?: string
           lista_id?: string
+          priority?: string | null
           reminder_days?: number | null
           start_date?: string | null
           titulo?: string
