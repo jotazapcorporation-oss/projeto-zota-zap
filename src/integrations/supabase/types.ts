@@ -47,6 +47,7 @@ export type Database = {
       agenda_eventos: {
         Row: {
           created_at: string
+          end_time: string | null
           event_date: string | null
           event_id: string
           event_time: string
@@ -57,6 +58,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          end_time?: string | null
           event_date?: string | null
           event_id?: string
           event_time: string
@@ -67,6 +69,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          end_time?: string | null
           event_date?: string | null
           event_id?: string
           event_time?: string
@@ -700,6 +703,15 @@ export type Database = {
       duplicate_lista: {
         Args: { _lista_id: string }
         Returns: string
+      }
+      get_random_phrase: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          autor: string | null
+          created_at: string | null
+          id: string
+          mensagem: string
+        }[]
       }
       retirar_caixinha: {
         Args: { _caixinha_id: string; _valor: number }

@@ -11,7 +11,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 interface EventModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (eventData: Omit<AgendaEvent, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => Promise<any>;
+  onSave: (eventData: { titulo: string; event_date: string; event_time: string; end_time?: string | null; local?: string | null }) => Promise<any>;
   onUpdate?: (id: string, eventData: Partial<AgendaEvent>) => Promise<void>;
   onDelete?: (id: string) => Promise<void>;
   editEvent?: AgendaEvent | null;
@@ -62,7 +62,7 @@ export const EventModal = ({ open, onOpenChange, onSave, onUpdate, onDelete, edi
       };
 
       if (editEvent && onUpdate) {
-        await onUpdate(editEvent.id, eventData);
+        await onUpdate(editEvent.event_id, eventData);
       } else {
         await onSave(eventData);
       }
@@ -80,9 +80,7 @@ export const EventModal = ({ open, onOpenChange, onSave, onUpdate, onDelete, edi
     
     setLoading(true);
     try {
-      await onDelete(editEvent.id);
-      setShowDeleteConfirm(false);
-      onOpenChange(false);
+      await onDelete(editEvent.event_id);
     } catch (error) {
       console.error('Error deleting event:', error);
     } finally {

@@ -82,7 +82,7 @@ export const CalendarWeekView = ({
               {/* Coluna de hora - FIXA */}
               <div 
                 key={`hour-${hour}`}
-                className="p-2 border-r border-b text-xs text-right text-muted-foreground sticky left-0 bg-card z-5"
+                className="p-2 border-r border-b text-xs text-right text-muted-foreground sticky left-0 bg-card z-20"
               >
                 {hour === 0 ? 'Meia-noite' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`}
               </div>
@@ -108,11 +108,12 @@ export const CalendarWeekView = ({
                   >
                     {dayEvents.map((event) => (
                       <ResizableEvent
-                        key={event.id}
+                        key={event.event_id}
                         event={event}
                         onEventClick={onEventClick}
                         onResize={handleResize}
                         compact
+                        className="absolute inset-x-1 top-1"
                       />
                     ))}
                   </div>

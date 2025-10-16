@@ -71,12 +71,12 @@ export const CalendarDayView = ({
               key={hour}
               onClick={() => onTimeSlotClick(timeString)}
               className={cn(
-                "flex border-b min-h-[80px] cursor-pointer transition-colors hover:bg-accent/50",
-                isToday && "bg-primary/5"
+                 "flex border-b min-h-[60px] cursor-pointer transition-colors hover:bg-accent/50",
+                 isToday && "bg-primary/5"
               )}
             >
               {/* Hora - COLUNA FIXA */}
-              <div className="w-24 p-3 border-r text-sm text-right text-muted-foreground font-medium sticky left-0 bg-card z-5 pointer-events-none">
+              <div className="w-24 p-3 border-r text-sm text-right text-muted-foreground font-medium sticky left-0 bg-card z-20 pointer-events-none">
                 {hour === 0 ? 'Meia-noite' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`}
               </div>
               
@@ -84,10 +84,11 @@ export const CalendarDayView = ({
               <div className="flex-1 p-2 space-y-2 relative">
                 {hourEvents.map((event) => (
                   <ResizableEvent
-                    key={event.id}
+                    key={event.event_id}
                     event={event}
                     onEventClick={onEventClick}
                     onResize={handleResize}
+                    className="absolute inset-x-2 top-1"
                   />
                 ))}
               </div>

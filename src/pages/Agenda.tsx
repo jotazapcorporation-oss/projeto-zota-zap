@@ -76,7 +76,7 @@ export default function Agenda() {
   };
 
   const handleEventResize = async (eventId: string, newEndTime: string) => {
-    await updateEvent(eventId, { event_time: newEndTime });
+    await updateEvent(eventId, { end_time: newEndTime });
   };
   const navigatePrevious = () => {
     switch (viewMode) {
