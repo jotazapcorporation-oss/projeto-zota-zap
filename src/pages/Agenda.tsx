@@ -13,45 +13,31 @@ import { useToast } from '@/hooks/use-toast';
 import { TutorialButton } from '@/components/ui/tutorial-button';
 import { TutorialModal } from '@/components/ui/tutorial-modal';
 import { useTutorial } from '@/hooks/useTutorial';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { 
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { addDays, addMonths, addYears, subDays, subMonths, subYears, format, startOfWeek, endOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
-
 type ViewMode = 'day' | 'week' | 'month' | 'year';
-
 export default function Agenda() {
-  const { user } = useAuth();
-  const { events, loading, fetchEvents, createEvent, updateEvent, deleteEvent } = useSupabaseAgenda(user?.id);
-  const { toast } = useToast();
+  const {
+    user
+  } = useAuth();
+  const {
+    events,
+    loading,
+    fetchEvents,
+    createEvent,
+    updateEvent,
+    deleteEvent
+  } = useSupabaseAgenda(user?.id);
+  const {
+    toast
+  } = useToast();
   const tutorial = useTutorial('agenda');
-  
   const [viewMode, setViewMode] = useState<ViewMode>('week');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [modalOpen, setModalOpen] = useState(false);
@@ -59,41 +45,34 @@ export default function Agenda() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [prefilledDate, setPrefilledDate] = useState<Date | null>(null);
   const [prefilledTime, setPrefilledTime] = useState<string | null>(null);
-
   const handleNewEvent = (date?: Date, time?: string) => {
     setEditEvent(null);
     setPrefilledDate(date || null);
     setPrefilledTime(time || null);
     setModalOpen(true);
   };
-
   const handleEditEvent = (event: AgendaEvent) => {
     setEditEvent(event);
     setPrefilledDate(null);
     setPrefilledTime(null);
     setModalOpen(true);
   };
-
   const handleDeleteConfirm = async () => {
     if (deleteId) {
       await deleteEvent(deleteId);
       setDeleteId(null);
     }
   };
-
   const handleDateClick = (date: Date) => {
     setSelectedDate(date);
     setViewMode('day');
   };
-
   const handleTimeSlotClick = (date: Date, time: string) => {
     handleNewEvent(date, time);
   };
-
   const handleDayTimeSlotClick = (time: string) => {
     handleNewEvent(selectedDate, time);
   };
-
   const navigatePrevious = () => {
     switch (viewMode) {
       case 'day':
@@ -110,7 +89,6 @@ export default function Agenda() {
         break;
     }
   };
-
   const navigateNext = () => {
     switch (viewMode) {
       case 'day':
@@ -127,62 +105,51 @@ export default function Agenda() {
         break;
     }
   };
-
   const goToToday = () => {
     setSelectedDate(new Date());
   };
-
   const getHeaderTitle = () => {
     switch (viewMode) {
       case 'day':
-        return format(selectedDate, "d 'de' MMMM 'de' yyyy", { locale: ptBR });
+        return format(selectedDate, "d 'de' MMMM 'de' yyyy", {
+          locale: ptBR
+        });
       case 'week':
-        const weekStart = startOfWeek(selectedDate, { weekStartsOn: 0 });
-        const weekEnd = endOfWeek(selectedDate, { weekStartsOn: 0 });
-        return `${format(weekStart, 'd MMM', { locale: ptBR })} - ${format(weekEnd, 'd MMM yyyy', { locale: ptBR })}`;
+        const weekStart = startOfWeek(selectedDate, {
+          weekStartsOn: 0
+        });
+        const weekEnd = endOfWeek(selectedDate, {
+          weekStartsOn: 0
+        });
+        return `${format(weekStart, 'd MMM', {
+          locale: ptBR
+        })} - ${format(weekEnd, 'd MMM yyyy', {
+          locale: ptBR
+        })}`;
       case 'month':
-        return format(selectedDate, 'MMMM yyyy', { locale: ptBR });
+        return format(selectedDate, 'MMMM yyyy', {
+          locale: ptBR
+        });
       case 'year':
         return format(selectedDate, 'yyyy');
     }
   };
-
   const upcomingEvents = events.filter(e => new Date(e.event_date) >= new Date()).length;
   const activeMonths = new Set(events.map(e => e.event_date.split('-')[1])).size;
-
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
+    return <div className="flex items-center justify-center min-h-[400px]">
         <div className="text-center space-y-4 animate-fade-in">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto"></div>
           <p className="text-muted-foreground">Carregando agenda...</p>
         </div>
-      </div>
-    );
+      </div>;
   }
-
-  return (
-    <div className="h-[calc(100vh-4rem)] flex flex-col gap-4 animate-fade-in">
+  return <div className="h-[calc(100vh-4rem)] flex flex-col gap-4 animate-fade-in">
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="p-3 rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/20">
-          <div className="text-center space-y-1">
-            <p className="text-2xl font-bold text-primary">{events.length}</p>
-            <p className="text-xs text-muted-foreground">Total de Eventos</p>
-          </div>
-        </div>
-        <div className="p-3 rounded-lg bg-gradient-to-br from-green-500/10 to-green-500/5 border-2 border-green-500/20">
-          <div className="text-center space-y-1">
-            <p className="text-2xl font-bold text-green-600">{upcomingEvents}</p>
-            <p className="text-xs text-muted-foreground">Próximos</p>
-          </div>
-        </div>
-        <div className="p-3 rounded-lg bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-2 border-blue-500/20">
-          <div className="text-center space-y-1">
-            <p className="text-2xl font-bold text-blue-600">{activeMonths}</p>
-            <p className="text-xs text-muted-foreground">Meses Ativos</p>
-          </div>
-        </div>
+        
+        
+        
       </div>
 
       {/* Toolbar */}
@@ -190,37 +157,24 @@ export default function Agenda() {
         <div className="flex items-center gap-2">
           <TutorialButton onClick={() => tutorial.setIsOpen(true)} />
           
-          <Button
-            onClick={() => handleNewEvent()}
-            className="gap-2 bg-primary hover:bg-primary/90"
-          >
+          <Button onClick={() => handleNewEvent()} className="gap-2 bg-primary hover:bg-primary/90">
             <Plus className="h-4 w-4" />
             <span className="hidden sm:inline">Criar</span>
           </Button>
 
           <Popover>
             <PopoverTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="icon"
-                className="hover:bg-accent"
-              >
+              <Button variant="outline" size="icon" className="hover:bg-accent">
                 <CalendarIcon className="h-4 w-4" />
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={(date) => {
-                  if (date) {
-                    setSelectedDate(date);
-                    setViewMode('day');
-                  }
-                }}
-                initialFocus
-                className="pointer-events-auto"
-              />
+              <Calendar mode="single" selected={selectedDate} onSelect={date => {
+              if (date) {
+                setSelectedDate(date);
+                setViewMode('day');
+              }
+            }} initialFocus className="pointer-events-auto" />
             </PopoverContent>
           </Popover>
 
@@ -233,12 +187,7 @@ export default function Agenda() {
             </Button>
           </div>
 
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={goToToday}
-            className="hidden sm:flex"
-          >
+          <Button variant="outline" size="sm" onClick={goToToday} className="hidden sm:flex">
             Hoje
           </Button>
         </div>
@@ -248,7 +197,7 @@ export default function Agenda() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Select value={viewMode} onValueChange={(v) => setViewMode(v as ViewMode)}>
+          <Select value={viewMode} onValueChange={v => setViewMode(v as ViewMode)}>
             <SelectTrigger className="w-32">
               <SelectValue />
             </SelectTrigger>
@@ -262,11 +211,7 @@ export default function Agenda() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button 
-                variant="outline" 
-                size="icon"
-                className="hover:bg-accent"
-              >
+              <Button variant="outline" size="icon" className="hover:bg-accent">
                 <Settings className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -303,45 +248,16 @@ export default function Agenda() {
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 overflow-hidden">
         {/* Calendar View */}
         <div className="lg:col-span-3 overflow-hidden">
-          {viewMode === 'day' && (
-            <CalendarDayView
-              events={events}
-              selectedDate={selectedDate}
-              onTimeSlotClick={handleDayTimeSlotClick}
-              onEventClick={handleEditEvent}
-            />
-          )}
+          {viewMode === 'day' && <CalendarDayView events={events} selectedDate={selectedDate} onTimeSlotClick={handleDayTimeSlotClick} onEventClick={handleEditEvent} />}
 
-          {viewMode === 'week' && (
-            <CalendarWeekView
-              events={events}
-              selectedDate={selectedDate}
-              onDateClick={handleDateClick}
-              onTimeSlotClick={handleTimeSlotClick}
-              onEventClick={handleEditEvent}
-            />
-          )}
+          {viewMode === 'week' && <CalendarWeekView events={events} selectedDate={selectedDate} onDateClick={handleDateClick} onTimeSlotClick={handleTimeSlotClick} onEventClick={handleEditEvent} />}
 
-          {viewMode === 'month' && (
-            <CalendarMonthView
-              events={events}
-              selectedDate={selectedDate}
-              onDateClick={handleDateClick}
-              onEventClick={handleEditEvent}
-            />
-          )}
+          {viewMode === 'month' && <CalendarMonthView events={events} selectedDate={selectedDate} onDateClick={handleDateClick} onEventClick={handleEditEvent} />}
 
-          {viewMode === 'year' && (
-            <CalendarYearView
-              events={events}
-              selectedDate={selectedDate}
-              onMonthClick={(date) => {
-                setSelectedDate(date);
-                setViewMode('month');
-              }}
-              onDateClick={handleDateClick}
-            />
-          )}
+          {viewMode === 'year' && <CalendarYearView events={events} selectedDate={selectedDate} onMonthClick={date => {
+          setSelectedDate(date);
+          setViewMode('month');
+        }} onDateClick={handleDateClick} />}
         </div>
 
         {/* Tasks Panel */}
@@ -351,15 +267,7 @@ export default function Agenda() {
       </div>
 
       {/* Modals */}
-      <EventModal
-        open={modalOpen}
-        onOpenChange={setModalOpen}
-        onSave={createEvent}
-        onUpdate={updateEvent}
-        editEvent={editEvent}
-        prefilledDate={prefilledDate}
-        prefilledTime={prefilledTime}
-      />
+      <EventModal open={modalOpen} onOpenChange={setModalOpen} onSave={createEvent} onUpdate={updateEvent} editEvent={editEvent} prefilledDate={prefilledDate} prefilledTime={prefilledTime} />
 
       <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
         <AlertDialogContent>
@@ -378,14 +286,6 @@ export default function Agenda() {
         </AlertDialogContent>
       </AlertDialog>
 
-      <TutorialModal
-        isOpen={tutorial.isOpen}
-        onClose={() => tutorial.setIsOpen(false)}
-        sectionId="agenda"
-        progress={tutorial.progress}
-        onToggleStep={tutorial.toggleStep}
-        onReset={tutorial.resetProgress}
-      />
-    </div>
-  );
+      <TutorialModal isOpen={tutorial.isOpen} onClose={() => tutorial.setIsOpen(false)} sectionId="agenda" progress={tutorial.progress} onToggleStep={tutorial.toggleStep} onReset={tutorial.resetProgress} />
+    </div>;
 }
