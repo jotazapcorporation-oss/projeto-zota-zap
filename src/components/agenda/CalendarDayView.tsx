@@ -2,12 +2,14 @@ import { AgendaEvent } from '@/hooks/useSupabaseAgenda';
 import { format, isSameDay, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { ResizableEvent } from './ResizableEvent';
 
 interface CalendarDayViewProps {
   events: AgendaEvent[];
   selectedDate: Date;
   onTimeSlotClick: (time: string) => void;
   onEventClick: (event: AgendaEvent) => void;
+  onEventResize?: (eventId: string, newEndTime: string) => void;
 }
 
 export const CalendarDayView = ({
@@ -15,7 +17,13 @@ export const CalendarDayView = ({
   selectedDate,
   onTimeSlotClick,
   onEventClick,
+  onEventResize,
 }: CalendarDayViewProps) => {
+  
+  const handleResize = async (eventId: string, newEndTime: string) => {
+    if (!onEventResize) return;
+    await onEventResize(eventId, newEndTime);
+  };
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
   const getEventsForHour = (hour: number) => {
@@ -75,29 +83,12 @@ export const CalendarDayView = ({
               {/* Eventos */}
               <div className="flex-1 p-2 space-y-2">
                 {hourEvents.map((event) => (
-                  <div
+                  <ResizableEvent
                     key={event.id}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onEventClick(event);
-                    }}
-                    className={cn(
-                      "p-3 rounded-lg cursor-pointer",
-                      "bg-primary text-primary-foreground",
-                      "hover:opacity-90 transition-opacity shadow-md",
-                      "border-l-4 border-primary-foreground/30"
-                    )}
-                  >
-                    <div className="font-semibold">{event.titulo}</div>
-                    <div className="text-sm opacity-90 mt-1">
-                      ⏰ {event.event_time}
-                    </div>
-                    {event.local && (
-                      <div className="text-sm opacity-90 mt-1">
-                        📍 {event.local}
-                      </div>
-                    )}
-                  </div>
+                    event={event}
+                    onEventClick={onEventClick}
+                    onResize={handleResize}
+                  />
                 ))}
               </div>
             </div>

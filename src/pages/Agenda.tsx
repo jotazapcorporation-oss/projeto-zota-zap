@@ -8,7 +8,7 @@ import { CalendarWeekView } from '@/components/agenda/CalendarWeekView';
 import { CalendarMonthView } from '@/components/agenda/CalendarMonthView';
 import { CalendarYearView } from '@/components/agenda/CalendarYearView';
 import { TasksPanel } from '@/components/agenda/TasksPanel';
-import { Plus, ChevronLeft, ChevronRight, Calendar as CalendarIcon, Settings } from 'lucide-react';
+import { Plus, ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { TutorialButton } from '@/components/ui/tutorial-button';
 import { TutorialModal } from '@/components/ui/tutorial-modal';
@@ -17,7 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { addDays, addMonths, addYears, subDays, subMonths, subYears, format, startOfWeek, endOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -45,6 +45,7 @@ export default function Agenda() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [prefilledDate, setPrefilledDate] = useState<Date | null>(null);
   const [prefilledTime, setPrefilledTime] = useState<string | null>(null);
+  const [tasksDialogOpen, setTasksDialogOpen] = useState(false);
   const handleNewEvent = (date?: Date, time?: string) => {
     setEditEvent(null);
     setPrefilledDate(date || null);
@@ -72,6 +73,10 @@ export default function Agenda() {
   };
   const handleDayTimeSlotClick = (time: string) => {
     handleNewEvent(selectedDate, time);
+  };
+
+  const handleEventResize = async (eventId: string, newEndTime: string) => {
+    await updateEvent(eventId, { event_time: newEndTime });
   };
   const navigatePrevious = () => {
     switch (viewMode) {
@@ -209,61 +214,36 @@ export default function Agenda() {
             </SelectContent>
           </Select>
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon" className="hover:bg-accent">
-                <Settings className="h-4 w-4" />
+          <Dialog open={tasksDialogOpen} onOpenChange={setTasksDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" className="gap-2">
+                Minhas Tarefas
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuLabel>Configurações da Agenda</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => setViewMode('day')}>
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                Ir para visualização diária
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setViewMode('week')}>
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                Ir para visualização semanal
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setViewMode('month')}>
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                Ir para visualização mensal
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={goToToday}>
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                Voltar para hoje
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => handleNewEvent()}>
-                <Plus className="mr-2 h-4 w-4" />
-                Criar novo evento
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+            </DialogTrigger>
+            <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden">
+              <DialogHeader>
+                <DialogTitle>Minhas Tarefas</DialogTitle>
+              </DialogHeader>
+              <div className="overflow-auto max-h-[calc(90vh-8rem)]">
+                <TasksPanel />
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
-      {/* Main Content with Tasks Panel */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-4 overflow-hidden">
-        {/* Calendar View */}
-        <div className="lg:col-span-3 overflow-hidden">
-          {viewMode === 'day' && <CalendarDayView events={events} selectedDate={selectedDate} onTimeSlotClick={handleDayTimeSlotClick} onEventClick={handleEditEvent} />}
+      {/* Main Content - Calendar Only */}
+      <div className="flex-1 overflow-hidden">
+        {viewMode === 'day' && <CalendarDayView events={events} selectedDate={selectedDate} onTimeSlotClick={handleDayTimeSlotClick} onEventClick={handleEditEvent} onEventResize={handleEventResize} />}
 
-          {viewMode === 'week' && <CalendarWeekView events={events} selectedDate={selectedDate} onDateClick={handleDateClick} onTimeSlotClick={handleTimeSlotClick} onEventClick={handleEditEvent} />}
+        {viewMode === 'week' && <CalendarWeekView events={events} selectedDate={selectedDate} onDateClick={handleDateClick} onTimeSlotClick={handleTimeSlotClick} onEventClick={handleEditEvent} onEventResize={handleEventResize} />}
 
-          {viewMode === 'month' && <CalendarMonthView events={events} selectedDate={selectedDate} onDateClick={handleDateClick} onEventClick={handleEditEvent} />}
+        {viewMode === 'month' && <CalendarMonthView events={events} selectedDate={selectedDate} onDateClick={handleDateClick} onEventClick={handleEditEvent} />}
 
-          {viewMode === 'year' && <CalendarYearView events={events} selectedDate={selectedDate} onMonthClick={date => {
-          setSelectedDate(date);
-          setViewMode('month');
-        }} onDateClick={handleDateClick} />}
-        </div>
-
-        {/* Tasks Panel */}
-        <div className="lg:col-span-1 overflow-hidden">
-          <TasksPanel />
-        </div>
+        {viewMode === 'year' && <CalendarYearView events={events} selectedDate={selectedDate} onMonthClick={date => {
+        setSelectedDate(date);
+        setViewMode('month');
+      }} onDateClick={handleDateClick} />}
       </div>
 
       {/* Modals */}

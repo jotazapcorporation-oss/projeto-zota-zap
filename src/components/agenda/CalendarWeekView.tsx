@@ -1,8 +1,8 @@
 import { AgendaEvent } from '@/hooks/useSupabaseAgenda';
-import { format, startOfWeek, addDays, isSameDay, parseISO, addMinutes, startOfDay } from 'date-fns';
+import { format, startOfWeek, addDays, isSameDay, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { ResizableEvent } from './ResizableEvent';
 
 interface CalendarWeekViewProps {
   events: AgendaEvent[];
@@ -10,6 +10,7 @@ interface CalendarWeekViewProps {
   onDateClick: (date: Date) => void;
   onTimeSlotClick: (date: Date, time: string) => void;
   onEventClick: (event: AgendaEvent) => void;
+  onEventResize?: (eventId: string, newEndTime: string) => void;
 }
 
 export const CalendarWeekView = ({
@@ -18,7 +19,13 @@ export const CalendarWeekView = ({
   onDateClick,
   onTimeSlotClick,
   onEventClick,
+  onEventResize,
 }: CalendarWeekViewProps) => {
+  
+  const handleResize = async (eventId: string, newEndTime: string) => {
+    if (!onEventResize) return;
+    await onEventResize(eventId, newEndTime);
+  };
   const weekStart = startOfWeek(selectedDate, { weekStartsOn: 0 });
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
   
@@ -92,29 +99,13 @@ export const CalendarWeekView = ({
                     )}
                   >
                     {dayEvents.map((event) => (
-                      <div
+                      <ResizableEvent
                         key={event.id}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onEventClick(event);
-                        }}
-                        className={cn(
-                          "text-xs p-2 mb-1 rounded cursor-pointer",
-                          "bg-primary text-primary-foreground",
-                          "hover:opacity-90 transition-opacity",
-                          "truncate font-medium shadow-sm"
-                        )}
-                        title={`${event.titulo} - ${event.event_time}${event.local ? ` • ${event.local}` : ''}`}
-                      >
-                        <div className="flex items-center gap-1">
-                          <span className="truncate">{event.titulo}</span>
-                        </div>
-                        {event.local && (
-                          <div className="text-[10px] opacity-90 truncate">
-                            📍 {event.local}
-                          </div>
-                        )}
-                      </div>
+                        event={event}
+                        onEventClick={onEventClick}
+                        onResize={handleResize}
+                        compact
+                      />
                     ))}
                   </div>
                 );
