@@ -9,13 +9,13 @@ interface AppLayoutProps {
 
 export function AppLayout({ children }: AppLayoutProps) {
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen flex w-full bg-background">
         <AppSidebar />
         <SidebarInset>
           <header className="h-16 flex items-center justify-between px-6 bg-card border-b shadow-sm sticky top-0 z-40">
             <div className="flex items-center gap-4">
-              <SidebarTrigger />
+              <SidebarTrigger className="hover:bg-accent hover:text-accent-foreground" />
               <h1 className="text-lg font-semibold title-color hidden sm:block">
                 VZAP - Sistema de Gestão Financeira
               </h1>
