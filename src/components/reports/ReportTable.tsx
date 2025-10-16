@@ -1,16 +1,20 @@
 
+import { useState } from 'react'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { TrendingUp, TrendingDown } from 'lucide-react'
 import { formatCurrency } from '@/utils/currency'
 import { ReportTransaction } from '@/hooks/useReports'
+import { TransactionDetailModal } from '@/components/transactions/TransactionDetailModal'
 
 interface ReportTableProps {
   transactions: ReportTransaction[]
 }
 
 export function ReportTable({ transactions }: ReportTableProps) {
+  const [selectedTransaction, setSelectedTransaction] = useState<ReportTransaction | null>(null)
+  const [detailModalOpen, setDetailModalOpen] = useState(false)
   const formatDate = (dateString: string) => {
     if (!dateString) return '-'
     return new Date(dateString).toLocaleDateString('pt-BR')
@@ -39,7 +43,14 @@ export function ReportTable({ transactions }: ReportTableProps) {
             </TableHeader>
             <TableBody>
               {transactions.map((transaction) => (
-                <TableRow key={transaction.id}>
+                <TableRow 
+                  key={transaction.id}
+                  onClick={() => {
+                    setSelectedTransaction(transaction)
+                    setDetailModalOpen(true)
+                  }}
+                  className="cursor-pointer hover:bg-accent/50"
+                >
                   <TableCell>{formatDate(transaction.quando || '')}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
@@ -71,6 +82,12 @@ export function ReportTable({ transactions }: ReportTableProps) {
           </Table>
         )}
       </CardContent>
+      
+      <TransactionDetailModal
+        transaction={selectedTransaction}
+        open={detailModalOpen}
+        onOpenChange={setDetailModalOpen}
+      />
     </Card>
   )
 }

@@ -24,6 +24,7 @@ import { DateRange } from "react-day-picker";
 import { TutorialButton } from "@/components/ui/tutorial-button";
 import { TutorialModal } from "@/components/ui/tutorial-modal";
 import { useTutorial } from "@/hooks/useTutorial";
+import { TransactionDetailModal } from "@/components/transactions/TransactionDetailModal";
 
 interface Transacao {
   id: number;
@@ -49,6 +50,8 @@ export default function TermometroGastos() {
   const [loading, setLoading] = useState(true);
   const [periodFilter, setPeriodFilter] = useState<PeriodFilter>("este-mes");
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [selectedTransaction, setSelectedTransaction] = useState<Transacao | null>(null);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
   const tutorial = useTutorial('termometro');
 
   useEffect(() => {
@@ -136,22 +139,93 @@ export default function TermometroGastos() {
     });
   }, [transacoes, periodFilter, dateRange]);
 
-  // Calcular totais
-  const { receitas, despesas, saldo, termometro } = useMemo(() => {
-    const receitas = filteredTransacoes
-      .filter((t) => t.tipo === "receita")
-      .reduce((acc, t) => acc + (t.valor || 0), 0);
+  // Calcular totais e análises detalhadas
+  const { receitas, despesas, saldo, termometro, analiseDetalhada } = useMemo(() => {
+    const receitasTransacoes = filteredTransacoes.filter((t) => t.tipo === "receita");
+    const despesasTransacoes = filteredTransacoes.filter((t) => t.tipo === "despesa");
 
-    const despesas = filteredTransacoes
-      .filter((t) => t.tipo === "despesa")
-      .reduce((acc, t) => acc + (t.valor || 0), 0);
-
+    const receitas = receitasTransacoes.reduce((acc, t) => acc + (t.valor || 0), 0);
+    const despesas = despesasTransacoes.reduce((acc, t) => acc + (t.valor || 0), 0);
     const saldo = receitas - despesas;
-
-    // Calcular termômetro (percentual de gastos em relação às receitas)
     const termometro = receitas > 0 ? (despesas / receitas) * 100 : 0;
 
-    return { receitas, despesas, saldo, termometro };
+    // Análise por dia
+    const receitasPorDia = new Map<string, number>();
+    const despesasPorDia = new Map<string, number>();
+
+    filteredTransacoes.forEach((t) => {
+      const dia = format(new Date(t.quando || t.created_at), "yyyy-MM-dd");
+      if (t.tipo === "receita") {
+        receitasPorDia.set(dia, (receitasPorDia.get(dia) || 0) + (t.valor || 0));
+      } else {
+        despesasPorDia.set(dia, (despesasPorDia.get(dia) || 0) + (t.valor || 0));
+      }
+    });
+
+    // Dia com maior receita
+    let diaMaiorReceita = { dia: "", valor: 0 };
+    receitasPorDia.forEach((valor, dia) => {
+      if (valor > diaMaiorReceita.valor) {
+        diaMaiorReceita = { dia, valor };
+      }
+    });
+
+    // Dia com maior gasto
+    let diaMaiorGasto = { dia: "", valor: 0 };
+    despesasPorDia.forEach((valor, dia) => {
+      if (valor > diaMaiorGasto.valor) {
+        diaMaiorGasto = { dia, valor };
+      }
+    });
+
+    // Categoria campeã de receita
+    const receitasPorCategoria = new Map<string, { nome: string; valor: number }>();
+    receitasTransacoes.forEach((t) => {
+      const catNome = t.categorias?.nome || "Sem categoria";
+      const atual = receitasPorCategoria.get(catNome) || { nome: catNome, valor: 0 };
+      receitasPorCategoria.set(catNome, {
+        nome: catNome,
+        valor: atual.valor + (t.valor || 0),
+      });
+    });
+
+    let categoriaCampeaReceita = { nome: "Nenhuma", valor: 0 };
+    receitasPorCategoria.forEach((cat) => {
+      if (cat.valor > categoriaCampeaReceita.valor) {
+        categoriaCampeaReceita = cat;
+      }
+    });
+
+    // Categoria de maior gasto
+    const despesasPorCategoria = new Map<string, { nome: string; valor: number }>();
+    despesasTransacoes.forEach((t) => {
+      const catNome = t.categorias?.nome || "Sem categoria";
+      const atual = despesasPorCategoria.get(catNome) || { nome: catNome, valor: 0 };
+      despesasPorCategoria.set(catNome, {
+        nome: catNome,
+        valor: atual.valor + (t.valor || 0),
+      });
+    });
+
+    let categoriaMaiorGasto = { nome: "Nenhuma", valor: 0 };
+    despesasPorCategoria.forEach((cat) => {
+      if (cat.valor > categoriaMaiorGasto.valor) {
+        categoriaMaiorGasto = cat;
+      }
+    });
+
+    return {
+      receitas,
+      despesas,
+      saldo,
+      termometro,
+      analiseDetalhada: {
+        diaMaiorReceita,
+        diaMaiorGasto,
+        categoriaCampeaReceita,
+        categoriaMaiorGasto,
+      },
+    };
   }, [filteredTransacoes]);
 
   // Determinar status do termômetro
@@ -361,7 +435,11 @@ export default function TermometroGastos() {
               {filteredTransacoes.map((transacao) => (
                 <div
                   key={transacao.id}
-                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors"
+                  onClick={() => {
+                    setSelectedTransaction(transacao);
+                    setDetailModalOpen(true);
+                  }}
+                  className="flex items-center justify-between p-4 border rounded-lg hover:bg-accent/50 transition-colors cursor-pointer"
                 >
                   <div className="flex items-center gap-3 flex-1">
                     <div className={cn(
@@ -404,36 +482,128 @@ export default function TermometroGastos() {
         </CardContent>
       </Card>
 
-      {/* Análise de Gastos */}
+      {/* Análise Detalhada Expandida */}
       {filteredTransacoes.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Análise Detalhada</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="h-5 w-5" />
+              Análise Detalhada
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">
+              Insights aprofundados sobre suas finanças no período
+            </p>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Total de Gastos</p>
-                <p className="text-2xl font-bold text-red-600">
-                  {formatCurrency(despesas)}
-                </p>
+            <div className="grid gap-6">
+              {/* Resumo Geral */}
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-lg">
+                  <p className="text-sm text-muted-foreground mb-1">Total de Gastos</p>
+                  <p className="text-2xl font-bold text-red-600">
+                    {formatCurrency(despesas)}
+                  </p>
+                </div>
+                <div className="p-4 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900 rounded-lg">
+                  <p className="text-sm text-muted-foreground mb-1">Total de Entradas</p>
+                  <p className="text-2xl font-bold text-green-600">
+                    {formatCurrency(receitas)}
+                  </p>
+                </div>
               </div>
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Total de Entradas</p>
-                <p className="text-2xl font-bold text-green-600">
-                  {formatCurrency(receitas)}
-                </p>
+
+              {/* Análise de Dias */}
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="p-4 bg-accent/50 rounded-lg border">
+                  <div className="flex items-center gap-2 mb-2">
+                    <TrendingUp className="h-4 w-4 text-green-600" />
+                    <p className="text-sm font-medium">Dia com Maior Receita</p>
+                  </div>
+                  {analiseDetalhada.diaMaiorReceita.valor > 0 ? (
+                    <>
+                      <p className="text-xs text-muted-foreground mb-1">
+                        {format(new Date(analiseDetalhada.diaMaiorReceita.dia), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                      </p>
+                      <p className="text-2xl font-bold text-green-600">
+                        {formatCurrency(analiseDetalhada.diaMaiorReceita.valor)}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Sem receitas no período</p>
+                  )}
+                </div>
+
+                <div className="p-4 bg-accent/50 rounded-lg border">
+                  <div className="flex items-center gap-2 mb-2">
+                    <TrendingDown className="h-4 w-4 text-red-600" />
+                    <p className="text-sm font-medium">Dia com Maior Gasto</p>
+                  </div>
+                  {analiseDetalhada.diaMaiorGasto.valor > 0 ? (
+                    <>
+                      <p className="text-xs text-muted-foreground mb-1">
+                        {format(new Date(analiseDetalhada.diaMaiorGasto.dia), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
+                      </p>
+                      <p className="text-2xl font-bold text-red-600">
+                        {formatCurrency(analiseDetalhada.diaMaiorGasto.valor)}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Sem despesas no período</p>
+                  )}
+                </div>
               </div>
+
+              {/* Análise de Categorias */}
+              <div className="grid gap-4 md:grid-cols-2">
+                <div className="p-4 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-900 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <ArrowUpCircle className="h-4 w-4 text-green-600" />
+                    <p className="text-sm font-medium">Categoria Campeã (Receita)</p>
+                  </div>
+                  {analiseDetalhada.categoriaCampeaReceita.valor > 0 ? (
+                    <>
+                      <p className="text-base font-medium mb-1">
+                        {analiseDetalhada.categoriaCampeaReceita.nome}
+                      </p>
+                      <p className="text-2xl font-bold text-green-600">
+                        {formatCurrency(analiseDetalhada.categoriaCampeaReceita.valor)}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Sem receitas no período</p>
+                  )}
+                </div>
+
+                <div className="p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <ArrowDownCircle className="h-4 w-4 text-red-600" />
+                    <p className="text-sm font-medium">Categoria de Maior Gasto</p>
+                  </div>
+                  {analiseDetalhada.categoriaMaiorGasto.valor > 0 ? (
+                    <>
+                      <p className="text-base font-medium mb-1">
+                        {analiseDetalhada.categoriaMaiorGasto.nome}
+                      </p>
+                      <p className="text-2xl font-bold text-red-600">
+                        {formatCurrency(analiseDetalhada.categoriaMaiorGasto.valor)}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">Sem despesas no período</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Alerta */}
+              {termometro > 80 && (
+                <div className="p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-lg">
+                  <p className="text-sm text-red-800 dark:text-red-400">
+                    <strong>⚠️ Atenção:</strong> Seus gastos estão acima de 80% das suas receitas. 
+                    Considere revisar suas despesas para melhorar sua saúde financeira.
+                  </p>
+                </div>
+              )}
             </div>
-            
-            {termometro > 80 && (
-              <div className="mt-4 p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900 rounded-lg">
-                <p className="text-sm text-red-800 dark:text-red-400">
-                  <strong>⚠️ Atenção:</strong> Seus gastos estão acima de 80% das suas receitas. 
-                  Considere revisar suas despesas para melhorar sua saúde financeira.
-                </p>
-              </div>
-            )}
           </CardContent>
         </Card>
       )}
@@ -445,6 +615,12 @@ export default function TermometroGastos() {
         progress={tutorial.progress}
         onToggleStep={tutorial.toggleStep}
         onReset={tutorial.resetProgress}
+      />
+
+      <TransactionDetailModal
+        transaction={selectedTransaction}
+        open={detailModalOpen}
+        onOpenChange={setDetailModalOpen}
       />
     </div>
   );

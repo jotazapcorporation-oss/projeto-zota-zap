@@ -15,6 +15,9 @@ export interface ReportTransaction {
   categorias?: {
     id: string
     nome: string
+    tipo: string
+    icon?: string
+    color?: string
   }
 }
 
@@ -47,7 +50,7 @@ export function useReports() {
         .from('transacoes')
         .select(`
           *,
-          categorias(id, nome)
+          categorias(id, nome, tipo, icon, color)
         `)
         .eq('userid', user.id)
         .order('created_at', { ascending: false })
