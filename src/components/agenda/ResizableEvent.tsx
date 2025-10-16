@@ -34,14 +34,18 @@ export const ResizableEvent = ({
     if (!isResizing) return;
 
     const handleMouseMove = (e: MouseEvent) => {
+      // Previne qualquer comportamento padrão e propagação
       e.preventDefault();
       e.stopPropagation();
+      
       const deltaY = e.clientY - startY.current;
       const newHeight = Math.max(60, startHeight.current + deltaY);
       setHeight(newHeight);
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (e: MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
       setIsResizing(false);
       
       if (height !== null && eventRef.current) {
@@ -70,12 +74,19 @@ export const ResizableEvent = ({
       }
     };
 
-    document.addEventListener('mousemove', handleMouseMove, { passive: false });
-    document.addEventListener('mouseup', handleMouseUp);
+    // Adiciona listeners ao document para garantir que funcione em toda a tela
+    document.addEventListener('mousemove', handleMouseMove, { passive: false, capture: true });
+    document.addEventListener('mouseup', handleMouseUp, { passive: false, capture: true });
+
+    // Previne seleção de texto durante o arraste
+    document.body.style.userSelect = 'none';
+    document.body.style.cursor = 'ns-resize';
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('mousemove', handleMouseMove, { capture: true });
+      document.removeEventListener('mouseup', handleMouseUp, { capture: true });
+      document.body.style.userSelect = '';
+      document.body.style.cursor = '';
     };
   }, [isResizing, height, event, onResize]);
 
@@ -94,7 +105,9 @@ export const ResizableEvent = ({
         "bg-primary text-primary-foreground",
         "hover:opacity-90 transition-opacity shadow-md",
         "border-l-4 border-primary-foreground/30",
-        isResizing && "cursor-ns-resize",
+        // Importante: não permitir que o evento se mova, apenas redimensione
+        "select-none",
+        isResizing && "cursor-ns-resize select-none",
         className
       )}
     >
@@ -112,17 +125,19 @@ export const ResizableEvent = ({
         </>
       )}
       
-      {/* Resize Handle */}
+      {/* Resize Handle - Alça de redimensionamento */}
       <div
         onMouseDown={handleResizeStart}
         className={cn(
-          "absolute bottom-0 left-0 right-0 h-2",
+          "absolute bottom-0 left-0 right-0 h-3",
           "cursor-ns-resize opacity-0 group-hover:opacity-100 transition-opacity",
           "bg-primary-foreground/20 hover:bg-primary-foreground/40",
-          "flex items-center justify-center"
+          "flex items-center justify-center",
+          // Garante que o handle fique acima de outros elementos
+          "z-10"
         )}
       >
-        <div className="w-8 h-1 bg-primary-foreground/60 rounded-full" />
+        <div className="w-12 h-1 bg-primary-foreground/80 rounded-full" />
       </div>
     </div>
   );

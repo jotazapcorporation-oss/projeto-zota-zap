@@ -78,9 +78,12 @@ export const CalendarWeekView = ({
       <div className="flex-1 overflow-auto">
         <div className="grid grid-cols-8">
           {hours.map((hour) => (
-            <div key={hour} className="contents">
-              {/* Coluna de hora */}
-              <div className="p-2 border-r border-b text-xs text-right text-muted-foreground sticky left-0 bg-card z-5">
+            <>
+              {/* Coluna de hora - FIXA */}
+              <div 
+                key={`hour-${hour}`}
+                className="p-2 border-r border-b text-xs text-right text-muted-foreground sticky left-0 bg-card z-5"
+              >
                 {hour === 0 ? 'Meia-noite' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`}
               </div>
               
@@ -91,8 +94,13 @@ export const CalendarWeekView = ({
                 
                 return (
                   <div
-                    key={`${hour}-${dayIdx}`}
-                    onClick={() => onTimeSlotClick(day, timeString)}
+                    key={`cell-${hour}-${dayIdx}`}
+                    onClick={(e) => {
+                      // Só abre o modal se clicar na célula vazia
+                      if (e.target === e.currentTarget) {
+                        onTimeSlotClick(day, timeString);
+                      }
+                    }}
                     className={cn(
                       "min-h-[60px] border-r border-b p-1 cursor-pointer transition-colors hover:bg-accent/50 relative",
                       isToday(day) && "bg-primary/5"
@@ -110,7 +118,7 @@ export const CalendarWeekView = ({
                   </div>
                 );
               })}
-            </div>
+            </>
           ))}
         </div>
       </div>

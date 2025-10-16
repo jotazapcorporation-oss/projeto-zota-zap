@@ -75,13 +75,13 @@ export const CalendarDayView = ({
                 isToday && "bg-primary/5"
               )}
             >
-              {/* Hora */}
-              <div className="w-24 p-3 border-r text-sm text-right text-muted-foreground font-medium sticky left-0 bg-card">
+              {/* Hora - COLUNA FIXA */}
+              <div className="w-24 p-3 border-r text-sm text-right text-muted-foreground font-medium sticky left-0 bg-card z-5 pointer-events-none">
                 {hour === 0 ? 'Meia-noite' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`}
               </div>
               
               {/* Eventos */}
-              <div className="flex-1 p-2 space-y-2">
+              <div className="flex-1 p-2 space-y-2 relative">
                 {hourEvents.map((event) => (
                   <ResizableEvent
                     key={event.id}
