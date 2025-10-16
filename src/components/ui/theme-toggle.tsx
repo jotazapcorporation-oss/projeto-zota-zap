@@ -31,6 +31,9 @@ export function ThemeToggle() {
         <DropdownMenuItem onClick={() => setTheme('vzap')}>
           V-ZAP
         </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme('sistema')}>
+          Sistema
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   )
