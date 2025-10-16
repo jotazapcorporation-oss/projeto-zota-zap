@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { Home, CreditCard, Calendar, User, LogOut, Tag, FileText, Bell, PiggyBank, Activity, GripVertical, Flag, BarChart3 } from 'lucide-react'
+import { Home, CreditCard, Calendar, User, LogOut, Tag, FileText, Bell, PiggyBank, Activity, GripVertical, Flag, BarChart3, PanelLeftClose, PanelLeft } from 'lucide-react'
 import { motion } from 'framer-motion'
 import {
   Sidebar,
@@ -126,7 +126,7 @@ function SortableMenuItem({
 }
 
 export function AppSidebar() {
-  const { state } = useSidebar()
+  const { state, toggleSidebar } = useSidebar()
   const location = useLocation()
   const { signOut } = useAuth()
   const currentPath = location.pathname
@@ -195,9 +195,24 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground">
-            Menu
-          </SidebarGroupLabel>
+          <div className="flex items-center justify-between px-3 mb-2">
+            <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground">
+              Menu
+            </SidebarGroupLabel>
+            <Button
+              onClick={toggleSidebar}
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 hover:bg-accent"
+              aria-label={isCollapsed ? "Expandir menu" : "Minimizar menu"}
+            >
+              {isCollapsed ? (
+                <PanelLeft className="h-4 w-4" />
+              ) : (
+                <PanelLeftClose className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
           <SidebarGroupContent>
             <DndContext
               sensors={sensors}
