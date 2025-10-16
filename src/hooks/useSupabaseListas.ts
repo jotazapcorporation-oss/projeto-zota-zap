@@ -10,9 +10,12 @@ export const useSupabaseListas = (boardId: string | null) => {
 
   const fetchListas = async () => {
     if (!boardId) {
+      console.log('useSupabaseListas: No boardId, skipping fetch');
       setLoading(false);
       return;
     }
+
+    console.log('useSupabaseListas: Fetching listas for board:', boardId);
 
     try {
       setLoading(true);
@@ -48,6 +51,7 @@ export const useSupabaseListas = (boardId: string | null) => {
         cards: mappedCards.filter(card => card.lista_id === lista.id),
       }));
 
+      console.log('useSupabaseListas: Fetched', listasWithCards.length, 'listas');
       setListas(listasWithCards);
     } catch (error: any) {
       console.error('Error fetching listas:', error);

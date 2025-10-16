@@ -297,6 +297,7 @@ export default function Metas() {
   };
 
   if (loading) {
+    console.log('Metas: Loading boards...');
     return (
       <div className="flex items-center justify-center h-[calc(100vh-8rem)]">
         <motion.div
@@ -308,6 +309,8 @@ export default function Metas() {
       </div>
     );
   }
+
+  console.log('Metas: Loaded. Boards:', boards.length, 'Selected board:', selectedBoard?.titulo);
 
   if (!selectedBoard) {
     return (
