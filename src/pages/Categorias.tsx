@@ -197,10 +197,9 @@ export default function Categorias() {
   const categoryStats = useMemo(() => {
     const receitas = categories.filter(c => c.tipo === 'receita').length;
     const despesas = categories.filter(c => c.tipo === 'despesa').length;
-    const custos = categories.filter(c => c.tipo === 'custo').length;
     const investimentos = categories.filter(c => c.tipo === 'investimento').length;
     
-    return { receitas, despesas, custos, investimentos, total: categories.length };
+    return { receitas, despesas, investimentos, total: categories.length };
   }, [categories]);
 
   if (isLoading) {
@@ -238,7 +237,7 @@ export default function Categorias() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -256,7 +255,7 @@ export default function Categorias() {
           className="bg-gradient-to-br from-green-500/10 to-green-500/5 border-2 border-green-500/20 rounded-xl p-4 text-center"
         >
           <p className="text-3xl font-bold text-green-600">{categoryStats.receitas}</p>
-          <p className="text-xs text-muted-foreground mt-1">Receitas</p>
+          <p className="text-xs text-muted-foreground mt-1">💚 Receitas</p>
         </motion.div>
 
         <motion.div
@@ -266,27 +265,17 @@ export default function Categorias() {
           className="bg-gradient-to-br from-red-500/10 to-red-500/5 border-2 border-red-500/20 rounded-xl p-4 text-center"
         >
           <p className="text-3xl font-bold text-red-600">{categoryStats.despesas}</p>
-          <p className="text-xs text-muted-foreground mt-1">Despesas</p>
+          <p className="text-xs text-muted-foreground mt-1">❤️ Despesas</p>
         </motion.div>
 
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.25 }}
-          className="bg-gradient-to-br from-orange-500/10 to-orange-500/5 border-2 border-orange-500/20 rounded-xl p-4 text-center"
-        >
-          <p className="text-3xl font-bold text-orange-600">{categoryStats.custos}</p>
-          <p className="text-xs text-muted-foreground mt-1">Custos</p>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.3 }}
           className="bg-gradient-to-br from-blue-500/10 to-blue-500/5 border-2 border-blue-500/20 rounded-xl p-4 text-center"
         >
           <p className="text-3xl font-bold text-blue-600">{categoryStats.investimentos}</p>
-          <p className="text-xs text-muted-foreground mt-1">Investimentos</p>
+          <p className="text-xs text-muted-foreground mt-1">💙 Investimentos</p>
         </motion.div>
       </div>
 
@@ -310,7 +299,6 @@ export default function Categorias() {
             <SelectItem value="all">Todas</SelectItem>
             <SelectItem value="receita">💚 Receitas</SelectItem>
             <SelectItem value="despesa">❤️ Despesas</SelectItem>
-            <SelectItem value="custo">🟠 Custos</SelectItem>
             <SelectItem value="investimento">💙 Investimentos</SelectItem>
           </SelectContent>
         </Select>

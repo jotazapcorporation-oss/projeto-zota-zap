@@ -37,15 +37,15 @@ const CATEGORY_ICONS = [
   
   // Despesas
   { emoji: '🛒', label: 'Compras', types: ['despesa'] },
-  { emoji: '🍔', label: 'Alimentação', types: ['despesa', 'custo'] },
-  { emoji: '🏠', label: 'Casa', types: ['despesa', 'custo'] },
-  { emoji: '🚗', label: 'Transporte', types: ['despesa', 'custo'] },
-  { emoji: '⚡', label: 'Energia', types: ['despesa', 'custo'] },
-  { emoji: '💊', label: 'Saúde', types: ['despesa', 'custo'] },
+  { emoji: '🍔', label: 'Alimentação', types: ['despesa'] },
+  { emoji: '🏠', label: 'Casa', types: ['despesa'] },
+  { emoji: '🚗', label: 'Transporte', types: ['despesa'] },
+  { emoji: '⚡', label: 'Energia', types: ['despesa'] },
+  { emoji: '💊', label: 'Saúde', types: ['despesa'] },
   { emoji: '📚', label: 'Educação', types: ['despesa', 'investimento'] },
   { emoji: '🎮', label: 'Lazer', types: ['despesa'] },
   { emoji: '👕', label: 'Vestuário', types: ['despesa'] },
-  { emoji: '📱', label: 'Telefone', types: ['despesa', 'custo'] },
+  { emoji: '📱', label: 'Telefone', types: ['despesa'] },
   { emoji: '🎵', label: 'Entretenimento', types: ['despesa'] },
   { emoji: '✈️', label: 'Viagem', types: ['despesa'] },
   
@@ -56,24 +56,23 @@ const CATEGORY_ICONS = [
   { emoji: '🌱', label: 'Crescimento', types: ['investimento'] },
   
   // Geral
-  { emoji: '📁', label: 'Pasta', types: ['receita', 'despesa', 'custo', 'investimento'] },
-  { emoji: '🎯', label: 'Meta', types: ['receita', 'despesa', 'custo', 'investimento'] },
-  { emoji: '⚙️', label: 'Configuração', types: ['custo'] },
-  { emoji: '🔧', label: 'Manutenção', types: ['despesa', 'custo'] },
+  { emoji: '📁', label: 'Pasta', types: ['receita', 'despesa', 'investimento'] },
+  { emoji: '🎯', label: 'Meta', types: ['receita', 'despesa', 'investimento'] },
+  { emoji: '⚙️', label: 'Configuração', types: ['despesa'] },
+  { emoji: '🔧', label: 'Manutenção', types: ['despesa'] },
   { emoji: '🎨', label: 'Criativo', types: ['despesa', 'investimento'] },
 ];
 
 const TYPE_COLORS = {
   receita: '#10B981',
   despesa: '#EF4444',
-  custo: '#F59E0B',
   investimento: '#3B82F6',
 };
 
 const PRESET_COLORS = [
-  '#10B981', '#EF4444', '#F59E0B', '#3B82F6',
-  '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16',
-  '#F97316', '#6366F1', '#14B8A6', '#A855F7',
+  '#10B981', // Verde - Receita
+  '#EF4444', // Vermelho - Despesa
+  '#3B82F6', // Azul - Investimento
 ];
 
 export const EnhancedCategoryForm = ({ category, onSave, onClose }: EnhancedCategoryFormProps) => {
@@ -168,7 +167,6 @@ export const EnhancedCategoryForm = ({ category, onSave, onClose }: EnhancedCate
               <SelectContent>
                 <SelectItem value="receita">💚 Receita</SelectItem>
                 <SelectItem value="despesa">❤️ Despesa</SelectItem>
-                <SelectItem value="custo">🟠 Custo</SelectItem>
                 <SelectItem value="investimento">💙 Investimento</SelectItem>
               </SelectContent>
             </Select>

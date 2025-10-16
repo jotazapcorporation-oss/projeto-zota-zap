@@ -7,7 +7,7 @@ export interface Category {
   id: string
   nome: string
   tags: string | null
-  tipo: 'receita' | 'despesa' | 'custo' | 'investimento'
+  tipo: 'receita' | 'despesa' | 'investimento'
   color: string
   icon: string
   description?: string | null
@@ -58,7 +58,7 @@ export function useSupabaseCategories() {
     }
   }
 
-  const createCategory = async (newCategory: { nome: string; tags?: string; tipo?: 'receita' | 'despesa' }) => {
+  const createCategory = async (newCategory: { nome: string; tags?: string; tipo?: 'receita' | 'despesa' | 'investimento' }) => {
     if (!user) {
       toast.error('Usuário não autenticado')
       return null
@@ -98,7 +98,7 @@ export function useSupabaseCategories() {
     }
   }
 
-  const updateCategory = async ({ id, updates }: { id: string; updates: { nome: string; tags?: string; tipo?: 'receita' | 'despesa' } }) => {
+  const updateCategory = async ({ id, updates }: { id: string; updates: { nome: string; tags?: string; tipo?: 'receita' | 'despesa' | 'investimento' } }) => {
     setIsLoading(true)
 
     try {

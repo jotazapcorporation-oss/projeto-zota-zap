@@ -41,12 +41,6 @@ const TYPE_CONFIGS = {
     bgGradient: 'from-red-500/10 to-red-500/5',
     borderColor: 'border-red-500/30'
   },
-  custo: { 
-    label: 'Custo', 
-    defaultColor: '#F59E0B',
-    bgGradient: 'from-amber-500/10 to-amber-500/5',
-    borderColor: 'border-amber-500/30'
-  },
   investimento: { 
     label: 'Investimento', 
     defaultColor: '#3B82F6',

@@ -4,7 +4,6 @@ import { useToast } from "@/hooks/use-toast";
 
 export interface AgendaEvent {
   id: string;
-  id: string;
   titulo: string;
   event_date: string;
   event_time: string;
@@ -45,7 +44,7 @@ export const useSupabaseAgenda = (userId: string | undefined) => {
     }
   };
 
-  const createEvent = async (eventData: Omit<AgendaEvent, "id" | "created_at" | "updated_at" | "id">) => {
+  const createEvent = async (eventData: Omit<AgendaEvent, "id" | "created_at" | "updated_at">) => {
     if (!userId) return;
 
     try {
