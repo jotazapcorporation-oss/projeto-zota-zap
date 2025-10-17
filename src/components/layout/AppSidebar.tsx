@@ -105,7 +105,7 @@ function SortableMenuItem({
             >
               <item.icon className="h-4 w-4" />
             </motion.div>
-            <span>{item.title}</span>
+            {!isCollapsed && <span>{item.title}</span>}
           </motion.div>
           
           {!isCollapsed && (
@@ -182,46 +182,47 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar collapsible="icon" className="h-full">
-      <SidebarHeader className="p-4">
-        <div className="flex items-center justify-center">
+    <Sidebar collapsible="icon" className="h-screen border-r">
+      <SidebarHeader className="p-4 border-b">
+        <div className="flex items-center justify-between">
           {isCollapsed ? (
-            <Logo iconOnly className="h-8 w-8" />
+            <Logo iconOnly className="h-8 w-8 mx-auto" />
           ) : (
-            <Logo showIcon className="h-8 w-auto" />
+            <>
+              <Logo showIcon className="h-8 w-auto" />
+              <Button
+                onClick={toggleSidebar}
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 hover:bg-accent flex-shrink-0"
+                aria-label="Recolher menu"
+              >
+                <PanelLeftClose className="h-4 w-4" />
+              </Button>
+            </>
           )}
         </div>
+        {isCollapsed && (
+          <div className="flex items-center justify-center mt-2">
+            <Button
+              onClick={toggleSidebar}
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-accent"
+              aria-label="Expandir menu"
+            >
+              <PanelLeft className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </SidebarHeader>
 
       <SidebarContent>
         <SidebarGroup>
-          {isCollapsed ? (
-            <div className="flex items-center justify-center px-2 mb-2">
-              <Button
-                onClick={toggleSidebar}
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 hover:bg-accent"
-                aria-label="Expandir menu"
-              >
-                <PanelLeft className="h-4 w-4" />
-              </Button>
-            </div>
-          ) : (
-            <div className="flex items-center justify-between px-3 mb-2">
-              <SidebarGroupLabel className="text-xs uppercase tracking-wider text-muted-foreground">
-                Menu
-              </SidebarGroupLabel>
-              <Button
-                onClick={toggleSidebar}
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 hover:bg-accent"
-                aria-label="Minimizar menu"
-              >
-                <PanelLeftClose className="h-4 w-4" />
-              </Button>
-            </div>
+          {!isCollapsed && (
+            <SidebarGroupLabel className="px-3 text-xs uppercase tracking-wider text-muted-foreground">
+              Menu
+            </SidebarGroupLabel>
           )}
           <SidebarGroupContent>
             <DndContext
