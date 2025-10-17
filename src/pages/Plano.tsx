@@ -1,48 +1,29 @@
-
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useTheme } from '@/hooks/useTheme';
 import { Check } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
 import { useNavigate } from 'react-router-dom';
-
 export default function Plano() {
-  const { theme } = useTheme();
+  const {
+    theme
+  } = useTheme();
   const navigate = useNavigate();
-  
   const handleSubscribe = () => {
     console.log('Iniciando processo de pagamento - VZAP');
     window.location.href = 'https://www.asaas.com/c/h2qg6p0uokffvi4b';
   };
-  
   const handleBackToLogin = () => {
     navigate('/auth');
   };
-  
-  const benefits = [
-    'Registre gastos e receitas automaticamente',
-    'Receba lembretes de contas e metas', 
-    'Tenha um assistente sempre pronto para ajudar'
-  ];
+  const benefits = ['Registre gastos e receitas automaticamente', 'Receba lembretes de contas e metas', 'Tenha um assistente sempre pronto para ajudar'];
 
   // Array de fotos de usuários para simular perfis
-  const userProfiles = [
-    'https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?w=100&h=100&fit=crop&crop=face',
-    'https://images.unsplash.com/photo-1501286353178-1ec881214838?w=100&h=100&fit=crop&crop=face',
-    'https://images.unsplash.com/photo-1485833077593-4278bba3f11f?w=100&h=100&fit=crop&crop=face',
-    'https://images.unsplash.com/photo-1441057206919-63d19fac2369?w=100&h=100&fit=crop&crop=face',
-    'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=100&h=100&fit=crop&crop=face'
-  ];
-
-  return (
-    <div className="min-h-screen flex bg-background p-4 sm:p-6">
+  const userProfiles = ['https://images.unsplash.com/photo-1535268647677-300dbf3d78d1?w=100&h=100&fit=crop&crop=face', 'https://images.unsplash.com/photo-1501286353178-1ec881214838?w=100&h=100&fit=crop&crop=face', 'https://images.unsplash.com/photo-1485833077593-4278bba3f11f?w=100&h=100&fit=crop&crop=face', 'https://images.unsplash.com/photo-1441057206919-63d19fac2369?w=100&h=100&fit=crop&crop=face', 'https://images.unsplash.com/photo-1618160702438-9b02ab6515c9?w=100&h=100&fit=crop&crop=face'];
+  return <div className="min-h-screen flex bg-background p-4 sm:p-6">
       {/* Left side - Image */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden rounded-3xl">
-        <img 
-          src="/logo-vzap-hq.jpg" 
-          alt="VZAP Logo" 
-          className="w-full h-full object-cover" 
-        />
+        <img src="/logo-vzap-hq.jpg" alt="VZAP Logo" className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-primary/20" />
         <div className="absolute bottom-8 left-8 text-white">
           <div className="flex items-center gap-3 mb-4">
@@ -61,27 +42,17 @@ export default function Plano() {
             {/* Fotos dos usuários */}
             <div className="flex items-center gap-2">
               <div className="flex -space-x-2">
-                {userProfiles.map((profile, index) => (
-                  <div
-                    key={index}
-                    className="w-8 h-8 rounded-full border-2 border-white overflow-hidden bg-white/20"
-                  >
-                    <img 
-                      src={profile} 
-                      alt={`Usuário ${index + 1}`}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        // Fallback para caso a imagem não carregue
-                        const target = e.target as HTMLImageElement;
-                        target.style.backgroundColor = '#6366f1';
-                        target.style.display = 'flex';
-                        target.style.alignItems = 'center';
-                        target.style.justifyContent = 'center';
-                        target.innerHTML = `<span style="color: white; font-size: 10px; font-weight: bold;">${String.fromCharCode(65 + index)}</span>`;
-                      }}
-                    />
-                  </div>
-                ))}
+                {userProfiles.map((profile, index) => <div key={index} className="w-8 h-8 rounded-full border-2 border-white overflow-hidden bg-white/20">
+                    <img src={profile} alt={`Usuário ${index + 1}`} className="w-full h-full object-cover" onError={e => {
+                  // Fallback para caso a imagem não carregue
+                  const target = e.target as HTMLImageElement;
+                  target.style.backgroundColor = '#6366f1';
+                  target.style.display = 'flex';
+                  target.style.alignItems = 'center';
+                  target.style.justifyContent = 'center';
+                  target.innerHTML = `<span style="color: white; font-size: 10px; font-weight: bold;">${String.fromCharCode(65 + index)}</span>`;
+                }} />
+                  </div>)}
                 <div className="w-8 h-8 rounded-full border-2 border-white bg-white/20 flex items-center justify-center">
                   <span className="text-xs font-bold text-white">+500</span>
                 </div>
@@ -106,46 +77,33 @@ export default function Plano() {
           
           <div className="w-full mx-auto">
             <div className="text-start py-4 sm:py-6 lg:py-8">
-              <h1 className="text-xl sm:text-2xl font-bold text-slate-800 mb-2 dark:text-slate-300">
-                Plano VZAP - Assistente Financeiro R$ 19,90 ao mês
-              </h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-800 mb-2 dark:text-slate-300">Plano VZAP - Assistente Financeiro R$ 19,99 ao mês</h1>
               <p className="text-base sm:text-lg text-muted-foreground mb-6 sm:mb-8">
                 Organize suas finanças de forma simples e inteligente!
               </p>
 
               {/* Benefits List */}
               <div className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-                {benefits.map((benefit, index) => (
-                  <div key={index} className="flex items-start gap-3">
+                {benefits.map((benefit, index) => <div key={index} className="flex items-start gap-3">
                     <div className="bg-primary rounded-full p-1 mt-0.5 flex-shrink-0">
                       <Check className="h-3 w-3 text-white" />
                     </div>
                     <p className="text-sm sm:text-base text-foreground">{benefit}</p>
-                  </div>
-                ))}
+                  </div>)}
               </div>
 
               {/* Impact Message */}
               <div className="bg-primary/10 rounded-lg p-3 sm:p-4 mb-6 sm:mb-8">
-                <p className="text-base sm:text-lg font-semibold text-primary text-center">
-                  Invista no controle da sua vida financeira por apenas R$ 19,90 por mês!
-                </p>
+                <p className="text-base sm:text-lg font-semibold text-primary text-center">Invista no controle da sua vida financeira por apenas R$ 19,99 por mês!</p>
               </div>
 
               {/* Action Buttons */}
               <div className="space-y-3 sm:space-y-4">
-                <Button 
-                  onClick={handleSubscribe} 
-                  className="w-full h-11 bg-primary hover:bg-primary/90 text-base sm:text-lg font-semibold"
-                >
+                <Button onClick={handleSubscribe} className="w-full h-11 bg-primary hover:bg-primary/90 text-base sm:text-lg font-semibold">
                   Assinar agora
                 </Button>
                 
-                <Button 
-                  variant="outline" 
-                  onClick={handleBackToLogin} 
-                  className="w-full h-11 border-primary text-primary hover:bg-primary hover:text-primary-foreground text-base sm:text-lg"
-                >
+                <Button variant="outline" onClick={handleBackToLogin} className="w-full h-11 border-primary text-primary hover:bg-primary hover:text-primary-foreground text-base sm:text-lg">
                   Voltar ao login
                 </Button>
               </div>
@@ -153,6 +111,5 @@ export default function Plano() {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 }
