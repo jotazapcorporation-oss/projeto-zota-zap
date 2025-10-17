@@ -143,7 +143,13 @@ export function useSupabaseCategories() {
 
       if (error) {
         console.error('Error deleting category:', error)
-        toast.error('Erro ao excluir categoria')
+        
+        // Verificar se é erro de foreign key constraint
+        if (error.code === '23503' || error.message.includes('foreign key')) {
+          toast.error('Não é possível excluir esta categoria pois existem transações vinculadas a ela.')
+        } else {
+          toast.error('Erro ao excluir categoria')
+        }
       } else {
         setCategories(prev => prev.filter(cat => cat.id !== id))
         toast.success('Categoria excluída com sucesso!')

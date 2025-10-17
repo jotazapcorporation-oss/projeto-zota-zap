@@ -50,7 +50,7 @@ export function useReports() {
         .from('transacoes')
         .select(`
           *,
-          categorias(id, nome, tipo, icon, color)
+          categorias!fk_transacoes_categoria(id, nome, tipo, icon, color)
         `)
         .eq('userid', user.id)
         .order('created_at', { ascending: false })

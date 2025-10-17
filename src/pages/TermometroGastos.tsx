@@ -67,7 +67,7 @@ export default function TermometroGastos() {
         .from("transacoes")
         .select(`
           *,
-          categorias (
+          categorias!fk_transacoes_categoria (
             id,
             nome,
             tipo
