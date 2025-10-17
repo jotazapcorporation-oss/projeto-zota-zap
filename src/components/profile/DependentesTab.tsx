@@ -145,8 +145,10 @@ export function DependentesTab() {
       setDependentName("");
       setDependentEmail("");
       setWhatsappNumber("");
-      fetchDependentes();
-      fetchMasterPlan();
+      
+      // Recarregar dependentes e plano após adicionar
+      await fetchDependentes();
+      await fetchMasterPlan();
     } catch (error: any) {
       console.error("Erro ao adicionar dependente:", error);
       toast({
