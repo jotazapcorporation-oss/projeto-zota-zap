@@ -5,9 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Users, UserPlus, Trash2 } from "lucide-react";
+import { Users, UserPlus, Trash2, Pencil } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 
 interface MasterPlan {
   limite_de_slots: number;
@@ -32,6 +33,14 @@ export function DependentesTab() {
   const [whatsappNumber, setWhatsappNumber] = useState("");
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
+  
+  // Estados para edição
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingDependente, setEditingDependente] = useState<Dependente | null>(null);
+  const [editName, setEditName] = useState("");
+  const [editEmail, setEditEmail] = useState("");
+  const [editWhatsapp, setEditWhatsapp] = useState("");
+  const [editing, setEditing] = useState(false);
 
   useEffect(() => {
     fetchMasterPlan();
@@ -206,6 +215,78 @@ export function DependentesTab() {
     }
   };
 
+  const handleOpenEditModal = (dependente: Dependente) => {
+    setEditingDependente(dependente);
+    setEditName(dependente.nome || "");
+    setEditEmail(dependente.email || "");
+    setEditWhatsapp(dependente.whatsapp || dependente.phone || "");
+    setEditModalOpen(true);
+  };
+
+  const handleEditDependente = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!editName.trim() || !editEmail.trim() || !editWhatsapp.trim()) {
+      toast({
+        title: "Erro",
+        description: "Por favor, preencha todos os campos",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!editingDependente) return;
+
+    setEditing(true);
+
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
+
+      const response = await fetch("https://webhook.jzap.net/webhook/dependentes/editar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Basic VVNVQVJJTzpTRU5IQQ==",
+        },
+        body: JSON.stringify({
+          dependente_id: editingDependente.id,
+          master_id: user.id,
+          nome: editName,
+          email: editEmail,
+          whatsapp: editWhatsapp,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao editar dependente");
+      }
+
+      toast({
+        title: "Sucesso!",
+        description: "Dependente editado com sucesso.",
+      });
+
+      setEditModalOpen(false);
+      setEditingDependente(null);
+      
+      // Recarregar dependentes e plano após editar
+      await fetchDependentes();
+      await fetchMasterPlan();
+    } catch (error: any) {
+      console.error("Erro ao editar dependente:", error);
+      toast({
+        title: "Erro",
+        description: error.message || "Não foi possível editar o dependente",
+        variant: "destructive",
+      });
+    } finally {
+      setEditing(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -335,14 +416,24 @@ export function DependentesTab() {
                       <Badge variant="outline">Ativo</Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleDeleteDependente(dep.id)}
-                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleOpenEditModal(dep)}
+                          className="hover:bg-primary/10"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDeleteDependente(dep.id)}
+                          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -351,6 +442,72 @@ export function DependentesTab() {
           </CardContent>
         </Card>
       )}
+
+      {/* Modal de Edição */}
+      <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Dependente</DialogTitle>
+            <DialogDescription>
+              Atualize as informações do dependente abaixo.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleEditDependente} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-name">Nome do Dependente</Label>
+              <Input
+                id="edit-name"
+                type="text"
+                placeholder="Ex: João da Silva"
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-email">E-mail do Dependente</Label>
+              <Input
+                id="edit-email"
+                type="email"
+                placeholder="Ex: joao@email.com"
+                value={editEmail}
+                onChange={(e) => setEditEmail(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="edit-whatsapp">Número do Dependente (WhatsApp)</Label>
+              <Input
+                id="edit-whatsapp"
+                type="tel"
+                placeholder="Ex: 5511999999999"
+                value={editWhatsapp}
+                onChange={(e) => setEditWhatsapp(e.target.value)}
+                required
+              />
+              <p className="text-sm text-muted-foreground">
+                Digite o número com código do país e DDD (ex: 5511999999999)
+              </p>
+            </div>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setEditModalOpen(false)}
+                disabled={editing}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={editing}>
+                {editing ? "Salvando..." : "Salvar alterações"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
