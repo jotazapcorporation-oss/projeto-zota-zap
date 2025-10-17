@@ -613,6 +613,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "fk_transacoes_categoria"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categorias"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "transacoes_category_id_fkey"
             columns: ["category_id"]
             isOneToOne: false
