@@ -161,6 +161,51 @@ export function DependentesTab() {
     }
   };
 
+  const handleDeleteDependente = async (dependenteId: string) => {
+    if (!confirm("Tem certeza que deseja excluir este dependente?")) {
+      return;
+    }
+
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Usuário não autenticado");
+
+      const response = await fetch("https://webhook.jzap.net/webhook/dependentes/excluir", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Basic VVNVQVJJTzpTRU5IQQ==",
+        },
+        body: JSON.stringify({
+          dependente_id: dependenteId,
+          master_id: user.id,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao excluir dependente");
+      }
+
+      toast({
+        title: "Sucesso!",
+        description: "Dependente excluído com sucesso.",
+      });
+
+      // Recarregar dependentes e plano após excluir
+      await fetchDependentes();
+      await fetchMasterPlan();
+    } catch (error: any) {
+      console.error("Erro ao excluir dependente:", error);
+      toast({
+        title: "Erro",
+        description: error.message || "Não foi possível excluir o dependente",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -276,6 +321,7 @@ export function DependentesTab() {
                   <TableHead>WhatsApp</TableHead>
                   <TableHead>Data de cadastro</TableHead>
                   <TableHead className="text-right">Status</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -287,6 +333,16 @@ export function DependentesTab() {
                     <TableCell>{new Date(dep.created_at).toLocaleDateString("pt-BR")}</TableCell>
                     <TableCell className="text-right">
                       <Badge variant="outline">Ativo</Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteDependente(dep.id)}
+                        className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))}
