@@ -304,11 +304,18 @@ export function DependentesTab() {
             Plano Família não disponível
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <p className="text-muted-foreground">
-            Seu plano atual não possui a funcionalidade de dependentes. Entre em contato com o suporte para mais
-            informações.
+            Seu plano atual não possui a funcionalidade de dependentes. Adquira o Plano Família para adicionar
+            dependentes à sua conta.
           </p>
+          <Button
+            onClick={() => window.open("LINK_PARA_ADQUIRIR_PLANO_FAMILIA", "_blank")}
+            className="w-full"
+          >
+            <UserPlus className="mr-2 h-4 w-4" />
+            Adquirir Plano Família
+          </Button>
         </CardContent>
       </Card>
     );
