@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from "@/hooks/useLocalAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
 import { AppLayout } from "@/components/layout/AppLayout";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
 import Transacoes from "./pages/Transacoes";
 import Lembretes from "./pages/Lembretes";
@@ -63,6 +64,10 @@ function AppRoutes() {
       <Route 
         path="/auth" 
         element={user ? <Navigate to="/dashboard" replace /> : <Auth />} 
+      />
+      <Route 
+        path="/reset-password" 
+        element={<ResetPassword />} 
       />
       <Route 
         path="/plano" 
