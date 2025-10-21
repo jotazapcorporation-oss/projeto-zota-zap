@@ -14,7 +14,7 @@ export function Logo({
   if (showIcon) {
     return <div className="flex items-center gap-2">
         
-        <img src="/logo-vzap-hq.jpg" alt="VZAP" className={className} />
+        
       </div>;
   }
   return <img src="/logo-vzap-hq.jpg" alt="VZAP" className={className} />;
