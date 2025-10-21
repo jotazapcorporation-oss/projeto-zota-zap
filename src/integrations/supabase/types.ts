@@ -55,6 +55,7 @@ export type Database = {
           local: string | null
           titulo: string
           updated_at: string
+          valor: number | null
         }
         Insert: {
           created_at?: string
@@ -66,6 +67,7 @@ export type Database = {
           local?: string | null
           titulo: string
           updated_at?: string
+          valor?: number | null
         }
         Update: {
           created_at?: string
@@ -77,6 +79,7 @@ export type Database = {
           local?: string | null
           titulo?: string
           updated_at?: string
+          valor?: number | null
         }
         Relationships: []
       }
@@ -468,6 +471,7 @@ export type Database = {
           customerid: string | null
           email: string | null
           id: string
+          intencao: string | null
           master_id: string | null
           nome: string | null
           phone: string | null
@@ -489,6 +493,7 @@ export type Database = {
           customerid?: string | null
           email?: string | null
           id: string
+          intencao?: string | null
           master_id?: string | null
           nome?: string | null
           phone?: string | null
@@ -510,6 +515,7 @@ export type Database = {
           customerid?: string | null
           email?: string | null
           id?: string
+          intencao?: string | null
           master_id?: string | null
           nome?: string | null
           phone?: string | null
@@ -721,6 +727,12 @@ export type Database = {
           created_at: string | null
           id: string
           mensagem: string
+        }[]
+      }
+      random_phrase: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          text: string
         }[]
       }
       retirar_caixinha: {
