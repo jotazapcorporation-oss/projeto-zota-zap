@@ -1,6 +1,7 @@
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Edit, Power, Trash2, User } from 'lucide-react';
+import { Edit, Power, Trash2, User, MessageCircle } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -14,6 +15,7 @@ import {
 } from '@/components/ui/table';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAdminActions } from '@/hooks/useAdminActions';
+import { useToast } from '@/hooks/use-toast';
 
 interface User {
   id: string;
@@ -35,12 +37,67 @@ interface UserTableProps {
 
 export const UserTable = ({ users, isLoading, onEdit, onDelete }: UserTableProps) => {
   const { toggleUserActive } = useAdminActions();
+  const { toast } = useToast();
+  const [validatingWhatsapp, setValidatingWhatsapp] = useState<string | null>(null);
 
   const handleToggleActive = (user: User) => {
     toggleUserActive.mutate({
       id: user.id,
       active: !user.ativo,
     });
+  };
+
+  const handleValidateWhatsapp = async (user: User) => {
+    if (!user.phone) {
+      toast({
+        title: "Erro",
+        description: "Usuário não possui telefone cadastrado",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setValidatingWhatsapp(user.id);
+
+    try {
+      const response = await fetch('https://webhook.jzap.net/webhook/validaUserWhatsapp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          phone: user.phone,
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        if (data.existe) {
+          toast({
+            title: "WhatsApp Encontrado",
+            description: `O número ${user.phone} está cadastrado no WhatsApp`,
+          });
+        } else {
+          toast({
+            title: "WhatsApp Não Encontrado",
+            description: `O número ${user.phone} não está cadastrado no WhatsApp`,
+            variant: "destructive",
+          });
+        }
+      } else {
+        throw new Error('Erro na requisição');
+      }
+    } catch (error) {
+      console.error('Erro ao validar WhatsApp:', error);
+      toast({
+        title: "Erro",
+        description: "Não foi possível validar o WhatsApp. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setValidatingWhatsapp(null);
+    }
   };
 
   if (isLoading) {
@@ -113,6 +170,15 @@ export const UserTable = ({ users, isLoading, onEdit, onDelete }: UserTableProps
             </TableCell>
             <TableCell className="text-right">
               <div className="flex justify-end gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleValidateWhatsapp(user)}
+                  disabled={!user.phone || validatingWhatsapp === user.id}
+                  title="Validar WhatsApp"
+                >
+                  <MessageCircle className="w-4 h-4 text-green-600" />
+                </Button>
                 <Button
                   variant="ghost"
                   size="icon"
