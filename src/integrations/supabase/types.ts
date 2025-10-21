@@ -732,6 +732,10 @@ export type Database = {
           mensagem: string
         }[]
       }
+      is_admin: {
+        Args: { _user_id: string }
+        Returns: boolean
+      }
       random_phrase: {
         Args: Record<PropertyKey, never>
         Returns: {
