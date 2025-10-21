@@ -162,9 +162,11 @@ function AppRoutes() {
       <Route
         path="/admin"
         element={
-          <AdminRoute>
-            <Admin />
-          </AdminRoute>
+          <ProtectedRoute>
+            <AdminRoute>
+              <Admin />
+            </AdminRoute>
+          </ProtectedRoute>
         }
       />
       <Route path="*" element={<NotFound />} />
