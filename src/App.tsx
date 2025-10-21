@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/hooks/useLocalAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
 import { AppLayout } from "@/components/layout/AppLayout";
+import { AdminRoute } from "@/components/auth/AdminRoute";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import Dashboard from "./pages/Dashboard";
@@ -21,6 +22,7 @@ import Metas from "./pages/Metas";
 import TermometroGastos from "./pages/TermometroGastos";
 import NotFound from "./pages/NotFound";
 import Plano from "./pages/Plano";
+import Admin from "./pages/Admin";
 
 const queryClient = new QueryClient();
 
@@ -155,6 +157,14 @@ function AppRoutes() {
           <ProtectedRoute>
             <Perfil />
           </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <AdminRoute>
+            <Admin />
+          </AdminRoute>
         }
       />
       <Route path="*" element={<NotFound />} />

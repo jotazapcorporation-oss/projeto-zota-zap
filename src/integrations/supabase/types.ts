@@ -463,6 +463,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          admin: boolean | null
           assinaturaid: string | null
           ativo: boolean | null
           avatar_url: string | null
@@ -485,6 +486,7 @@ export type Database = {
           whatsapp: string | null
         }
         Insert: {
+          admin?: boolean | null
           assinaturaid?: string | null
           ativo?: boolean | null
           avatar_url?: string | null
@@ -507,6 +509,7 @@ export type Database = {
           whatsapp?: string | null
         }
         Update: {
+          admin?: boolean | null
           assinaturaid?: string | null
           ativo?: boolean | null
           avatar_url?: string | null

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { Home, CreditCard, Calendar, User, LogOut, Tag, FileText, Bell, PiggyBank, Activity, GripVertical, Flag, BarChart3, PanelLeftClose, PanelLeft } from 'lucide-react'
+import { Home, CreditCard, Calendar, User, LogOut, Tag, FileText, Bell, PiggyBank, Activity, GripVertical, Flag, BarChart3, PanelLeftClose, PanelLeft, Shield } from 'lucide-react'
 import { motion } from 'framer-motion'
 import {
   Sidebar,
@@ -19,6 +19,7 @@ import { useAuth } from '@/hooks/useLocalAuth'
 import { Button } from '@/components/ui/button'
 import { UserProfile } from './UserProfile'
 import { Logo } from '@/components/ui/logo'
+import { useAdmin } from '@/hooks/useAdmin'
 import {
   DndContext,
   closestCenter,
@@ -57,6 +58,8 @@ const defaultItems: MenuItem[] = [
   { id: 'metas', title: 'Metas', url: '/metas', icon: Flag },
   { id: 'perfil', title: 'Perfil', url: '/perfil', icon: User },
 ]
+
+const adminItem: MenuItem = { id: 'admin', title: 'Administração', url: '/admin', icon: Shield }
 
 function SortableMenuItem({ 
   item, 
@@ -129,6 +132,7 @@ export function AppSidebar() {
   const { state, toggleSidebar } = useSidebar()
   const location = useLocation()
   const { signOut } = useAuth()
+  const { isAdmin } = useAdmin()
   const currentPath = location.pathname
 
   const isActive = (path: string) => currentPath === path
@@ -243,6 +247,35 @@ export function AppSidebar() {
                       isCollapsed={isCollapsed}
                     />
                   ))}
+                  {isAdmin && (
+                    <SidebarMenuItem>
+                      <SidebarMenuButton
+                        asChild
+                        className={cn(
+                          "transition-all duration-200",
+                          isActive('/admin')
+                            ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                            : 'hover:bg-accent hover:translate-x-1'
+                        )}
+                      >
+                        <NavLink to="/admin" end className="flex items-center">
+                          <motion.div 
+                            className="flex items-center gap-2"
+                            whileHover={{ x: 2 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <motion.div
+                              whileHover={{ rotate: 5, scale: 1.1 }}
+                              transition={{ duration: 0.2 }}
+                            >
+                              <Shield className="h-4 w-4" />
+                            </motion.div>
+                            {!isCollapsed && <span>Administração</span>}
+                          </motion.div>
+                        </NavLink>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  )}
                 </SidebarMenu>
               </SortableContext>
             </DndContext>
