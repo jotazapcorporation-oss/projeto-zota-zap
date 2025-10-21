@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useLocalAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,26 +24,81 @@ export default function ResetPassword() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [verifyingToken, setVerifyingToken] = useState(true);
   const [hasToken, setHasToken] = useState(false);
+  const [tokenError, setTokenError] = useState<string | null>(null);
   const { updatePassword } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check for access token in URL hash or query params
-    const hashParams = new URLSearchParams(window.location.hash.substring(1));
-    const queryParams = new URLSearchParams(window.location.search);
-    const token = hashParams.get('access_token') || queryParams.get('access_token');
-    
-    if (token) {
-      setHasToken(true);
-    } else {
-      setHasToken(false);
-      toast({
-        title: "Link inválido",
-        description: "O link de recuperação de senha está inválido ou expirou.",
-        variant: "destructive",
-      });
-    }
+    const verifyToken = async () => {
+      setVerifyingToken(true);
+      
+      // Extract token and type from URL hash
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const token = hashParams.get('access_token');
+      const type = hashParams.get('type');
+      
+      if (!token || type !== 'recovery') {
+        setHasToken(false);
+        setTokenError('Link inválido ou expirado');
+        setVerifyingToken(false);
+        toast({
+          title: "Link inválido",
+          description: "O link de recuperação de senha está inválido ou expirou.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      try {
+        // Verify the OTP token and establish session
+        const { error } = await supabase.auth.verifyOtp({
+          token_hash: token,
+          type: 'recovery'
+        });
+
+        if (error) {
+          console.error('Token verification error:', error);
+          setHasToken(false);
+          
+          // Determine error message based on error type
+          let errorMessage = 'O link de recuperação está inválido ou expirou.';
+          if (error.message?.includes('expired')) {
+            errorMessage = 'O link expirou. Solicite um novo link de recuperação.';
+          } else if (error.message?.includes('invalid')) {
+            errorMessage = 'Link inválido ou já utilizado.';
+          }
+          
+          setTokenError(errorMessage);
+          toast({
+            title: "Erro de verificação",
+            description: errorMessage,
+            variant: "destructive",
+          });
+        } else {
+          // Session established successfully
+          setHasToken(true);
+          setTokenError(null);
+          
+          // Clean up URL by removing hash params
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+      } catch (error) {
+        console.error('Unexpected error during token verification:', error);
+        setHasToken(false);
+        setTokenError('Erro ao verificar o link. Tente novamente.');
+        toast({
+          title: "Erro",
+          description: "Erro ao verificar o link. Tente novamente.",
+          variant: "destructive",
+        });
+      } finally {
+        setVerifyingToken(false);
+      }
+    };
+
+    verifyToken();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -111,6 +167,47 @@ export default function ResetPassword() {
     });
   };
 
+  // Show loading state while verifying token
+  if (verifyingToken) {
+    return (
+      <div className="min-h-screen flex bg-background p-4 sm:p-6">
+        <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden rounded-3xl">
+          <img 
+            src="/logo-vzap-hq.jpg" 
+            alt="VZAP Logo" 
+            className="w-full h-full object-cover" 
+          />
+          <div className="absolute inset-0 bg-primary/20" />
+        </div>
+
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 lg:p-8 relative">
+          <div className="absolute top-4 right-4">
+            <ThemeToggle />
+          </div>
+
+          <div className="w-full max-w-md lg:max-w-lg mt-4 sm:mt-8">
+            <div className="mb-6">
+              <Logo showIcon className="h-6 sm:h-8 w-auto" />
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Verificando Link</CardTitle>
+                <CardDescription>
+                  Aguarde enquanto verificamos seu link de recuperação...
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="flex justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if token is invalid
   if (!hasToken) {
     return (
       <div className="min-h-screen flex bg-background p-4 sm:p-6">
@@ -137,7 +234,7 @@ export default function ResetPassword() {
               <CardHeader>
                 <CardTitle>Link Inválido</CardTitle>
                 <CardDescription>
-                  O link de recuperação de senha está inválido ou expirou.
+                  {tokenError || 'O link de recuperação de senha está inválido ou expirou.'}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
