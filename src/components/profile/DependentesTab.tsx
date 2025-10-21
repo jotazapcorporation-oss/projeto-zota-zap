@@ -245,24 +245,18 @@ export function DependentesTab() {
       } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
 
-      const response = await fetch("https://webhook.jzap.net/webhook/dependentes/editar", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Basic VVNVQVJJTzpTRU5IQQ==",
-        },
-        body: JSON.stringify({
-          dependente_id: editingDependente.id,
-          master_id: user.id,
+      // Atualizar diretamente no Supabase
+      const { error } = await supabase
+        .from("profiles")
+        .update({
           nome: editName,
           email: editEmail,
           whatsapp: editWhatsapp,
-        }),
-      });
+        })
+        .eq("id", editingDependente.id)
+        .eq("master_id", user.id);
 
-      if (!response.ok) {
-        throw new Error("Erro ao editar dependente");
-      }
+      if (error) throw error;
 
       toast({
         title: "Sucesso!",
