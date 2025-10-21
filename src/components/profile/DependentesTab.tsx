@@ -337,7 +337,7 @@ export function DependentesTab() {
                   <TableRow key={dep.id}>
                     <TableCell className="font-medium">{dep.nome || "Sem nome"}</TableCell>
                     <TableCell>{dep.email || "Não informado"}</TableCell>
-                    <TableCell>{dep.whatsapp || dep.phone || "Não informado"}</TableCell>
+                    <TableCell>{dep.phone || dep.whatsapp || "Não informado"}</TableCell>
                     <TableCell>{new Date(dep.created_at).toLocaleDateString("pt-BR")}</TableCell>
                     <TableCell className="text-right">
                       <Badge variant="outline">Ativo</Badge>
