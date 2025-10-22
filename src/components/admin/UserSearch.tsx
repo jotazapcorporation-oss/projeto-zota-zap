@@ -18,7 +18,7 @@ export const UserSearch = ({ value, onChange }: UserSearchProps) => {
     }, 500);
 
     return () => clearTimeout(timeout);
-  }, [localValue, onChange]);
+  }, [localValue]);
 
   return (
     <div className="relative w-full md:w-96">

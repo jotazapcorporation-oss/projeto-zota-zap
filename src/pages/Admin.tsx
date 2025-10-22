@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { UserPlus } from 'lucide-react';
@@ -31,19 +31,19 @@ export default function Admin() {
 
   const { listUsers } = useAdminActions(page, pageSize, searchTerm);
 
-  const handlePageChange = (newPage: number) => {
+  const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage);
-  };
+  }, []);
 
-  const handlePageSizeChange = (newPageSize: number) => {
+  const handlePageSizeChange = useCallback((newPageSize: number) => {
     setPageSize(newPageSize);
     setPage(1); // Reset para primeira página ao mudar tamanho
-  };
+  }, []);
 
-  const handleSearchChange = (newSearchTerm: string) => {
+  const handleSearchChange = useCallback((newSearchTerm: string) => {
     setSearchTerm(newSearchTerm);
     setPage(1); // Reset para primeira página ao buscar
-  };
+  }, []);
 
   return (
     <div className="container mx-auto py-8 px-4">
