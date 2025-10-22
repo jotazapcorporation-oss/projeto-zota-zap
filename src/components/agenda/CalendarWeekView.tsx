@@ -84,7 +84,7 @@ export const CalendarWeekView = ({
                 key={`hour-${hour}`}
                 className="p-2 border-r border-b text-xs text-right text-muted-foreground sticky left-0 bg-card z-20"
               >
-                {hour === 0 ? 'Meia-noite' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour - 12} PM`}
+                {hour}
               </div>
               
               {/* Células de cada dia */}
