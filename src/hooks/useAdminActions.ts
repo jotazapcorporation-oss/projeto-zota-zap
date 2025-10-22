@@ -10,21 +10,35 @@ export interface UserData {
   admin: boolean;
 }
 
-export const useAdminActions = () => {
+export const useAdminActions = (
+  page: number = 1,
+  pageSize: number = 25,
+  searchTerm: string = ''
+) => {
   const queryClient = useQueryClient();
   const { session } = useAuth();
 
-  // Listar todos os usuários
+  // Listar usuários com paginação e busca
   const listUsers = useQuery({
-    queryKey: ['admin-users'],
+    queryKey: ['admin-users', page, pageSize, searchTerm],
     queryFn: async () => {
-      const { data, error } = await supabase
+      const from = (page - 1) * pageSize;
+      const to = from + pageSize - 1;
+
+      let query = supabase
         .from('profiles')
-        .select('id, nome, email, phone, admin, ativo, created_at, avatar_url')
+        .select('id, nome, email, phone, admin, ativo, created_at, avatar_url', { count: 'exact' })
         .order('created_at', { ascending: false });
+
+      // Aplicar filtro de busca se existir
+      if (searchTerm) {
+        query = query.or(`nome.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%`);
+      }
+
+      const { data, error, count } = await query.range(from, to);
       
       if (error) throw error;
-      return data;
+      return { users: data, total: count || 0 };
     },
   });
 

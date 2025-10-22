@@ -6,6 +6,8 @@ import { UserTable } from '@/components/admin/UserTable';
 import { CreateUserModal } from '@/components/admin/CreateUserModal';
 import { EditUserModal } from '@/components/admin/EditUserModal';
 import { DeleteUserDialog } from '@/components/admin/DeleteUserDialog';
+import { UserSearch } from '@/components/admin/UserSearch';
+import { UserPagination } from '@/components/admin/UserPagination';
 import { useAdminActions } from '@/hooks/useAdminActions';
 
 interface User {
@@ -23,7 +25,25 @@ export default function Admin() {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
-  const { listUsers } = useAdminActions();
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(25);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const { listUsers } = useAdminActions(page, pageSize, searchTerm);
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handlePageSizeChange = (newPageSize: number) => {
+    setPageSize(newPageSize);
+    setPage(1); // Reset para primeira página ao mudar tamanho
+  };
+
+  const handleSearchChange = (newSearchTerm: string) => {
+    setSearchTerm(newSearchTerm);
+    setPage(1); // Reset para primeira página ao buscar
+  };
 
   return (
     <div className="container mx-auto py-8 px-4">
@@ -41,11 +61,23 @@ export default function Admin() {
       </div>
 
       <Card>
+        <div className="p-4 border-b">
+          <UserSearch value={searchTerm} onChange={handleSearchChange} />
+        </div>
+        
         <UserTable
-          users={listUsers.data || []}
+          users={listUsers.data?.users || []}
           isLoading={listUsers.isLoading}
           onEdit={setEditingUser}
           onDelete={setDeletingUser}
+        />
+
+        <UserPagination
+          currentPage={page}
+          pageSize={pageSize}
+          totalUsers={listUsers.data?.total || 0}
+          onPageChange={handlePageChange}
+          onPageSizeChange={handlePageSizeChange}
         />
       </Card>
 
