@@ -118,19 +118,27 @@ export const useAdminActions = (
   // Excluir usuário permanentemente
   const deleteUser = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase
-        .from('profiles')
-        .delete()
-        .eq('id', id);
-      
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Não autenticado');
+
+      const { data, error } = await supabase.functions.invoke('delete-user', {
+        body: { userId: id },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
       if (error) throw error;
+      if (data?.error) throw new Error(data.error);
+      
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
-      toast.success('Usuário excluído permanentemente');
+      toast.success('Usuário e todos os seus dados foram excluídos permanentemente');
     },
-    onError: () => {
-      toast.error('Erro ao excluir usuário');
+    onError: (error: Error) => {
+      toast.error(error.message || 'Erro ao excluir usuário');
     },
   });
 
