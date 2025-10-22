@@ -38,8 +38,10 @@ export const useAdminActions = (
       const { data, error, count } = await query.range(from, to);
       
       if (error) throw error;
-      return { users: data, total: count || 0 };
+      return { users: data || [], total: count || 0 };
     },
+    staleTime: 30000, // 30 segundos
+    refetchOnWindowFocus: false,
   });
 
   // Criar novo usuário via webhook
