@@ -17,7 +17,11 @@ export function AppLayout({ children }: AppLayoutProps) {
             <h1 className="text-lg font-semibold title-color hidden sm:block">VZAP - Sistema de Gestão Financeira</h1>
             <ThemeToggle />
           </header>
-          <div className="flex-1 p-4 bg-background overflow-auto">{children}</div>
+          <div className="flex-1 p-4 bg-background">
+            <div className="h-full overflow-y-auto">
+              {children}
+            </div>
+          </div>
         </div>
       </div>
     </SidebarProvider>
