@@ -43,9 +43,9 @@ export const CalendarWeekView = ({
   const isToday = (date: Date) => isSameDay(date, new Date());
 
   return (
-    <div className="flex flex-col bg-background rounded-lg border shadow-lg">
+    <div className="flex flex-col bg-background rounded-lg border shadow-lg h-full">
       {/* Header com dias da semana */}
-      <div className="grid grid-cols-8 border-b bg-card sticky top-0 z-10">
+      <div className="grid grid-cols-8 border-b bg-card sticky top-0 z-20">
         <div className="p-2 border-r text-xs text-center text-muted-foreground font-medium">Horário</div>
         {weekDays.map((day, idx) => (
           <div

@@ -38,10 +38,10 @@ export const CalendarDayView = ({
   const isToday = isSameDay(selectedDate, new Date());
 
   return (
-    <div className="flex flex-col h-full bg-background rounded-lg border shadow-lg overflow-hidden">
+    <div className="flex flex-col h-full bg-background rounded-lg border shadow-lg">
       {/* Header */}
       <div className={cn(
-        "p-2 border-b bg-card sticky top-0 z-10",
+        "p-2 border-b bg-card sticky top-0 z-20",
         isToday && "bg-primary/10"
       )}>
         <div className="text-center">
@@ -61,7 +61,7 @@ export const CalendarDayView = ({
       </div>
 
       {/* Grid de horários */}
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1">
         {hours.map((hour) => {
           const hourEvents = getEventsForHour(hour);
           const timeString = `${hour.toString().padStart(2, '0')}:00`;

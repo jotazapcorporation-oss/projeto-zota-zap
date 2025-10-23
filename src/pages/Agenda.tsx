@@ -223,7 +223,7 @@ export default function Agenda() {
       </div>
 
       {/* Main Content - Calendar Only */}
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-y-auto">
         {viewMode === 'day' && <CalendarDayView events={events} selectedDate={selectedDate} onTimeSlotClick={handleDayTimeSlotClick} onEventClick={handleEditEvent} onEventResize={handleEventResize} />}
 
         {viewMode === 'week' && <CalendarWeekView events={events} selectedDate={selectedDate} onDateClick={handleDateClick} onTimeSlotClick={handleTimeSlotClick} onEventClick={handleEditEvent} onEventResize={handleEventResize} />}
