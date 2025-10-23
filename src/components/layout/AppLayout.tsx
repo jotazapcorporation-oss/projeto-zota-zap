@@ -19,7 +19,7 @@ export function AppLayout({ children }: AppLayoutProps) {
             </h1>
             <ThemeToggle />
           </header>
-          <div className="flex-1 p-4 bg-background overflow-auto">
+          <div className="p-4 bg-background">
             {children}
           </div>
         </div>
