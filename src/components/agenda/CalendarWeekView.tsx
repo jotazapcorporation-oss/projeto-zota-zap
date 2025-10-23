@@ -74,7 +74,7 @@ export const CalendarWeekView = ({
               {/* Coluna de hora - FIXA */}
               <div
                 key={`hour-${hour}`}
-                className="p-2 border-r border-b text-xs text-right text-muted-foreground sticky left-0 bg-card z-20"
+                className="p-2 border-b text-xs text-right text-muted-foreground sticky left-0 bg-card z-20"
               >
                 {hour}
               </div>
