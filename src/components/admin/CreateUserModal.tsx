@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -19,13 +20,14 @@ import {
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { PhoneInput } from '@/components/ui/phone-input';
 import { useAdminActions, type UserData } from '@/hooks/useAdminActions';
 import { Loader2 } from 'lucide-react';
 
 const formSchema = z.object({
   nome: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres'),
   email: z.string().email('Email inválido'),
-  phone: z.string().optional(),
+  phone: z.string().min(10, 'Telefone deve ter no mínimo 10 dígitos').max(15, 'Telefone inválido'),
   admin: z.boolean().default(false),
 });
 
@@ -36,6 +38,7 @@ interface CreateUserModalProps {
 
 export const CreateUserModal = ({ open, onOpenChange }: CreateUserModalProps) => {
   const { createUser } = useAdminActions();
+  const [countryCode, setCountryCode] = useState('55');
 
   const form = useForm<UserData>({
     resolver: zodResolver(formSchema),
@@ -49,8 +52,17 @@ export const CreateUserModal = ({ open, onOpenChange }: CreateUserModalProps) =>
 
   const onSubmit = async (values: UserData) => {
     try {
-      await createUser.mutateAsync(values);
+      // Garantir que o número seja enviado com o código do país
+      const phoneWithCountryCode = values.phone.startsWith('+') 
+        ? values.phone 
+        : `+${countryCode}${values.phone}`;
+      
+      await createUser.mutateAsync({
+        ...values,
+        phone: phoneWithCountryCode,
+      });
       form.reset();
+      setCountryCode('55');
       onOpenChange(false);
     } catch (error) {
       // Error is handled by the mutation
@@ -102,9 +114,15 @@ export const CreateUserModal = ({ open, onOpenChange }: CreateUserModalProps) =>
               name="phone"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Telefone (Opcional)</FormLabel>
+                  <FormLabel>Telefone</FormLabel>
                   <FormControl>
-                    <Input placeholder="+55 11 99999-9999" {...field} />
+                    <PhoneInput
+                      value={field.value}
+                      countryCode={countryCode}
+                      onValueChange={field.onChange}
+                      onCountryChange={setCountryCode}
+                      placeholder="11 99999-9999"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
