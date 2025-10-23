@@ -1,3 +1,4 @@
+import React from 'react';
 import { AgendaEvent } from '@/hooks/useSupabaseAgenda';
 import { format, startOfWeek, addDays, isSameDay, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -121,11 +122,6 @@ export const CalendarWeekView = ({
     })}
   </React.Fragment>
 ))}
-                  </div>
-                );
-              })}
-            </>
-          ))}
         </div>
       </div>
     </div>
