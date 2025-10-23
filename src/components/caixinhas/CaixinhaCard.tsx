@@ -314,7 +314,7 @@ export function CaixinhaCard({
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-6 flex-1 flex flex-col justify-between">
+      <CardContent className="space-y-4 flex-1 flex flex-col justify-between overflow-auto">
         {progressStatus !== 'normal' && (
           <div className={cn(
             "flex items-center gap-2 p-3 rounded-lg text-sm",
