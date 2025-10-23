@@ -1,8 +1,8 @@
-import { AgendaEvent } from '@/hooks/useSupabaseAgenda';
-import { format, startOfWeek, addDays, isSameDay, parseISO } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
-import { cn } from '@/lib/utils';
-import { ResizableEvent } from './ResizableEvent';
+import { AgendaEvent } from "@/hooks/useSupabaseAgenda";
+import { format, startOfWeek, addDays, isSameDay, parseISO } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { cn } from "@/lib/utils";
+import { ResizableEvent } from "./ResizableEvent";
 
 interface CalendarWeekViewProps {
   events: AgendaEvent[];
@@ -21,22 +21,21 @@ export const CalendarWeekView = ({
   onEventClick,
   onEventResize,
 }: CalendarWeekViewProps) => {
-  
   const handleResize = async (eventId: string, newEndTime: string) => {
     if (!onEventResize) return;
     await onEventResize(eventId, newEndTime);
   };
   const weekStart = startOfWeek(selectedDate, { weekStartsOn: 0 });
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
-  
+
   // Horas de 0 a 23
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
   const getEventsForDateAndHour = (date: Date, hour: number) => {
-    return events.filter(event => {
+    return events.filter((event) => {
       if (!isSameDay(parseISO(event.event_date), date)) return false;
-      
-      const eventHour = parseInt(event.event_time.split(':')[0]);
+
+      const eventHour = parseInt(event.event_time.split(":")[0]);
       return eventHour === hour;
     });
   };
@@ -47,28 +46,21 @@ export const CalendarWeekView = ({
     <div className="flex flex-col h-full bg-background rounded-lg border shadow-lg overflow-hidden">
       {/* Header com dias da semana */}
       <div className="grid grid-cols-8 border-b bg-card sticky top-0 z-10">
-        <div className="p-1 border-r text-xs text-center text-muted-foreground font-medium">
-          GMT-3
-        </div>
+        <div className="p-1 border-r text-xs text-center text-muted-foreground font-medium">Horário</div>
         {weekDays.map((day, idx) => (
           <div
             key={idx}
             onClick={() => onDateClick(day)}
             className={cn(
               "p-2 border-r cursor-pointer transition-colors hover:bg-accent",
-              isToday(day) && "bg-primary/10"
+              isToday(day) && "bg-primary/10",
             )}
           >
             <div className="text-center">
               <div className="text-xs uppercase text-muted-foreground font-medium">
-                {format(day, 'EEE', { locale: ptBR })}
+                {format(day, "EEE", { locale: ptBR })}
               </div>
-              <div className={cn(
-                "text-xl font-semibold",
-                isToday(day) && "text-primary"
-              )}>
-                {format(day, 'd')}
-              </div>
+              <div className={cn("text-xl font-semibold", isToday(day) && "text-primary")}>{format(day, "d")}</div>
             </div>
           </div>
         ))}
@@ -80,18 +72,18 @@ export const CalendarWeekView = ({
           {hours.map((hour) => (
             <>
               {/* Coluna de hora - FIXA */}
-              <div 
+              <div
                 key={`hour-${hour}`}
                 className="p-2 border-r border-b text-xs text-right text-muted-foreground sticky left-0 bg-card z-20"
               >
                 {hour}
               </div>
-              
+
               {/* Células de cada dia */}
               {weekDays.map((day, dayIdx) => {
                 const dayEvents = getEventsForDateAndHour(day, hour);
-                const timeString = `${hour.toString().padStart(2, '0')}:00`;
-                
+                const timeString = `${hour.toString().padStart(2, "0")}:00`;
+
                 return (
                   <div
                     key={`cell-${hour}-${dayIdx}`}
@@ -103,7 +95,7 @@ export const CalendarWeekView = ({
                     }}
                     className={cn(
                       "min-h-[60px] border-r border-b p-1 cursor-pointer transition-colors hover:bg-accent/50 relative",
-                      isToday(day) && "bg-primary/5"
+                      isToday(day) && "bg-primary/5",
                     )}
                   >
                     {dayEvents.map((event) => (
