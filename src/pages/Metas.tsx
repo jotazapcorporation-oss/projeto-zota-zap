@@ -42,7 +42,7 @@ export default function Metas() {
   const { user } = useAuth();
   const { boards, loading, createBoard, updateBoard, deleteBoard } = useSupabaseBoards(user?.id);
   const [selectedBoard, setSelectedBoard] = useState<Board | null>(null);
-  const { listas, loading: loadingListas, setListas, createLista, deleteLista, updateListasOrder, duplicateLista } = useSupabaseListas(selectedBoard?.id || null);
+  const { listas, loading: loadingListas, setListas, fetchListas, createLista, deleteLista, updateListasOrder, duplicateLista } = useSupabaseListas(selectedBoard?.id || null);
   const { createCard, updateCard, deleteCard, moveCard, duplicateCard, uploadCoverImage, removeCoverImage } = useSupabaseCards();
   const tutorial = useTutorial('metas');
   
@@ -117,6 +117,7 @@ export default function Metas() {
       checklist: [],
       display_order: listas.find(l => l.id === listaId)?.cards?.length || 0,
     });
+    await fetchListas();
   };
 
   const handleUpdateListTitle = async (id: string, titulo: string) => {
@@ -164,6 +165,7 @@ export default function Metas() {
         });
       }
       
+      await fetchListas();
       setEditingCard(null);
     } else if (newCardListaId && cardData.titulo) {
       await createCard(newCardListaId, {
@@ -174,6 +176,7 @@ export default function Metas() {
         checklist: cardData.checklist || [],
         display_order: listas.find(l => l.id === newCardListaId)?.cards?.length || 0,
       });
+      await fetchListas();
       setNewCardListaId(null);
     }
     setCardModalOpen(false);
@@ -597,6 +600,7 @@ export default function Metas() {
           onSave={handleSaveCard}
           onDuplicate={async (cardId) => {
             await duplicateCard(cardId);
+            await fetchListas();
           }}
           onUploadCover={uploadCoverImage}
           onRemoveCover={removeCoverImage}
