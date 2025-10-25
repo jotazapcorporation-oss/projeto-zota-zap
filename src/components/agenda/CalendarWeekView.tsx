@@ -44,10 +44,10 @@ export const CalendarWeekView = ({
   const isToday = (date: Date) => isSameDay(date, new Date());
 
   return (
-    <div className="flex flex-col h-full bg-background rounded-lg border shadow-lg ">
+    <div className="flex flex-col h-full bg-background rounded-lg border shadow-lg overflow-hidden">
       {/* Header com dias da semana */}
       <div className="grid grid-cols-8 border-b bg-card sticky top-0 z-10">
-        <div className="p-1 border-r text-xs text-center text-muted-foreground font-medium">Horário</div>
+        <div className="p-1 border-r text-xs text-center text-muted-foreground font-medium">GMT-3</div>
         {weekDays.map((day, idx) => (
           <div
             key={idx}
@@ -68,54 +68,52 @@ export const CalendarWeekView = ({
       </div>
 
       {/* Grid de horários */}
-      <div>
-        <div className="flex-1">
-          <div className="grid grid-cols-8">
-            {hours.map((hour) => (
-              <React.Fragment key={hour}>
-                {/* Coluna de hora - FIXA */}
-                <div
-                  // 2) Remova border-r aqui
-                  className="p-2 border-b text-xs text-right text-muted-foreground sticky left-0 bg-card z-20"
-                >
-                  {hour}
-                </div>
+      <div className="flex-1 overflow-auto">
+        <div className="grid grid-cols-8">
+          {hours.map((hour) => (
+            <React.Fragment key={hour}>
+              {/* Coluna de hora - FIXA */}
+              <div
+                // 2) Remova border-r aqui
+                className="p-2 border-b text-xs text-right text-muted-foreground sticky left-0 bg-card z-20"
+              >
+                {hour}
+              </div>
 
-                {/* Células de cada dia */}
-                {weekDays.map((day, dayIdx) => {
-                  const dayEvents = getEventsForDateAndHour(day, hour);
-                  const timeString = `${hour.toString().padStart(2, "0")}:00`;
+              {/* Células de cada dia */}
+              {weekDays.map((day, dayIdx) => {
+                const dayEvents = getEventsForDateAndHour(day, hour);
+                const timeString = `${hour.toString().padStart(2, "0")}:00`;
 
-                  return (
-                    <div
-                      key={`cell-${hour}-${dayIdx}`}
-                      onClick={(e) => {
-                        if (e.target === e.currentTarget) onTimeSlotClick(day, timeString);
-                      }}
-                      className={cn(
-                        // 3) Mantém border-b/border-r como antes,
-                        //    mas adiciona border-l somente na primeira coluna de dias
-                        "min-h-[60px] border-b border-r p-1 cursor-pointer transition-colors hover:bg-accent/50 relative",
-                        dayIdx === 0 && "border-l",
-                        isToday(day) && "bg-primary/5",
-                      )}
-                    >
-                      {dayEvents.map((event) => (
-                        <ResizableEvent
-                          key={event.event_id}
-                          event={event}
-                          onEventClick={onEventClick}
-                          onResize={handleResize}
-                          compact
-                          className="absolute inset-x-1 top-1"
-                        />
-                      ))}
-                    </div>
-                  );
-                })}
-              </React.Fragment>
-            ))}
-          </div>
+                return (
+                  <div
+                    key={`cell-${hour}-${dayIdx}`}
+                    onClick={(e) => {
+                      if (e.target === e.currentTarget) onTimeSlotClick(day, timeString);
+                    }}
+                    className={cn(
+                      // 3) Mantém border-b/border-r como antes,
+                      //    mas adiciona border-l somente na primeira coluna de dias
+                      "min-h-[60px] border-b border-r p-1 cursor-pointer transition-colors hover:bg-accent/50 relative",
+                      dayIdx === 0 && "border-l",
+                      isToday(day) && "bg-primary/5",
+                    )}
+                  >
+                    {dayEvents.map((event) => (
+                      <ResizableEvent
+                        key={event.event_id}
+                        event={event}
+                        onEventClick={onEventClick}
+                        onResize={handleResize}
+                        compact
+                        className="absolute inset-x-1 top-1"
+                      />
+                    ))}
+                  </div>
+                );
+              })}
+            </React.Fragment>
+          ))}
         </div>
       </div>
     </div>
