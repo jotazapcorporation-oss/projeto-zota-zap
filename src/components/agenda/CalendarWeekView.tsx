@@ -68,7 +68,7 @@ export const CalendarWeekView = ({
       </div>
 
       {/* Grid de horários */}
-      <div className="flex-1 overflow-y-auto" id="gridHorario">
+      <div className="flex-1" id="gridHorario">
         <div className="grid grid-cols-8">
           {hours.map((hour) => (
             <React.Fragment key={hour}>
