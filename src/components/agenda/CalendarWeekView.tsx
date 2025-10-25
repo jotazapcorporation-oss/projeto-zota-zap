@@ -44,7 +44,7 @@ export const CalendarWeekView = ({
   const isToday = (date: Date) => isSameDay(date, new Date());
 
   return (
-    <div className="flex flex-col h-full bg-background rounded-lg border shadow-lg overflow-hidden">
+    <div className="flex flex-col h-full bg-background rounded-lg border shadow-lg ">
       {/* Header com dias da semana */}
       <div className="grid grid-cols-8 border-b bg-card sticky top-0 z-10">
         <div className="p-1 border-r text-xs text-center text-muted-foreground font-medium">Horário</div>
@@ -68,7 +68,7 @@ export const CalendarWeekView = ({
       </div>
 
       {/* Grid de horários */}
-      <div className="flex-1 ">
+      <div className="flex-1 overflow-auto">
         <div className="grid grid-cols-8">
           {hours.map((hour) => (
             <React.Fragment key={hour}>
