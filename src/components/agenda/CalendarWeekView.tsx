@@ -46,8 +46,8 @@ export const CalendarWeekView = ({
   return (
     <div className="flex flex-col h-[calc(100vh-8rem)] bg-background rounded-lg  ">
       {/* Header com dias da semana */}
-      <div className="grid grid-cols-8 border-b bg-card sticky top-0 z-10">
-        <div className="p-1 border-r sticky top-0 left-0 bg-card z-20">
+      <div className="grid grid-cols-8 border-b bg-card top-0 z-10">
+        <div className="p-1 border-r top-0 left-0 bg-card z-20">
           <div className="text-xs text-center text-muted-foreground font-medium">Horário</div>
         </div>
         {weekDays.map((day, idx) => (
