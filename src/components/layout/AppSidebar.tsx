@@ -192,18 +192,15 @@ export function AppSidebar() {
           {isCollapsed ? (
             <Logo iconOnly className="h-8 w-8 mx-auto" />
           ) : (
-            <>
-              <Logo showIcon className="h-8 w-auto" />
-              <Button
-                onClick={toggleSidebar}
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 hover:bg-accent flex-shrink-0"
-                aria-label="Recolher menu"
-              >
-                <PanelLeftClose className="h-4 w-4" />
-              </Button>
-            </>
+            <Button
+              onClick={toggleSidebar}
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-accent ml-auto"
+              aria-label="Recolher menu"
+            >
+              <PanelLeftClose className="h-4 w-4" />
+            </Button>
           )}
         </div>
         {isCollapsed && (
