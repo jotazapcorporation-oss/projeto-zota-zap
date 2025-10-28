@@ -9,13 +9,12 @@ export function Logo({
   iconOnly = false
 }: LogoProps) {
   if (iconOnly) {
-    return <img src="/logo-vzap-hq.jpg" alt="VZAP Icon" className={className} />;
+    return <img src="/logo-vzap.png" alt="VZAP Icon" className={className} />;
   }
   if (showIcon) {
     return <div className="flex items-center gap-2">
-        
-        
+        <img src="/logo-vzap.png" alt="VZAP" className="h-8 w-8" />
       </div>;
   }
-  return <img src="/logo-vzap-hq.jpg" alt="VZAP" className={className} />;
+  return <img src="/logo-vzap.png" alt="VZAP" className={className} />;
 }
