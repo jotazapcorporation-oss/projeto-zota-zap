@@ -11,7 +11,7 @@ export default function Plano() {
   const navigate = useNavigate();
   const handleSubscribe = () => {
     console.log('Iniciando processo de pagamento - VZAP');
-    window.location.href = 'https://www.asaas.com/c/h2qg6p0uokffvi4b';
+    window.location.href = 'https://pay.cakto.com.br/d6djota_620913';
   };
   const handleBackToLogin = () => {
     navigate('/auth');
