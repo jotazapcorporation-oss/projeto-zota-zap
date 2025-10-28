@@ -79,9 +79,27 @@ function SortableMenuItem({
     isDragging,
   } = useSortable({ id: item.id })
 
+  const [wasDragging, setWasDragging] = useState(false)
+
+  useEffect(() => {
+    if (isDragging) {
+      setWasDragging(true)
+    } else if (wasDragging) {
+      // Reset após um pequeno delay para prevenir click após drag
+      const timer = setTimeout(() => setWasDragging(false), 100)
+      return () => clearTimeout(timer)
+    }
+  }, [isDragging, wasDragging])
+
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+  }
+
+  const handleClick = (e: React.MouseEvent) => {
+    if (wasDragging || isDragging) {
+      e.preventDefault()
+    }
   }
 
   return (
@@ -96,7 +114,12 @@ function SortableMenuItem({
           isDragging && 'opacity-50 scale-105 shadow-lg z-50'
         )}
       >
-        <NavLink to={item.url} end className="flex items-center justify-between">
+        <NavLink 
+          to={item.url} 
+          end 
+          className="flex items-center justify-between"
+          onClick={handleClick}
+        >
           <motion.div 
             className="flex items-center gap-2"
             whileHover={{ x: 2 }}
