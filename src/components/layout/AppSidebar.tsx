@@ -144,23 +144,38 @@ export function AppSidebar() {
     if (saved) {
       try {
         const savedIds = JSON.parse(saved) as string[]
+        // Criar lista completa incluindo admin se aplicável
+        const allItems = isAdmin ? [...defaultItems, adminItem] : defaultItems
+        
         // Reordenar os items baseado na ordem salva
         const ordered = savedIds
-          .map(id => defaultItems.find(item => item.id === id))
+          .map(id => allItems.find(item => item.id === id))
           .filter(Boolean) as MenuItem[]
         
         // Adicionar novos itens que não estavam salvos
-        const newItems = defaultItems.filter(
+        const newItems = allItems.filter(
           item => !savedIds.includes(item.id)
         )
         
         return [...ordered, ...newItems]
       } catch {
-        return defaultItems
+        return isAdmin ? [...defaultItems, adminItem] : defaultItems
       }
     }
-    return defaultItems
+    return isAdmin ? [...defaultItems, adminItem] : defaultItems
   })
+
+  // Atualizar menuItems quando isAdmin mudar
+  useEffect(() => {
+    setMenuItems(prev => {
+      if (isAdmin && !prev.find(item => item.id === 'admin')) {
+        return [...prev, adminItem]
+      } else if (!isAdmin && prev.find(item => item.id === 'admin')) {
+        return prev.filter(item => item.id !== 'admin')
+      }
+      return prev
+    })
+  }, [isAdmin])
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -227,35 +242,6 @@ export function AppSidebar() {
                       isCollapsed={isCollapsed}
                     />
                   ))}
-                  {isAdmin && (
-                    <SidebarMenuItem>
-                      <SidebarMenuButton
-                        asChild
-                        className={cn(
-                          "transition-all duration-200",
-                          isActive('/admin')
-                            ? 'bg-primary text-primary-foreground hover:bg-primary/90'
-                            : 'hover:bg-accent hover:translate-x-1'
-                        )}
-                      >
-                        <NavLink to="/admin" end className="flex items-center">
-                          <motion.div 
-                            className="flex items-center gap-2"
-                            whileHover={{ x: 2 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            <motion.div
-                              whileHover={{ rotate: 5, scale: 1.1 }}
-                              transition={{ duration: 0.2 }}
-                            >
-                              <Shield className="h-4 w-4" />
-                            </motion.div>
-                            {!isCollapsed && <span>Administração</span>}
-                          </motion.div>
-                        </NavLink>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  )}
                 </SidebarMenu>
               </SortableContext>
             </DndContext>
