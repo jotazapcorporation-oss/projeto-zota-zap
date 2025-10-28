@@ -188,34 +188,17 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="h-screen border-r">
       <SidebarHeader className="p-4 border-b">
-        <div className="flex items-center justify-between">
-          {isCollapsed ? (
-            <Logo iconOnly className="h-8 w-8 mx-auto" />
-          ) : (
-            <Button
-              onClick={toggleSidebar}
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 hover:bg-accent ml-auto"
-              aria-label="Recolher menu"
-            >
-              <PanelLeftClose className="h-4 w-4" />
-            </Button>
-          )}
+        <div className="flex items-center justify-end">
+          <Button
+            onClick={toggleSidebar}
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 hover:bg-accent"
+            aria-label={isCollapsed ? "Expandir menu" : "Recolher menu"}
+          >
+            {isCollapsed ? <PanelLeft className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+          </Button>
         </div>
-        {isCollapsed && (
-          <div className="flex items-center justify-center mt-2">
-            <Button
-              onClick={toggleSidebar}
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 hover:bg-accent"
-              aria-label="Expandir menu"
-            >
-              <PanelLeft className="h-4 w-4" />
-            </Button>
-          </div>
-        )}
       </SidebarHeader>
 
       <SidebarContent>
