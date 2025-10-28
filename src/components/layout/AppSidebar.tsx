@@ -169,6 +169,24 @@ export function AppSidebar() {
   useEffect(() => {
     setMenuItems(prev => {
       if (isAdmin && !prev.find(item => item.id === 'admin')) {
+        // Consultar localStorage para saber onde inserir
+        const saved = localStorage.getItem('menu-order')
+        if (saved) {
+          try {
+            const savedIds = JSON.parse(saved) as string[]
+            const adminIndex = savedIds.indexOf('admin')
+            
+            if (adminIndex !== -1) {
+              // Inserir na posição correta
+              const newItems = [...prev]
+              newItems.splice(adminIndex, 0, adminItem)
+              return newItems
+            }
+          } catch (error) {
+            console.error('Erro ao carregar ordem do menu:', error)
+          }
+        }
+        // Fallback: adicionar no final
         return [...prev, adminItem]
       } else if (!isAdmin && prev.find(item => item.id === 'admin')) {
         return prev.filter(item => item.id !== 'admin')
