@@ -42,17 +42,17 @@ export function DashboardCharts({ transacoes }: DashboardChartsProps) {
   }
 
   const getPieData = () => {
-    const receitas = transacoes.filter(t => t.tipo === 'receita').reduce((sum, t) => sum + (t.valor || 0), 0)
-    const despesas = transacoes.filter(t => t.tipo === 'despesa').reduce((sum, t) => sum + (t.valor || 0), 0)
+    const receitas = transacoes.filter(t => t.tipo?.toLowerCase() === 'receita').reduce((sum, t) => sum + (t.valor || 0), 0)
+    const despesas = transacoes.filter(t => t.tipo?.toLowerCase() === 'despesa').reduce((sum, t) => sum + Math.abs(t.valor || 0), 0)
 
     return [
       { name: 'Receitas', value: receitas },
-      { name: 'Despesas', value: Math.abs(despesas) }
+      { name: 'Despesas', value: despesas }
     ]
   }
 
-  const totalReceitas = transacoes.filter(t => t.tipo === 'receita').reduce((sum, t) => sum + (t.valor || 0), 0)
-  const totalDespesas = transacoes.filter(t => t.tipo === 'despesa').reduce((sum, t) => sum + (t.valor || 0), 0)
+  const totalReceitas = transacoes.filter(t => t.tipo?.toLowerCase() === 'receita').reduce((sum, t) => sum + (t.valor || 0), 0)
+  const totalDespesas = transacoes.filter(t => t.tipo?.toLowerCase() === 'despesa').reduce((sum, t) => sum + Math.abs(t.valor || 0), 0)
   const saldo = totalReceitas - totalDespesas
 
   const stats = {

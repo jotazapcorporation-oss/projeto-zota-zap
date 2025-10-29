@@ -137,12 +137,12 @@ export default function Dashboard() {
   // Calcular estatísticas
   const stats = useMemo(() => {
     const totalReceitas = filteredTransacoes
-      .filter(t => t.tipo === 'receita')
+      .filter(t => t.tipo?.toLowerCase() === 'receita')
       .reduce((acc, t) => acc + (t.valor || 0), 0)
     
     const totalDespesas = filteredTransacoes
-      .filter(t => t.tipo === 'despesa')
-      .reduce((acc, t) => acc + (t.valor || 0), 0)
+      .filter(t => t.tipo?.toLowerCase() === 'despesa')
+      .reduce((acc, t) => acc + Math.abs(t.valor || 0), 0)
     
     const saldo = totalReceitas - totalDespesas
     
