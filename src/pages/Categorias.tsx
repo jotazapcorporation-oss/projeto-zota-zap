@@ -195,9 +195,9 @@ export default function Categorias() {
   };
 
   const categoryStats = useMemo(() => {
-    const receitas = categories.filter(c => c.tipo === 'receita').length;
-    const despesas = categories.filter(c => c.tipo === 'despesa').length;
-    const investimentos = categories.filter(c => c.tipo === 'investimento').length;
+    const receitas = categories.filter(c => c.tipo?.toLowerCase() === 'receita').length;
+    const despesas = categories.filter(c => c.tipo?.toLowerCase() === 'despesa').length;
+    const investimentos = categories.filter(c => c.tipo?.toLowerCase() === 'investimento').length;
     
     return { receitas, despesas, investimentos, total: categories.length };
   }, [categories]);

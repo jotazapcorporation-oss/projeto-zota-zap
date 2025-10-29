@@ -76,7 +76,7 @@ export function generateExcelReport(data: ExcelReportData) {
       t.quando ? new Date(t.quando).toLocaleDateString('pt-BR') : '',
       t.estabelecimento || '',
       t.categorias?.nome || 'Sem categoria',
-      t.tipo === 'receita' ? 'Receita' : 'Despesa',
+      t.tipo?.toLowerCase() === 'receita' ? 'Receita' : 'Despesa',
       formatCurrency(t.valor || 0),
       t.detalhes || ''
     ])

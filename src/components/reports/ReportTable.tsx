@@ -54,7 +54,7 @@ export function ReportTable({ transactions }: ReportTableProps) {
                   <TableCell>{formatDate(transaction.quando || '')}</TableCell>
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      {transaction.tipo === 'receita' ? (
+                      {transaction.tipo?.toLowerCase() === 'receita' ? (
                         <TrendingUp className="h-4 w-4 text-green-600" />
                       ) : (
                         <TrendingDown className="h-4 w-4 text-red-600" />
@@ -66,14 +66,14 @@ export function ReportTable({ transactions }: ReportTableProps) {
                     {transaction.categorias?.nome || 'Sem categoria'}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={transaction.tipo === 'receita' ? 'default' : 'destructive'}>
+                    <Badge variant={transaction.tipo?.toLowerCase() === 'receita' ? 'default' : 'destructive'}>
                       {transaction.tipo}
                     </Badge>
                   </TableCell>
                   <TableCell className={`text-right font-medium ${
-                    transaction.tipo === 'receita' ? 'text-green-600' : 'text-red-600'
+                    transaction.tipo?.toLowerCase() === 'receita' ? 'text-green-600' : 'text-red-600'
                   }`}>
-                    {transaction.tipo === 'receita' ? '+' : '-'}
+                    {transaction.tipo?.toLowerCase() === 'receita' ? '+' : '-'}
                     {formatCurrency(Math.abs(transaction.valor || 0))}
                   </TableCell>
                 </TableRow>

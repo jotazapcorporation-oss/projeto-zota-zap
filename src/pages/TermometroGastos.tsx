@@ -141,8 +141,8 @@ export default function TermometroGastos() {
 
   // Calcular totais e análises detalhadas
   const { receitas, despesas, saldo, termometro, analiseDetalhada } = useMemo(() => {
-    const receitasTransacoes = filteredTransacoes.filter((t) => t.tipo === "receita");
-    const despesasTransacoes = filteredTransacoes.filter((t) => t.tipo === "despesa");
+    const receitasTransacoes = filteredTransacoes.filter((t) => t.tipo?.toLowerCase() === "receita");
+    const despesasTransacoes = filteredTransacoes.filter((t) => t.tipo?.toLowerCase() === "despesa");
 
     const receitas = receitasTransacoes.reduce((acc, t) => acc + (t.valor || 0), 0);
     const despesas = despesasTransacoes.reduce((acc, t) => acc + (t.valor || 0), 0);
@@ -155,7 +155,7 @@ export default function TermometroGastos() {
 
     filteredTransacoes.forEach((t) => {
       const dia = format(new Date(t.quando || t.created_at), "yyyy-MM-dd");
-      if (t.tipo === "receita") {
+      if (t.tipo?.toLowerCase() === "receita") {
         receitasPorDia.set(dia, (receitasPorDia.get(dia) || 0) + (t.valor || 0));
       } else {
         despesasPorDia.set(dia, (despesasPorDia.get(dia) || 0) + (t.valor || 0));
@@ -444,9 +444,9 @@ export default function TermometroGastos() {
                   <div className="flex items-center gap-3 flex-1">
                     <div className={cn(
                       "p-2 rounded-full",
-                      transacao.tipo === "receita" ? "bg-green-100" : "bg-red-100"
+                      transacao.tipo?.toLowerCase() === "receita" ? "bg-green-100" : "bg-red-100"
                     )}>
-                      {transacao.tipo === "receita" ? (
+                      {transacao.tipo?.toLowerCase() === "receita" ? (
                         <TrendingUp className="h-4 w-4 text-green-600" />
                       ) : (
                         <TrendingDown className="h-4 w-4 text-red-600" />
@@ -470,9 +470,9 @@ export default function TermometroGastos() {
                   </div>
                   <div className={cn(
                     "text-lg font-bold",
-                    transacao.tipo === "receita" ? "text-green-600" : "text-red-600"
+                    transacao.tipo?.toLowerCase() === "receita" ? "text-green-600" : "text-red-600"
                   )}>
-                    {transacao.tipo === "receita" ? "+" : "-"}
+                    {transacao.tipo?.toLowerCase() === "receita" ? "+" : "-"}
                     {formatCurrency(Math.abs(transacao.valor || 0))}
                   </div>
                 </div>

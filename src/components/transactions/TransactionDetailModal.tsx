@@ -38,7 +38,7 @@ export function TransactionDetailModal({
   if (!transaction) return null;
 
   const transactionDate = new Date(transaction.quando || transaction.created_at);
-  const isReceita = transaction.tipo === "receita";
+  const isReceita = transaction.tipo?.toLowerCase() === "receita";
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

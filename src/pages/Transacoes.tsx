@@ -84,11 +84,11 @@ export default function Transacoes() {
   // Cálculo dos totais
   const { receitas, despesas, saldo } = useMemo(() => {
     const receitas = filteredTransacoes
-      .filter(t => t.tipo === 'receita')
+      .filter(t => t.tipo?.toLowerCase() === 'receita')
       .reduce((acc, t) => acc + (t.valor || 0), 0)
     
     const despesas = filteredTransacoes
-      .filter(t => t.tipo === 'despesa')
+      .filter(t => t.tipo?.toLowerCase() === 'despesa')
       .reduce((acc, t) => acc + (t.valor || 0), 0)
     
     return {
@@ -442,7 +442,7 @@ export default function Transacoes() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      {transacao.tipo === 'receita' ? (
+                      {transacao.tipo?.toLowerCase() === 'receita' ? (
                         <TrendingUp className="h-5 w-5 text-green-600" />
                       ) : (
                         <TrendingDown className="h-5 w-5 text-red-600" />
@@ -450,8 +450,8 @@ export default function Transacoes() {
                       <h3 className="font-semibold">
                         {transacao.estabelecimento || 'Sem estabelecimento'}
                       </h3>
-                      <Badge variant={transacao.tipo === 'receita' ? 'default' : 'destructive'}>
-                        {transacao.tipo === 'receita' ? 'Receita' : 'Despesa'}
+                      <Badge variant={transacao.tipo?.toLowerCase() === 'receita' ? 'default' : 'destructive'}>
+                        {transacao.tipo?.toLowerCase() === 'receita' ? 'Receita' : 'Despesa'}
                       </Badge>
                     </div>
                     <div className="text-sm text-muted-foreground space-y-1">
@@ -468,9 +468,9 @@ export default function Transacoes() {
                   </div>
                   <div className="flex items-center gap-4">
                     <div className={`text-xl font-bold ${
-                      transacao.tipo === 'receita' ? 'text-green-600' : 'text-red-600'
+                      transacao.tipo?.toLowerCase() === 'receita' ? 'text-green-600' : 'text-red-600'
                     }`}>
-                      {transacao.tipo === 'receita' ? '+' : '-'}
+                      {transacao.tipo?.toLowerCase() === 'receita' ? '+' : '-'}
                       {formatCurrency(Math.abs(transacao.valor || 0))}
                     </div>
                     <div className="flex gap-2">

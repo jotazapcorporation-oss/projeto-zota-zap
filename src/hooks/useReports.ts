@@ -114,11 +114,11 @@ export function useReports() {
   // Calculate summary data
   const summaryData = useMemo(() => {
     const receitas = transactions
-      .filter(t => t.tipo === 'receita')
+      .filter(t => t.tipo?.toLowerCase() === 'receita')
       .reduce((acc, t) => acc + (t.valor || 0), 0)
     
     const despesas = transactions
-      .filter(t => t.tipo === 'despesa')
+      .filter(t => t.tipo?.toLowerCase() === 'despesa')
       .reduce((acc, t) => acc + (t.valor || 0), 0)
     
     const saldo = receitas - despesas
@@ -132,7 +132,7 @@ export function useReports() {
         acc[categoryName] = { receitas: 0, despesas: 0, total: 0 }
       }
       
-      if (transaction.tipo === 'receita') {
+      if (transaction.tipo?.toLowerCase() === 'receita') {
         acc[categoryName].receitas += valor
       } else {
         acc[categoryName].despesas += valor

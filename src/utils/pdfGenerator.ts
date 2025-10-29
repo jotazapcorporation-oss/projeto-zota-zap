@@ -129,11 +129,11 @@ export const generatePDFReport = (data: PDFReportData, options: PDFExportOptions
   // Recalcular dados do resumo baseado nas transações filtradas
   const getFilteredSummary = () => {
     const receitas = filteredTransactions
-      .filter(t => t.tipo === 'receita')
+      .filter(t => t.tipo?.toLowerCase() === 'receita')
       .reduce((acc, t) => acc + (t.valor || 0), 0)
     
     const despesas = filteredTransactions
-      .filter(t => t.tipo === 'despesa')
+      .filter(t => t.tipo?.toLowerCase() === 'despesa')
       .reduce((acc, t) => acc + (t.valor || 0), 0)
     
     return { receitas, despesas, saldo: receitas - despesas }
@@ -296,7 +296,7 @@ export const generatePDFReport = (data: PDFReportData, options: PDFExportOptions
       transaction.estabelecimento || 'Sem estabelecimento',
       transaction.categorias?.nome || 'Sem categoria',
       transaction.tipo || '-',
-      `${transaction.tipo === 'receita' ? '+' : '-'}${formatCurrency(Math.abs(transaction.valor || 0))}`
+      `${transaction.tipo?.toLowerCase() === 'receita' ? '+' : '-'}${formatCurrency(Math.abs(transaction.valor || 0))}`
     ])
 
     doc.autoTable({
