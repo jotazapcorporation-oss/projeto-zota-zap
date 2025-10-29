@@ -30,7 +30,7 @@ export function DashboardCharts({ transacoes }: DashboardChartsProps) {
     const categorias: { [key: string]: number } = {}
     
     transacoes.forEach(t => {
-      if (t.categorias?.nome && t.valor && t.tipo === 'despesa') {
+      if (t.categorias?.nome && t.valor) {
         categorias[t.categorias.nome] = (categorias[t.categorias.nome] || 0) + Math.abs(t.valor)
       }
     })

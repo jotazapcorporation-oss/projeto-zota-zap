@@ -67,10 +67,10 @@ export default function Dashboard() {
     try {
       setLoading(true)
       
-      // Buscar transações
+      // Buscar transações com categorias
       const txRes = await supabase
         .from('transacoes')
-        .select('*')
+        .select('*, categorias!transacoes_category_id_fkey(id, nome)')
         .eq('userid', user.id)
         .order('created_at', { ascending: false })
 
