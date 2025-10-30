@@ -230,7 +230,7 @@ export function DependentesTab() {
             dependentes à sua conta.
           </p>
           <Button
-            onClick={() => window.open("LINK_PARA_ADQUIRIR_PLANO_FAMILIA", "_blank")}
+            onClick={() => window.open("https://site.vzapmentor.com/#planos", "_blank")}
             className="w-full"
           >
             <UserPlus className="mr-2 h-4 w-4" />
