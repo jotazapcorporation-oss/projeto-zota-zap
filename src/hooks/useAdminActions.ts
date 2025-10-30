@@ -106,6 +106,7 @@ export const useAdminActions = (
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-user-stats'] });
       toast.success('Usuário criado com sucesso!');
     },
     onError: (error: Error) => {
@@ -128,6 +129,7 @@ export const useAdminActions = (
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-user-stats'] });
       toast.success('Usuário atualizado com sucesso!');
     },
     onError: () => {
@@ -147,6 +149,7 @@ export const useAdminActions = (
     },
     onSuccess: (_, { active }) => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-user-stats'] });
       toast.success(active ? 'Usuário ativado!' : 'Usuário desativado!');
     },
     onError: () => {
@@ -174,6 +177,7 @@ export const useAdminActions = (
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-user-stats'] });
       toast.success('Usuário e todos os seus dados foram excluídos permanentemente');
     },
     onError: (error: Error) => {
