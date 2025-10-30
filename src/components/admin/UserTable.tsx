@@ -178,7 +178,7 @@ export const UserTable = ({ users, isLoading, onEdit, onDelete, currentPage, pag
               {format(new Date(user.created_at), 'dd/MM/yyyy', { locale: ptBR })}
             </TableCell>
             <TableCell>
-              {user.assinaturaid && user.assinaturaid.trim() !== '' ? (
+              {user.assinaturaid ? (
                 <DollarSign className="w-5 h-5 text-green-500" />
               ) : (
                 <X className="w-5 h-5 text-red-500" />
