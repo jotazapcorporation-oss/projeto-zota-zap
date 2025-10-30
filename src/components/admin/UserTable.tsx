@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Edit, Power, Trash2, User, MessageCircle } from 'lucide-react';
+import { Edit, Power, Trash2, User, MessageCircle, DollarSign, X } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -26,6 +26,7 @@ interface User {
   ativo: boolean | null;
   created_at: string;
   avatar_url: string | null;
+  assinaturaid: string | null;
 }
 
 interface UserTableProps {
@@ -136,6 +137,7 @@ export const UserTable = ({ users, isLoading, onEdit, onDelete, currentPage, pag
           <TableHead>Admin</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Cadastro</TableHead>
+          <TableHead>Pagamento</TableHead>
           <TableHead className="text-right">Ações</TableHead>
         </TableRow>
       </TableHeader>
@@ -174,6 +176,13 @@ export const UserTable = ({ users, isLoading, onEdit, onDelete, currentPage, pag
             </TableCell>
             <TableCell>
               {format(new Date(user.created_at), 'dd/MM/yyyy', { locale: ptBR })}
+            </TableCell>
+            <TableCell>
+              {user.assinaturaid && user.assinaturaid.trim() !== '' ? (
+                <DollarSign className="w-5 h-5 text-green-500" />
+              ) : (
+                <X className="w-5 h-5 text-red-500" />
+              )}
             </TableCell>
             <TableCell className="text-right">
               <div className="flex justify-end gap-2">

@@ -66,7 +66,7 @@ export const useAdminActions = (
 
       let query = supabase
         .from('profiles')
-        .select('id, nome, email, phone, admin, ativo, created_at, avatar_url', { count: 'exact' })
+        .select('id, nome, email, phone, admin, ativo, created_at, avatar_url, assinaturaid', { count: 'exact' })
         .order('created_at', { ascending: false });
 
       // Aplicar filtro de busca se existir
