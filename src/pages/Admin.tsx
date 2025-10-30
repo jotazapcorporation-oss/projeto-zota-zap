@@ -8,6 +8,7 @@ import { EditUserModal } from '@/components/admin/EditUserModal';
 import { DeleteUserDialog } from '@/components/admin/DeleteUserDialog';
 import { UserSearch } from '@/components/admin/UserSearch';
 import { UserPagination } from '@/components/admin/UserPagination';
+import { AdminStatsCards } from '@/components/admin/AdminStatsCards';
 import { useAdminActions } from '@/hooks/useAdminActions';
 
 interface User {
@@ -59,6 +60,12 @@ export default function Admin() {
           Novo Usuário
         </Button>
       </div>
+
+      <AdminStatsCards 
+        totalUsers={0}
+        payingUsers={0}
+        freeUsers={0}
+      />
 
       <Card>
         <div className="p-4 border-b">
