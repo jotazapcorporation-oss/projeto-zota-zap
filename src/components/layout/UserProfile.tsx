@@ -41,9 +41,9 @@ export function UserProfile() {
 
   if (loading) {
     return (
-      <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+      <div className="flex items-center gap-2 p-2 mx-2 bg-muted/50 rounded-lg">
         <div className="animate-pulse">
-          <div className="h-10 w-10 bg-muted rounded-full"></div>
+          <div className="h-9 w-9 bg-muted rounded-full"></div>
         </div>
         <div className="flex-1 min-w-0 group-data-[collapsible=icon]:hidden">
           <div className="h-4 bg-muted rounded animate-pulse mb-1"></div>
@@ -56,8 +56,8 @@ export function UserProfile() {
   if (!profile) {
     return (
       <NavLink to="/perfil" className="block">
-        <div className={`flex items-center gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors ${isCollapsed ? 'justify-center' : ''}`}>
-          <Avatar className="h-10 w-10">
+        <div className={`flex items-center gap-2 p-2 mx-2 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors ${isCollapsed ? 'justify-center' : ''}`}>
+          <Avatar className="h-9 w-9">
             <AvatarFallback className="bg-primary text-primary-foreground">
               {user?.email?.charAt(0).toUpperCase()}
             </AvatarFallback>
@@ -86,16 +86,16 @@ export function UserProfile() {
 
   return (
     <NavLink to="/perfil" className="block">
-      <div className={`flex items-center gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors ${isCollapsed ? 'justify-center' : ''}`}>
+      <div className={`flex items-center gap-2 p-2 mx-2 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors ${isCollapsed ? 'justify-center' : ''}`}>
         <div className="relative">
-          <Avatar className="h-10 w-10">
+          <Avatar className="h-9 w-9">
             <AvatarImage src={profile.avatar_url} />
             <AvatarFallback className="bg-primary text-primary-foreground">
               {getInitials(profile.nome)}
             </AvatarFallback>
           </Avatar>
           {isActiveSubscription && !isCollapsed && (
-            <div className="absolute -top-1 -right-1 h-4 w-4 bg-green-500 rounded-full flex items-center justify-center">
+            <div className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-green-500 rounded-full flex items-center justify-center">
               <CheckCircle className="h-3 w-3 text-white" />
             </div>
           )}
