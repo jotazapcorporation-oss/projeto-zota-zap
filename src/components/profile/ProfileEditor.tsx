@@ -80,7 +80,7 @@ export function ProfileEditor({
 
         if (fullPhone !== profile.phone) {
           try {
-            const whatsappValidation = await validateWhatsAppNumber(fullPhone.replace("+", ""));
+            const whatsappValidation = await validateWhatsAppNumber(fullPhone);
 
             if (!whatsappValidation.exists) {
               toast({

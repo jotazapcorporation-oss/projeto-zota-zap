@@ -52,10 +52,10 @@ export const CreateUserModal = ({ open, onOpenChange }: CreateUserModalProps) =>
 
   const onSubmit = async (values: UserData) => {
     try {
-      // Garantir que o número seja enviado com o código do país
+      // Enviar número com código do país sem o "+"
       const phoneWithCountryCode = values.phone.startsWith('+') 
-        ? values.phone 
-        : `+${countryCode}${values.phone}`;
+        ? values.phone.substring(1)
+        : `${countryCode}${values.phone}`;
       
       await createUser.mutateAsync({
         ...values,
