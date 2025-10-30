@@ -8,12 +8,14 @@ import { CreditCard, RefreshCw, AlertCircle } from 'lucide-react'
 import { fetchSubscriptionInfo, mapSubscriptionData } from '@/utils/subscription'
 import { SubscriptionDetails } from './SubscriptionDetails'
 import type { SubscriptionData } from '@/types/subscription'
+import { supabase } from '@/integrations/supabase/client'
 
 export function SubscriptionInfo() {
   const { user } = useAuth()
   const [loading, setLoading] = useState(false)
   const [syncing, setSyncing] = useState(false)
   const [subscriptionData, setSubscriptionData] = useState<SubscriptionData | null>(null)
+  const [isFreeUser, setIsFreeUser] = useState(false)
 
   useEffect(() => {
     loadSubscriptionData()
@@ -24,6 +26,22 @@ export function SubscriptionInfo() {
     
     try {
       setLoading(true)
+      
+      // Verificar se o usuário tem assinaturaid no perfil
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('assinaturaid')
+        .eq('id', user.id)
+        .single()
+      
+      // Se não tem assinaturaid, é usuário gratuito
+      if (!profile?.assinaturaid) {
+        setIsFreeUser(true)
+        setLoading(false)
+        return
+      }
+      
+      setIsFreeUser(false)
       const apiData = await fetchSubscriptionInfo(user.id)
       if (apiData) {
         const mappedData = mapSubscriptionData(apiData)
@@ -74,6 +92,26 @@ export function SubscriptionInfo() {
           <div className="text-center py-8 space-y-4">
             <RefreshCw className="h-12 w-12 text-muted-foreground mx-auto animate-spin" />
             <p className="text-muted-foreground">Carregando informações da assinatura...</p>
+          </div>
+        ) : isFreeUser ? (
+          <div className="text-center py-8 space-y-4">
+            <CreditCard className="h-12 w-12 text-muted-foreground mx-auto" />
+            <div className="space-y-2">
+              <p className="text-lg font-medium">Perfil Gratuito</p>
+              <p className="text-sm text-muted-foreground">
+                Você está usando a versão gratuita do VZap Mentor.
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Para acessar recursos premium, adquira um plano.
+              </p>
+            </div>
+            <Button 
+              onClick={() => window.open("https://site.vzapmentor.com/#planos", "_blank")}
+              variant="default"
+              className="mt-4"
+            >
+              Ver Planos Disponíveis
+            </Button>
           </div>
         ) : subscriptionData ? (
           <div className="space-y-6">
