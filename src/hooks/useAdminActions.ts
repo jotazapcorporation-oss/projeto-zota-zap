@@ -39,10 +39,18 @@ export const useAdminActions = (
 
       if (payingError) throw payingError;
 
+      // Total de usuários criados grátis (sem assinaturaid)
+      const { count: freeUsers, error: freeError } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true })
+        .or('assinaturaid.is.null,assinaturaid.eq.');
+
+      if (freeError) throw freeError;
+
       return {
         totalUsers: totalUsers || 0,
         payingUsers: payingUsers || 0,
-        freeUsers: 0,
+        freeUsers: freeUsers || 0,
       };
     },
     staleTime: 30000,
