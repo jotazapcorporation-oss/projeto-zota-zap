@@ -77,6 +77,8 @@ export default function Admin() {
           isLoading={listUsers.isLoading}
           onEdit={setEditingUser}
           onDelete={setDeletingUser}
+          currentPage={page}
+          pageSize={pageSize}
         />
 
         <UserPagination

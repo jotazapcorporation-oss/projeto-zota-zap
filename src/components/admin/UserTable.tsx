@@ -33,12 +33,15 @@ interface UserTableProps {
   isLoading: boolean;
   onEdit: (user: User) => void;
   onDelete: (user: User) => void;
+  currentPage: number;
+  pageSize: number;
 }
 
-export const UserTable = ({ users, isLoading, onEdit, onDelete }: UserTableProps) => {
+export const UserTable = ({ users, isLoading, onEdit, onDelete, currentPage, pageSize }: UserTableProps) => {
   const { toggleUserActive } = useAdminActions();
   const { toast } = useToast();
   const [validatingWhatsapp, setValidatingWhatsapp] = useState<string | null>(null);
+  const offset = (currentPage - 1) * pageSize;
 
   const handleToggleActive = (user: User) => {
     toggleUserActive.mutate({
@@ -140,7 +143,7 @@ export const UserTable = ({ users, isLoading, onEdit, onDelete }: UserTableProps
         {users.map((user, index) => (
           <TableRow key={user.id}>
             <TableCell className="font-mono text-muted-foreground">
-              {index + 1}
+              {offset + index + 1}
             </TableCell>
             <TableCell>
               <div className="flex items-center gap-3">
