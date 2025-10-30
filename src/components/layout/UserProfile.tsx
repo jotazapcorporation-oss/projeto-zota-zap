@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useLocalAuth'
 import { NavLink } from 'react-router-dom'
 import { CheckCircle } from 'lucide-react'
 import { useSidebar } from '@/components/ui/sidebar'
+import { supabase } from '@/integrations/supabase/client'
 
 interface UserProfile {
   nome: string
@@ -28,15 +29,44 @@ export function UserProfile() {
   const isCollapsed = state === "collapsed"
 
   useEffect(() => {
-    if (user) {
-      // Database tables don't exist yet, use fallback profile
-      setProfile({
-        nome: user?.email?.split('@')[0] || 'Usuário',
-        phone: '',
-        email: user?.email
-      })
-      setLoading(false)
+    const loadProfile = async () => {
+      if (user) {
+        setLoading(true)
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('nome, phone, avatar_url, email, assinaturaid')
+            .eq('id', user.id)
+            .single()
+
+          if (error) throw error
+
+          setProfile({
+            nome: data?.nome || user?.email?.split('@')[0] || 'Usuário',
+            phone: data?.phone || '',
+            avatar_url: data?.avatar_url,
+            email: user?.email
+          })
+
+          // Set subscription status based on assinaturaid
+          if (data?.assinaturaid) {
+            setSubscriptionStatus({ status: 'active' })
+          }
+        } catch (error) {
+          console.error('Error loading profile:', error)
+          // Fallback to email-based profile
+          setProfile({
+            nome: user?.email?.split('@')[0] || 'Usuário',
+            phone: '',
+            email: user?.email
+          })
+        } finally {
+          setLoading(false)
+        }
+      }
     }
+
+    loadProfile()
   }, [user])
 
   if (loading) {
@@ -111,7 +141,7 @@ export function UserProfile() {
               )}
             </div>
             <p className="text-xs text-muted-foreground truncate">
-              {subscriptionStatus?.plan_name || profile.phone || profile.email || 'Completar perfil'}
+              {user?.email || 'Completar perfil'}
             </p>
           </div>
         )}
