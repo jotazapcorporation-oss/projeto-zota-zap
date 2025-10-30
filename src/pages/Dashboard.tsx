@@ -125,9 +125,10 @@ export default function Dashboard() {
     return transacoes.filter(transacao => {
       if (!transacao.quando) return false
       
-      const transacaoDate = new Date(transacao.quando)
-      const transacaoMonth = transacaoDate.getMonth()
-      const transacaoYear = transacaoDate.getFullYear()
+      // Parse date in dd/MM/yyyy format
+      const [day, month, year] = transacao.quando.split('/')
+      const transacaoMonth = parseInt(month) - 1 // JS months are 0-indexed
+      const transacaoYear = parseInt(year)
       
       return transacaoMonth === parseInt(filterMonth) && 
              transacaoYear === parseInt(filterYear)
