@@ -30,10 +30,18 @@ export const useAdminActions = (
 
       if (totalError) throw totalError;
 
-      // Por enquanto, outros valores em 0 (serão implementados depois)
+      // Total de usuários pagantes (com assinaturaid preenchido)
+      const { count: payingUsers, error: payingError } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true })
+        .not('assinaturaid', 'is', null)
+        .neq('assinaturaid', '');
+
+      if (payingError) throw payingError;
+
       return {
         totalUsers: totalUsers || 0,
-        payingUsers: 0,
+        payingUsers: payingUsers || 0,
         freeUsers: 0,
       };
     },
