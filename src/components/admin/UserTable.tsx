@@ -126,6 +126,7 @@ export const UserTable = ({ users, isLoading, onEdit, onDelete }: UserTableProps
     <Table>
       <TableHeader>
         <TableRow>
+          <TableHead className="w-20">Identificador</TableHead>
           <TableHead>Usuário</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Telefone</TableHead>
@@ -136,8 +137,11 @@ export const UserTable = ({ users, isLoading, onEdit, onDelete }: UserTableProps
         </TableRow>
       </TableHeader>
       <TableBody>
-        {users.map((user) => (
+        {users.map((user, index) => (
           <TableRow key={user.id}>
+            <TableCell className="font-mono text-muted-foreground">
+              {index + 1}
+            </TableCell>
             <TableCell>
               <div className="flex items-center gap-3">
                 <Avatar className="h-8 w-8">
