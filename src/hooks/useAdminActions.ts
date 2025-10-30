@@ -18,6 +18,29 @@ export const useAdminActions = (
   const queryClient = useQueryClient();
   const { session } = useAuth();
 
+  // Buscar estatísticas de usuários
+  const userStats = useQuery({
+    queryKey: ['admin-user-stats'],
+    queryFn: async () => {
+      // Total de usuários ativos
+      const { count: totalUsers, error: totalError } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true })
+        .eq('ativo', true);
+
+      if (totalError) throw totalError;
+
+      // Por enquanto, outros valores em 0 (serão implementados depois)
+      return {
+        totalUsers: totalUsers || 0,
+        payingUsers: 0,
+        freeUsers: 0,
+      };
+    },
+    staleTime: 30000,
+    refetchOnWindowFocus: false,
+  });
+
   // Listar usuários com paginação e busca
   const listUsers = useQuery({
     queryKey: ['admin-users', page, pageSize, searchTerm],
@@ -143,6 +166,7 @@ export const useAdminActions = (
   });
 
   return {
+    userStats,
     listUsers,
     createUser,
     updateUser,

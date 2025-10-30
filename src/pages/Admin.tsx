@@ -30,7 +30,7 @@ export default function Admin() {
   const [pageSize, setPageSize] = useState(25);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const { listUsers } = useAdminActions(page, pageSize, searchTerm);
+  const { userStats, listUsers } = useAdminActions(page, pageSize, searchTerm);
 
   const handlePageChange = useCallback((newPage: number) => {
     setPage(newPage);
@@ -62,9 +62,9 @@ export default function Admin() {
       </div>
 
       <AdminStatsCards 
-        totalUsers={0}
-        payingUsers={0}
-        freeUsers={0}
+        totalUsers={userStats.data?.totalUsers || 0}
+        payingUsers={userStats.data?.payingUsers || 0}
+        freeUsers={userStats.data?.freeUsers || 0}
       />
 
       <Card>
