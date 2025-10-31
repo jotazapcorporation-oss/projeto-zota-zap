@@ -122,17 +122,43 @@ export default function Dashboard() {
 
   // Filtrar transações por mês e ano
   const filteredTransacoes = useMemo(() => {
-    return transacoes.filter(transacao => {
-      if (!transacao.quando) return false
+    console.log('Total transacoes:', transacoes.length)
+    console.log('Filter month:', filterMonth, 'Filter year:', filterYear)
+    
+    const filtered = transacoes.filter(transacao => {
+      if (!transacao.quando) {
+        console.log('Transacao sem data:', transacao)
+        return false
+      }
       
-      // Parse date in dd/MM/yyyy format
-      const [day, month, year] = transacao.quando.split('/')
-      const transacaoMonth = parseInt(month) - 1 // JS months are 0-indexed
-      const transacaoYear = parseInt(year)
+      console.log('Processando transacao:', transacao.quando, 'tipo:', transacao.tipo, 'valor:', transacao.valor)
       
-      return transacaoMonth === parseInt(filterMonth) && 
-             transacaoYear === parseInt(filterYear)
+      // Parse date in dd/MM/yyyy or yyyy-MM-dd format
+      let transacaoMonth: number
+      let transacaoYear: number
+      
+      if (transacao.quando.includes('/')) {
+        // Format: dd/MM/yyyy
+        const [day, month, year] = transacao.quando.split('/')
+        transacaoMonth = parseInt(month) - 1 // JS months are 0-indexed
+        transacaoYear = parseInt(year)
+      } else {
+        // Format: yyyy-MM-dd
+        const date = new Date(transacao.quando)
+        transacaoMonth = date.getMonth()
+        transacaoYear = date.getFullYear()
+      }
+      
+      const matches = transacaoMonth === parseInt(filterMonth) && 
+                      transacaoYear === parseInt(filterYear)
+      
+      console.log('Match?', matches, '- Transacao:', transacaoMonth, transacaoYear, 'Filter:', filterMonth, filterYear)
+      
+      return matches
     })
+    
+    console.log('Filtered transacoes:', filtered.length)
+    return filtered
   }, [transacoes, filterMonth, filterYear])
 
   // Calcular estatísticas
