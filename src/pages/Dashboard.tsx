@@ -122,16 +122,8 @@ export default function Dashboard() {
 
   // Filtrar transações por mês e ano
   const filteredTransacoes = useMemo(() => {
-    console.log('Total transacoes:', transacoes.length)
-    console.log('Filter month:', filterMonth, 'Filter year:', filterYear)
-    
-    const filtered = transacoes.filter(transacao => {
-      if (!transacao.quando) {
-        console.log('Transacao sem data:', transacao)
-        return false
-      }
-      
-      console.log('Processando transacao:', transacao.quando, 'tipo:', transacao.tipo, 'valor:', transacao.valor)
+    return transacoes.filter(transacao => {
+      if (!transacao.quando) return false
       
       // Parse date in dd/MM/yyyy or yyyy-MM-dd format
       let transacaoMonth: number
@@ -149,16 +141,9 @@ export default function Dashboard() {
         transacaoYear = date.getFullYear()
       }
       
-      const matches = transacaoMonth === parseInt(filterMonth) && 
-                      transacaoYear === parseInt(filterYear)
-      
-      console.log('Match?', matches, '- Transacao:', transacaoMonth, transacaoYear, 'Filter:', filterMonth, filterYear)
-      
-      return matches
+      return transacaoMonth === parseInt(filterMonth) && 
+             transacaoYear === parseInt(filterYear)
     })
-    
-    console.log('Filtered transacoes:', filtered.length)
-    return filtered
   }, [transacoes, filterMonth, filterYear])
 
   // Calcular estatísticas
