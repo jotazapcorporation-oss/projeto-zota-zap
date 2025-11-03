@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from './useLocalAuth';
+import { getAvatarUrl } from '@/utils/avatar';
 
 export interface UserData {
   nome: string;
@@ -66,7 +67,7 @@ export const useAdminActions = (
 
       let query = supabase
         .from('profiles')
-        .select('id, nome, email, phone, admin, ativo, created_at, avatar_url, assinaturaid', { count: 'exact' })
+        .select('id, nome, email, phone, admin, ativo, created_at, arquivo, assinaturaid', { count: 'exact' })
         .order('created_at', { ascending: false });
 
       // Aplicar filtro de busca se existir
@@ -77,7 +78,14 @@ export const useAdminActions = (
       const { data, error, count } = await query.range(from, to);
       
       if (error) throw error;
-      return { users: data || [], total: count || 0 };
+
+      // Mapear dados para adicionar avatar_url derivado de arquivo
+      const usersWithAvatars = (data || []).map(user => ({
+        ...user,
+        avatar_url: getAvatarUrl(user.arquivo)
+      }));
+
+      return { users: usersWithAvatars, total: count || 0 };
     },
     staleTime: 30000, // 30 segundos
     refetchOnWindowFocus: false,

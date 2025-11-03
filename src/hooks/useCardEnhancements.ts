@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { getAvatarUrl } from '@/utils/avatar';
 
 export interface CardComment {
   id: string;
@@ -11,7 +12,8 @@ export interface CardComment {
   updated_at: string;
   user?: {
     nome: string;
-    avatar_url: string;
+    avatar_url?: string;
+    arquivo?: string;
   };
 }
 
@@ -34,7 +36,8 @@ export interface CardMember {
   assigned_by: string;
   user?: {
     nome: string;
-    avatar_url: string;
+    avatar_url?: string;
+    arquivo?: string;
   };
 }
 
@@ -67,8 +70,27 @@ export const useCardEnhancements = (cardId: string | null) => {
 
     if (error) {
       console.error('Error fetching comments:', error);
-    } else {
-      setComments(data || []);
+    } else if (data) {
+      // Buscar dados dos usuários
+      const userIds = [...new Set(data.map(c => c.user_id))];
+      const { data: usersData } = await supabase
+        .from('profiles')
+        .select('id, nome, arquivo')
+        .in('id', userIds);
+
+      // Mapear comentários com dados dos usuários
+      const commentsWithAvatars = data.map(comment => {
+        const user = usersData?.find(u => u.id === comment.user_id);
+        return {
+          ...comment,
+          user: user ? {
+            nome: user.nome || 'Usuário',
+            avatar_url: getAvatarUrl(user.arquivo),
+            arquivo: user.arquivo
+          } : undefined
+        };
+      });
+      setComments(commentsWithAvatars);
     }
   };
 
@@ -181,8 +203,27 @@ export const useCardEnhancements = (cardId: string | null) => {
 
     if (error) {
       console.error('Error fetching members:', error);
-    } else {
-      setMembers(data || []);
+    } else if (data) {
+      // Buscar dados dos usuários
+      const userIds = [...new Set(data.map(m => m.user_id))];
+      const { data: usersData } = await supabase
+        .from('profiles')
+        .select('id, nome, arquivo')
+        .in('id', userIds);
+
+      // Mapear membros com dados dos usuários
+      const membersWithAvatars = data.map(member => {
+        const user = usersData?.find(u => u.id === member.user_id);
+        return {
+          ...member,
+          user: user ? {
+            nome: user.nome || 'Usuário',
+            avatar_url: getAvatarUrl(user.arquivo),
+            arquivo: user.arquivo
+          } : undefined
+        };
+      });
+      setMembers(membersWithAvatars);
     }
   };
 

@@ -20,6 +20,7 @@ interface User {
   ativo: boolean | null;
   created_at: string;
   avatar_url: string | null;
+  arquivo?: string | null;
 }
 
 export default function Admin() {
