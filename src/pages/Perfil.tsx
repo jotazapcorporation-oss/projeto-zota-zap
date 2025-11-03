@@ -8,12 +8,12 @@ import { PhoneInput } from "@/components/ui/phone-input";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChangePasswordForm } from "@/components/profile/ChangePasswordForm";
-import { SubscriptionInfo } from "@/components/profile/SubscriptionInfo";
+
 import { DependentesTab } from "@/components/profile/DependentesTab";
 import { ProfileEditor } from "@/components/profile/ProfileEditor";
 import { useAuth } from "@/hooks/useLocalAuth";
 import { toast } from "@/hooks/use-toast";
-import { Camera, User, Trash2, Settings, CreditCard, Shield, Users } from "lucide-react";
+import { Camera, User, Trash2, Settings, Shield, Users } from "lucide-react";
 import { validateWhatsAppNumber } from "@/utils/whatsapp";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -247,14 +247,10 @@ export default function Perfil() {
       
 
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
+        <TabsList className="grid w-full grid-cols-3 lg:w-[500px]">
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="h-4 w-4" />
             Perfil
-          </TabsTrigger>
-          <TabsTrigger value="subscription" className="flex items-center gap-2">
-            <CreditCard className="h-4 w-4" />
-            Assinatura
           </TabsTrigger>
           <TabsTrigger value="dependentes" className="flex items-center gap-2">
             <Users className="h-4 w-4" />
@@ -280,9 +276,6 @@ export default function Perfil() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="subscription">
-          <SubscriptionInfo />
-        </TabsContent>
 
         <TabsContent value="dependentes">
           <DependentesTab />
