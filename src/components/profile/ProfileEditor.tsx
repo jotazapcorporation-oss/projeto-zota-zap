@@ -147,12 +147,18 @@ export function ProfileEditor({
 
       if (updateError) throw updateError;
 
+      // Buscar URL pública da foto
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(arquivoPath);
+
       // Atualizar profile local
       const updatedProfile = {
         ...localProfile,
         phone: fullPhone,
         whatsapp: whatsappId,
         arquivo: arquivoPath,
+        avatar_url: publicUrl,
       };
       
       onProfileUpdate(updatedProfile);
