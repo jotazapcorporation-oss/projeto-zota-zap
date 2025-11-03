@@ -27,6 +27,7 @@ interface Profile {
   email?: string;
   arquivo?: string;
 }
+// Perfil page without subscription tab
 export default function Perfil() {
   const {
     user,
