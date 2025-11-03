@@ -97,23 +97,17 @@ export function ProfileEditor({
 
             if (!whatsappValidation.exists) {
               toast({
-                title: "Erro",
-                description: "Este número não possui WhatsApp ativo",
-                variant: "destructive",
+                title: "Aviso",
+                description: "Este número não possui WhatsApp ativo. Salvando mesmo assim.",
               });
-              setSaving(false);
-              return;
+            } else {
+              whatsappId = whatsappValidation.whatsappId;
             }
-
-            whatsappId = whatsappValidation.whatsappId;
           } catch (error: any) {
             toast({
-              title: "Erro na validação do WhatsApp",
-              description: error.message,
-              variant: "destructive",
+              title: "Aviso",
+              description: "Não foi possível validar o WhatsApp. Salvando mesmo assim.",
             });
-            setSaving(false);
-            return;
           }
         }
       }
