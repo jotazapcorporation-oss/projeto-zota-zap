@@ -58,7 +58,7 @@ export default function Perfil() {
 
       // Buscar dados do perfil no Supabase
       // @ts-ignore - Avoiding circular type reference in Supabase types
-      const profileResponse = await supabase.from("profiles").select("nome, phone, email, avatar_url, whatsapp, arquivo").eq("id", user.id).maybeSingle();
+      const profileResponse = await supabase.from("profiles").select("nome, phone, email, whatsapp, arquivo").eq("id", user.id).maybeSingle();
       if (profileResponse.error && profileResponse.error.code !== "PGRST116") {
         throw profileResponse.error;
       }
@@ -69,7 +69,7 @@ export default function Perfil() {
       const phone = profileData?.phone || user?.phone || "";
       const email = profileData?.email || user?.email || "";
       const arquivo = profileData?.arquivo;
-      const avatar_url = getAvatarUrl(arquivo) || profileData?.avatar_url;
+      const avatar_url = getAvatarUrl(arquivo);
       const whatsapp = profileData?.whatsapp;
       setProfile({
         nome,

@@ -37,14 +37,14 @@ export function UserProfile() {
         try {
           const { data, error } = await supabase
             .from('profiles')
-            .select('nome, phone, avatar_url, email, assinaturaid, arquivo')
+            .select('nome, phone, email, assinaturaid, arquivo')
             .eq('id', user.id)
             .single()
 
           if (error) throw error
 
           const arquivo = data?.arquivo;
-          const avatar_url = getAvatarUrl(arquivo) || data?.avatar_url;
+          const avatar_url = getAvatarUrl(arquivo);
 
           setProfile({
             nome: data?.nome || user?.email?.split('@')[0] || 'Usuário',
