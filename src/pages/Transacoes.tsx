@@ -138,18 +138,7 @@ export default function Transacoes() {
       return
     }
 
-    // Validação: verificar se a categoria selecionada pertence ao usuário
-    if (formData.category_id) {
-      const categoryBelongsToUser = categories?.some(cat => cat.id === formData.category_id)
-      if (!categoryBelongsToUser) {
-        toast({
-          title: "Erro de validação",
-          description: "A categoria selecionada não é válida para este usuário.",
-          variant: "destructive",
-        })
-        return
-      }
-    }
+    // A validação de categoria é feita pelas RLS policies do Supabase
 
     try {
       const transacaoData = {
