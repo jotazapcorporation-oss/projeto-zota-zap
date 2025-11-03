@@ -7,6 +7,9 @@ import { PhoneInput } from "@/components/ui/phone-input";
 import { Camera, User } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { validateWhatsAppNumber } from "@/utils/whatsapp";
+import { validateImageFile, validateImageDimensions } from "@/utils/avatar";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useLocalAuth";
 
 interface ProfileEditorProps {
   profile: {
@@ -15,6 +18,7 @@ interface ProfileEditorProps {
     email?: string;
     avatar_url?: string;
     whatsapp?: string;
+    arquivo?: string;
   };
   onProfileUpdate: (profile: any) => void;
   currentCountryCode: string;
@@ -31,34 +35,39 @@ export function ProfileEditor({
   onCountryChange,
   onPhoneChange,
 }: ProfileEditorProps) {
+  const { user } = useAuth();
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [localProfile, setLocalProfile] = useState(profile);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const uploadAvatar = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     try {
       setUploading(true);
 
       if (!event.target.files || event.target.files.length === 0) {
-        throw new Error("Você deve selecionar uma imagem para fazer upload.");
+        return;
       }
 
       const file = event.target.files[0];
-      await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (e.target?.result) {
-          const newProfile = { ...localProfile, avatar_url: e.target!.result as string };
-          setLocalProfile(newProfile);
-          onProfileUpdate(newProfile);
-          toast({ title: "Avatar atualizado com sucesso!" });
-        }
-      };
-      reader.readAsDataURL(file);
+      // Validações
+      validateImageFile(file);
+      await validateImageDimensions(file);
+
+      // Criar preview local
+      const preview = URL.createObjectURL(file);
+      setPreviewUrl(preview);
+      setSelectedFile(file);
+
+      toast({ 
+        title: "Imagem selecionada", 
+        description: "Clique em 'Salvar Alterações' para confirmar." 
+      });
     } catch (error: any) {
       toast({
-        title: "Erro ao fazer upload da imagem",
+        title: "Erro na validação",
         description: error.message,
         variant: "destructive",
       });
@@ -72,6 +81,10 @@ export function ProfileEditor({
     setSaving(true);
 
     try {
+      if (!user?.id) {
+        throw new Error("Usuário não autenticado");
+      }
+
       let fullPhone = "";
       let whatsappId = localProfile.whatsapp;
 
@@ -105,11 +118,59 @@ export function ProfileEditor({
         }
       }
 
-      toast({
-        title: "Banco de dados indisponível",
-        description: "Aguarde a recriação das tabelas para usar esta funcionalidade",
-        variant: "destructive",
-      });
+      let arquivoPath = profile.arquivo;
+
+      // Se existe arquivo selecionado, fazer upload
+      if (selectedFile) {
+        // Deletar arquivo antigo se existir
+        if (profile.arquivo) {
+          await supabase.storage.from('avatars').remove([profile.arquivo]);
+        }
+
+        // Upload novo arquivo
+        const fileExt = selectedFile.name.split('.').pop();
+        const fileName = `${user.id}/avatar-${Date.now()}.${fileExt}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(fileName, selectedFile);
+
+        if (uploadError) throw uploadError;
+
+        arquivoPath = fileName;
+      }
+
+      // Atualizar profile no banco
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({
+          nome: localProfile.nome,
+          phone: fullPhone,
+          whatsapp: whatsappId,
+          arquivo: arquivoPath,
+        })
+        .eq('id', user.id);
+
+      if (updateError) throw updateError;
+
+      // Atualizar profile local
+      const updatedProfile = {
+        ...localProfile,
+        phone: fullPhone,
+        whatsapp: whatsappId,
+        arquivo: arquivoPath,
+      };
+      
+      onProfileUpdate(updatedProfile);
+
+      toast({ title: "Perfil atualizado com sucesso!" });
+
+      // Limpar preview
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+        setPreviewUrl(null);
+      }
+      setSelectedFile(null);
     } catch (error: any) {
       toast({
         title: "Erro ao atualizar perfil",
@@ -135,7 +196,7 @@ export function ProfileEditor({
       <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
         <div className="relative">
           <Avatar className="h-24 w-24">
-            <AvatarImage src={localProfile.avatar_url} />
+            <AvatarImage src={previewUrl || localProfile.avatar_url} />
             <AvatarFallback className="bg-primary text-primary-foreground text-lg">
               {localProfile.nome ? getInitials(localProfile.nome) : <User className="h-8 w-8" />}
             </AvatarFallback>
@@ -149,7 +210,13 @@ export function ProfileEditor({
           >
             <Camera className="h-4 w-4" />
           </Button>
-          <input id="avatar-upload" type="file" accept="image/*" onChange={uploadAvatar} className="hidden" />
+          <input 
+            id="avatar-upload" 
+            type="file" 
+            accept="image/jpeg,image/jpg,image/png" 
+            onChange={handleFileSelect} 
+            className="hidden" 
+          />
         </div>
         <div className="flex-1">
           <h3 className="text-xl font-semibold">{localProfile.nome || "Sem nome"}</h3>

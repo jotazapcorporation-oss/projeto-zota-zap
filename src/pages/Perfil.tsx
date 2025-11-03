@@ -17,12 +17,15 @@ import { Camera, User, Trash2, Settings, CreditCard, Shield, Users } from "lucid
 import { validateWhatsAppNumber } from "@/utils/whatsapp";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { getAvatarUrl } from "@/utils/avatar";
+
 interface Profile {
   nome: string;
   phone: string;
   whatsapp?: string;
   avatar_url?: string;
   email?: string;
+  arquivo?: string;
 }
 export default function Perfil() {
   const {
@@ -55,7 +58,7 @@ export default function Perfil() {
 
       // Buscar dados do perfil no Supabase
       // @ts-ignore - Avoiding circular type reference in Supabase types
-      const profileResponse = await supabase.from("profiles").select("nome, phone, email, avatar_url, whatsapp").eq("id", user.id).maybeSingle();
+      const profileResponse = await supabase.from("profiles").select("nome, phone, email, avatar_url, whatsapp, arquivo").eq("id", user.id).maybeSingle();
       if (profileResponse.error && profileResponse.error.code !== "PGRST116") {
         throw profileResponse.error;
       }
@@ -65,14 +68,16 @@ export default function Perfil() {
       const nome = profileData?.nome || user?.email?.split("@")[0] || "";
       const phone = profileData?.phone || user?.phone || "";
       const email = profileData?.email || user?.email || "";
-      const avatar_url = profileData?.avatar_url;
+      const arquivo = profileData?.arquivo;
+      const avatar_url = getAvatarUrl(arquivo) || profileData?.avatar_url;
       const whatsapp = profileData?.whatsapp;
       setProfile({
         nome,
         phone,
         email,
         avatar_url,
-        whatsapp
+        whatsapp,
+        arquivo
       });
 
       // Processar telefone para separar DDI e número

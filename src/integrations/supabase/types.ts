@@ -431,6 +431,7 @@ export type Database = {
           created_at: string
           data: string | null
           descricao: string | null
+          hora: string | null
           id: number
           userid: string
           valor: number | null
@@ -439,6 +440,7 @@ export type Database = {
           created_at?: string
           data?: string | null
           descricao?: string | null
+          hora?: string | null
           id?: number
           userid: string
           valor?: number | null
@@ -447,6 +449,7 @@ export type Database = {
           created_at?: string
           data?: string | null
           descricao?: string | null
+          hora?: string | null
           id?: number
           userid?: string
           valor?: number | null
@@ -461,9 +464,43 @@ export type Database = {
           },
         ]
       }
+      lembretes_recorrentes: {
+        Row: {
+          data: string | null
+          descricao: string
+          dia_recorrencia: number | null
+          dia_semana: string | null
+          frequencia: string | null
+          hora: string | null
+          id: string
+          lembrete_id: number
+        }
+        Insert: {
+          data?: string | null
+          descricao: string
+          dia_recorrencia?: number | null
+          dia_semana?: string | null
+          frequencia?: string | null
+          hora?: string | null
+          id: string
+          lembrete_id?: number
+        }
+        Update: {
+          data?: string | null
+          descricao?: string
+          dia_recorrencia?: number | null
+          dia_semana?: string | null
+          frequencia?: string | null
+          hora?: string | null
+          id?: string
+          lembrete_id?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           admin: boolean | null
+          arquivo: string | null
           assinaturaid: string | null
           ativo: boolean | null
           avatar_url: string | null
@@ -472,14 +509,11 @@ export type Database = {
           customerid: string | null
           email: string | null
           id: string
-          intencao: string | null
           master_id: string | null
           nome: string | null
           phone: string | null
           saldo: number | null
-          stripe_customer_id: string | null
           subscription_end_date: string | null
-          subscription_id: string | null
           subscription_status: string | null
           updated_at: string
           username: string | null
@@ -487,6 +521,7 @@ export type Database = {
         }
         Insert: {
           admin?: boolean | null
+          arquivo?: string | null
           assinaturaid?: string | null
           ativo?: boolean | null
           avatar_url?: string | null
@@ -495,14 +530,11 @@ export type Database = {
           customerid?: string | null
           email?: string | null
           id: string
-          intencao?: string | null
           master_id?: string | null
           nome?: string | null
           phone?: string | null
           saldo?: number | null
-          stripe_customer_id?: string | null
           subscription_end_date?: string | null
-          subscription_id?: string | null
           subscription_status?: string | null
           updated_at?: string
           username?: string | null
@@ -510,6 +542,7 @@ export type Database = {
         }
         Update: {
           admin?: boolean | null
+          arquivo?: string | null
           assinaturaid?: string | null
           ativo?: boolean | null
           avatar_url?: string | null
@@ -518,14 +551,11 @@ export type Database = {
           customerid?: string | null
           email?: string | null
           id?: string
-          intencao?: string | null
           master_id?: string | null
           nome?: string | null
           phone?: string | null
           saldo?: number | null
-          stripe_customer_id?: string | null
           subscription_end_date?: string | null
-          subscription_id?: string | null
           subscription_status?: string | null
           updated_at?: string
           username?: string | null
@@ -715,29 +745,41 @@ export type Database = {
         Args: { _caixinha_id: string; _valor: number }
         Returns: Json
       }
-      duplicate_card: {
-        Args: { _card_id: string }
-        Returns: string
-      }
-      duplicate_lista: {
-        Args: { _lista_id: string }
-        Returns: string
-      }
-      get_random_phrase: {
-        Args: Record<PropertyKey, never>
+      duplicate_card: { Args: { _card_id: string }; Returns: string }
+      duplicate_lista: { Args: { _lista_id: string }; Returns: string }
+      frase_aleatoria: {
+        Args: { limite?: number }
         Returns: {
           autor: string | null
           created_at: string | null
           id: string
           mensagem: string
         }[]
+        SetofOptions: {
+          from: "*"
+          to: "frasediaria"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
-      is_admin: {
-        Args: { _user_id: string }
-        Returns: boolean
+      get_random_phrase: {
+        Args: never
+        Returns: {
+          autor: string | null
+          created_at: string | null
+          id: string
+          mensagem: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "frasediaria"
+          isOneToOne: true
+          isSetofReturn: true
+        }
       }
+      is_admin: { Args: { _user_id: string }; Returns: boolean }
       random_phrase: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           text: string
         }[]

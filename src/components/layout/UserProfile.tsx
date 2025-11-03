@@ -6,12 +6,14 @@ import { NavLink } from 'react-router-dom'
 import { CheckCircle } from 'lucide-react'
 import { useSidebar } from '@/components/ui/sidebar'
 import { supabase } from '@/integrations/supabase/client'
+import { getAvatarUrl } from '@/utils/avatar'
 
 interface UserProfile {
   nome: string
   phone: string
   avatar_url?: string
   email?: string
+  arquivo?: string
 }
 
 interface SubscriptionStatus {
@@ -35,17 +37,21 @@ export function UserProfile() {
         try {
           const { data, error } = await supabase
             .from('profiles')
-            .select('nome, phone, avatar_url, email, assinaturaid')
+            .select('nome, phone, avatar_url, email, assinaturaid, arquivo')
             .eq('id', user.id)
             .single()
 
           if (error) throw error
 
+          const arquivo = data?.arquivo;
+          const avatar_url = getAvatarUrl(arquivo) || data?.avatar_url;
+
           setProfile({
             nome: data?.nome || user?.email?.split('@')[0] || 'Usuário',
             phone: data?.phone || '',
-            avatar_url: data?.avatar_url,
-            email: user?.email
+            avatar_url,
+            email: user?.email,
+            arquivo
           })
 
           // Set subscription status based on assinaturaid
