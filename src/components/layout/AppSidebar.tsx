@@ -299,7 +299,7 @@ export function AppSidebar() {
           size={isCollapsed ? "icon" : "lg"}
           className="w-full"
         >
-          <LogOut className="h-4 w-4" />
+          <LogOut className={isCollapsed ? "h-5 w-5" : "h-4 w-4"} />
           <span className="group-data-[collapsible=icon]:hidden ml-2">Sair</span>
         </Button>
       </SidebarFooter>
