@@ -500,10 +500,10 @@ export type Database = {
       profiles: {
         Row: {
           admin: boolean | null
+          alternative_phone: string | null
           arquivo: string | null
           assinaturaid: string | null
           ativo: boolean | null
-          avatar_url: string | null
           card_form_field_order: Json | null
           created_at: string
           customerid: string | null
@@ -521,10 +521,10 @@ export type Database = {
         }
         Insert: {
           admin?: boolean | null
+          alternative_phone?: string | null
           arquivo?: string | null
           assinaturaid?: string | null
           ativo?: boolean | null
-          avatar_url?: string | null
           card_form_field_order?: Json | null
           created_at?: string
           customerid?: string | null
@@ -542,10 +542,10 @@ export type Database = {
         }
         Update: {
           admin?: boolean | null
+          alternative_phone?: string | null
           arquivo?: string | null
           assinaturaid?: string | null
           ativo?: boolean | null
-          avatar_url?: string | null
           card_form_field_order?: Json | null
           created_at?: string
           customerid?: string | null
