@@ -131,7 +131,12 @@ function SortableMenuItem({
             >
               <item.icon className="h-4 w-4" />
             </motion.div>
-            {!isCollapsed && <span>{item.title}</span>}
+            <span className={cn(
+              "transition-all duration-300 overflow-hidden whitespace-nowrap",
+              isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+            )}>
+              {item.title}
+            </span>
           </motion.div>
           
           {!isCollapsed && (
@@ -242,7 +247,7 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar collapsible="icon" className="h-screen border-r">
+    <Sidebar collapsible="icon" className="h-screen border-r transition-all duration-300 ease-in-out">
       <SidebarHeader className="p-4 border-b">
         <div className="flex items-center justify-end">
           <Button
@@ -252,18 +257,27 @@ export function AppSidebar() {
             className="h-8 w-8 hover:bg-accent"
             aria-label={isCollapsed ? "Expandir menu" : "Recolher menu"}
           >
-            {isCollapsed ? <PanelLeft className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+            <motion.div
+              initial={false}
+              animate={{ rotate: isCollapsed ? 180 : 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            >
+              {isCollapsed ? <PanelLeft className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+            </motion.div>
           </Button>
         </div>
       </SidebarHeader>
 
       <SidebarContent>
         <SidebarGroup>
-          {!isCollapsed && (
-            <SidebarGroupLabel className="px-3 text-xs uppercase tracking-wider text-muted-foreground">
-              Menu
-            </SidebarGroupLabel>
-          )}
+          <SidebarGroupLabel 
+            className={cn(
+              "px-3 text-xs uppercase tracking-wider text-muted-foreground transition-all duration-300",
+              isCollapsed ? "opacity-0 h-0 overflow-hidden" : "opacity-100"
+            )}
+          >
+            Menu
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <DndContext
               sensors={sensors}
@@ -299,8 +313,13 @@ export function AppSidebar() {
           size={isCollapsed ? "icon" : "lg"}
           className="w-full"
         >
-          <LogOut className={isCollapsed ? "h-5 w-5" : "h-4 w-4"} />
-          <span className="group-data-[collapsible=icon]:hidden ml-2">Sair</span>
+          <LogOut className={cn("transition-all duration-300", isCollapsed ? "h-5 w-5" : "h-4 w-4")} />
+          <span className={cn(
+            "ml-2 transition-all duration-300 overflow-hidden whitespace-nowrap",
+            isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+          )}>
+            Sair
+          </span>
         </Button>
       </SidebarFooter>
     </Sidebar>
