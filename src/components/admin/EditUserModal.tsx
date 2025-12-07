@@ -13,7 +13,7 @@ import { PhoneInput } from '@/components/ui/phone-input';
 const formSchema = z.object({
   nome: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres'),
   email: z.string().email('Email inválido'),
-  phone: z.string().optional(),
+  phone: z.string().min(1, 'Telefone é obrigatório').min(10, 'Telefone deve ter no mínimo 10 dígitos').max(15, 'Telefone inválido'),
   admin: z.boolean().default(false)
 });
 type FormValues = z.infer<typeof formSchema>;
@@ -142,7 +142,7 @@ export const EditUserModal = ({
             <FormField control={form.control} name="phone" render={({
             field
           }) => <FormItem>
-                  <FormLabel>Telefone (Opcional)</FormLabel>
+                  <FormLabel>Telefone</FormLabel>
                   <FormControl>
                     <PhoneInput value={field.value || ''} countryCode={countryCode} onValueChange={field.onChange} onCountryChange={setCountryCode} placeholder="(11) 9999-9999" />
                   </FormControl>
