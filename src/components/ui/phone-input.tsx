@@ -34,11 +34,20 @@ const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
       return numbers
     }
 
+    const selectedCountry = countries.find(c => c.dialCode === countryCode)
+
     return (
       <div className="flex">
         <Select value={countryCode} onValueChange={onCountryChange}>
           <SelectTrigger className="w-[120px] rounded-r-none border-r-0">
-            <SelectValue />
+            <SelectValue>
+              {selectedCountry && (
+                <span className="flex items-center gap-1">
+                  <span>{selectedCountry.flag}</span>
+                  <span>{selectedCountry.dialCode}</span>
+                </span>
+              )}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
             {countries.map((country) => (
