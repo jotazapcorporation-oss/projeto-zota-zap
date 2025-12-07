@@ -22,14 +22,10 @@ const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
     }
 
     const formatPhoneDisplay = (phone: string) => {
-      const numbers = phone.replace(/\D/g, '')
+      const numbers = phone.replace(/\D/g, '').slice(0, 10)
       if (countryCode === '+55') {
-        // Formato brasileiro
-        if (numbers.length <= 10) {
-          return numbers.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3')
-        } else {
-          return numbers.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')
-        }
+        // Formato brasileiro fixo (10 dígitos)
+        return numbers.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3')
       }
       return numbers
     }
@@ -66,7 +62,7 @@ const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
           value={formatPhoneDisplay(value || '')}
           onChange={handlePhoneChange}
           className={cn("rounded-l-none", className)}
-          placeholder="(11) 99999-9999"
+          placeholder="(11) 9999-9999"
         />
       </div>
     )
