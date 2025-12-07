@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -22,6 +22,7 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useAdminActions } from '@/hooks/useAdminActions';
 import { Loader2 } from 'lucide-react';
+import { PhoneInput } from '@/components/ui/phone-input';
 
 const formSchema = z.object({
   nome: z.string().min(3, 'Nome deve ter no mínimo 3 caracteres'),
@@ -46,8 +47,27 @@ interface EditUserModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+// Extrair código de país do telefone completo
+const extractCountryCode = (fullPhone: string | null): { countryCode: string; localNumber: string } => {
+  if (!fullPhone) return { countryCode: '55', localNumber: '' };
+  
+  const cleaned = fullPhone.replace(/\D/g, '');
+  
+  // Códigos de país comuns (ordenados do mais longo para o mais curto)
+  const countryCodes = ['351', '55', '54', '56', '57', '58', '52', '51', '34', '33', '49', '44', '39', '1'];
+  
+  for (const code of countryCodes) {
+    if (cleaned.startsWith(code)) {
+      return { countryCode: code, localNumber: cleaned.slice(code.length) };
+    }
+  }
+  
+  return { countryCode: '55', localNumber: cleaned };
+};
+
 export const EditUserModal = ({ user, open, onOpenChange }: EditUserModalProps) => {
   const { updateUser } = useAdminActions();
+  const [countryCode, setCountryCode] = useState('55');
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -61,10 +81,13 @@ export const EditUserModal = ({ user, open, onOpenChange }: EditUserModalProps) 
 
   useEffect(() => {
     if (user) {
+      const { countryCode: extractedCode, localNumber } = extractCountryCode(user.phone);
+      setCountryCode(extractedCode);
+      
       form.reset({
         nome: user.nome || '',
         email: user.email || '',
-        phone: user.phone || '',
+        phone: localNumber,
         admin: user.admin || false,
       });
     }
@@ -73,10 +96,16 @@ export const EditUserModal = ({ user, open, onOpenChange }: EditUserModalProps) 
   const onSubmit = async (values: FormValues) => {
     if (!user) return;
 
+    // Concatenar código do país com número local (sem "+")
+    const fullPhone = values.phone ? `${countryCode}${values.phone.replace(/\D/g, '')}` : '';
+
     try {
       await updateUser.mutateAsync({
         id: user.id,
-        updates: values,
+        updates: {
+          ...values,
+          phone: fullPhone,
+        },
       });
       onOpenChange(false);
     } catch (error) {
@@ -133,7 +162,13 @@ export const EditUserModal = ({ user, open, onOpenChange }: EditUserModalProps) 
                 <FormItem>
                   <FormLabel>Telefone (Opcional)</FormLabel>
                   <FormControl>
-                    <Input placeholder="+55 11 99999-9999" {...field} />
+                    <PhoneInput
+                      value={field.value || ''}
+                      countryCode={countryCode}
+                      onValueChange={field.onChange}
+                      onCountryChange={setCountryCode}
+                      placeholder="(11) 99999-9999"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
