@@ -167,9 +167,12 @@ export const EditUserModal = ({ user, open, onOpenChange }: EditUserModalProps) 
                       countryCode={countryCode}
                       onValueChange={field.onChange}
                       onCountryChange={setCountryCode}
-                      placeholder="(11) 99999-9999"
+                      placeholder="(11) 9999-9999"
                     />
                   </FormControl>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    O dígito 9 é adicionado automaticamente à frente do número.
+                  </p>
                   <FormMessage />
                 </FormItem>
               )}
