@@ -15,7 +15,7 @@ export function AppLayout({ children }: AppLayoutProps) {
         <div className="flex flex-col flex-1">
           <header className="h-16 flex items-center justify-between px-4 sm:px-6 bg-card border-b shadow-sm sticky top-0 z-40">
             <div className="flex items-center gap-3">
-              <SidebarTrigger />
+              <SidebarTrigger className="h-10 w-10 flex-shrink-0" />
               <h1 className="text-lg font-semibold title-color hidden sm:block">VZAP - Sistema de Gestão Financeira</h1>
             </div>
             <ThemeToggle />
