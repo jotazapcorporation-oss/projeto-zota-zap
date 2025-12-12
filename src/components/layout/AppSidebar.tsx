@@ -157,14 +157,15 @@ function SortableMenuItem({
 }
 
 export function AppSidebar() {
-  const { state, toggleSidebar } = useSidebar()
+  const { state, toggleSidebar, isMobile } = useSidebar()
   const location = useLocation()
   const { signOut } = useAuth()
   const { isAdmin } = useAdmin()
   const currentPath = location.pathname
 
   const isActive = (path: string) => currentPath === path
-  const isCollapsed = state === "collapsed"
+  // No mobile, nunca considerar como colapsado para sempre mostrar textos
+  const isCollapsed = !isMobile && state === "collapsed"
 
   // Carregar ordem personalizada do localStorage
   const [menuItems, setMenuItems] = useState<MenuItem[]>(() => {
@@ -250,21 +251,24 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="h-screen border-r transition-all duration-300 ease-in-out">
       <SidebarHeader className="p-4 border-b">
         <div className="flex items-center justify-end">
-          <Button
-            onClick={toggleSidebar}
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8 hover:bg-accent"
-            aria-label={isCollapsed ? "Expandir menu" : "Recolher menu"}
-          >
-            <motion.div
-              initial={false}
-              animate={{ rotate: isCollapsed ? 180 : 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut" }}
+          {/* Esconder botão de collapse no mobile - não faz sentido em Sheet */}
+          {!isMobile && (
+            <Button
+              onClick={toggleSidebar}
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 hover:bg-accent"
+              aria-label={isCollapsed ? "Expandir menu" : "Recolher menu"}
             >
-              {isCollapsed ? <PanelLeft className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
-            </motion.div>
-          </Button>
+              <motion.div
+                initial={false}
+                animate={{ rotate: isCollapsed ? 180 : 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              >
+                {isCollapsed ? <PanelLeft className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+              </motion.div>
+            </Button>
+          )}
         </div>
       </SidebarHeader>
 
