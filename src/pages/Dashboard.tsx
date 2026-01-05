@@ -135,10 +135,10 @@ export default function Dashboard() {
         transacaoMonth = parseInt(month) - 1 // JS months are 0-indexed
         transacaoYear = parseInt(year)
       } else {
-        // Format: yyyy-MM-dd
-        const date = new Date(transacao.quando)
-        transacaoMonth = date.getMonth()
-        transacaoYear = date.getFullYear()
+        // Format: yyyy-MM-dd - parse manually to avoid timezone issues
+        const [year, month, day] = transacao.quando.split('-')
+        transacaoMonth = parseInt(month) - 1 // JS months are 0-indexed
+        transacaoYear = parseInt(year)
       }
       
       return transacaoMonth === parseInt(filterMonth) && 
