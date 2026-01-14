@@ -260,6 +260,12 @@ export default function Transacoes() {
   }
 
   const formatDate = (dateString: string) => {
+    // Parse manually to avoid iOS Safari issues with yyyy-MM-dd format
+    if (dateString.includes('-') && !dateString.includes('T')) {
+      const [year, month, day] = dateString.split('-').map(Number)
+      const date = new Date(year, month - 1, day)
+      return date.toLocaleDateString('pt-BR')
+    }
     return new Date(dateString).toLocaleDateString('pt-BR')
   }
 
