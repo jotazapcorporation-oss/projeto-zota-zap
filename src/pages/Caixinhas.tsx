@@ -69,7 +69,6 @@ export default function Caixinhas() {
   const {
     caixinhas,
     loading,
-    saldoGeral,
     createCaixinha,
     depositar,
     retirar,
