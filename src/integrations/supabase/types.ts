@@ -515,7 +515,6 @@ export type Database = {
           master_id: string | null
           nome: string | null
           phone: string | null
-          saldo: number | null
           subscription_end_date: string | null
           subscription_status: string | null
           updated_at: string
@@ -536,7 +535,6 @@ export type Database = {
           master_id?: string | null
           nome?: string | null
           phone?: string | null
-          saldo?: number | null
           subscription_end_date?: string | null
           subscription_status?: string | null
           updated_at?: string
@@ -557,7 +555,6 @@ export type Database = {
           master_id?: string | null
           nome?: string | null
           phone?: string | null
-          saldo?: number | null
           subscription_end_date?: string | null
           subscription_status?: string | null
           updated_at?: string
