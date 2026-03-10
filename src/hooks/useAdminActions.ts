@@ -40,11 +40,21 @@ export const useAdminActions = (
 
       if (payingError) throw payingError;
 
-      // Total de usuários criados grátis (sem assinaturaid)
+      // Total de admins
+      const { count: adminUsers, error: adminError } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true })
+        .eq('admin', true);
+
+      if (adminError) throw adminError;
+
+      // Total de usuários criados grátis (sem assinaturaid e não admin)
       const { count: freeUsers, error: freeError } = await supabase
         .from('profiles')
         .select('*', { count: 'exact', head: true })
-        .or('assinaturaid.is.null,assinaturaid.eq.');
+        .or('assinaturaid.is.null,assinaturaid.eq.')
+        .or('admin.is.null,admin.eq.false')
+        .not('admin', 'eq', true);
 
       if (freeError) throw freeError;
 
@@ -52,6 +62,7 @@ export const useAdminActions = (
         totalUsers: totalUsers || 0,
         payingUsers: payingUsers || 0,
         freeUsers: freeUsers || 0,
+        adminUsers: adminUsers || 0,
       };
     },
     staleTime: 30000,
