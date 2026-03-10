@@ -309,22 +309,24 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="p-4 space-y-4">
-        <UserProfile />
-        
-        <Button
-          onClick={signOut}
-          variant="outline"
-          size={isCollapsed ? "icon" : "lg"}
-          className="w-full"
-        >
-          <LogOut className={cn("transition-all duration-300", isCollapsed ? "h-5 w-5" : "h-4 w-4")} />
-          <span className={cn(
-            "ml-2 transition-all duration-300 overflow-hidden whitespace-nowrap",
-            isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
-          )}>
-            Sair
-          </span>
-        </Button>
+        <div className="flex flex-col items-center justify-center gap-4">
+          <UserProfile />
+          
+          <Button
+            onClick={signOut}
+            variant="outline"
+            size={isCollapsed ? "icon" : "lg"}
+            className="w-full"
+          >
+            <LogOut className={cn("transition-all duration-300", isCollapsed ? "h-5 w-5" : "h-4 w-4")} />
+            <span className={cn(
+              "ml-2 transition-all duration-300 overflow-hidden whitespace-nowrap",
+              isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
+            )}>
+              Sair
+            </span>
+          </Button>
+        </div>
       </SidebarFooter>
     </Sidebar>
   )
