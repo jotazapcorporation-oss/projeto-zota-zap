@@ -311,20 +311,25 @@ export function AppSidebar() {
       <SidebarFooter className="p-4 space-y-4">
         <div className="flex flex-col items-center justify-center gap-4">
           <UserProfile />
-          
+
           <Button
             onClick={signOut}
             variant="outline"
             size={isCollapsed ? "icon" : "lg"}
-            className="w-full"
+            className={cn(
+              "flex items-center justify-center",
+              isCollapsed ? "h-10 w-10 p-0" : "w-full"
+            )}
           >
-            <LogOut className={cn("transition-all duration-300", isCollapsed ? "h-5 w-5" : "h-4 w-4")} />
-            <span className={cn(
-              "ml-2 transition-all duration-300 overflow-hidden whitespace-nowrap",
-              isCollapsed ? "w-0 opacity-0" : "w-auto opacity-100"
-            )}>
-              Sair
-            </span>
+            <LogOut
+              className={cn(
+                "shrink-0 transition-all duration-300",
+                isCollapsed ? "h-5 w-5" : "h-4 w-4"
+              )}
+            />
+            {!isCollapsed && (
+              <span className="ml-2 whitespace-nowrap">Sair</span>
+            )}
           </Button>
         </div>
       </SidebarFooter>
