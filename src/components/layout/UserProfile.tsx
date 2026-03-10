@@ -92,7 +92,7 @@ export function UserProfile() {
   if (!profile) {
     return (
       <NavLink to="/perfil" className="block">
-        <div className={`flex items-center gap-2 p-2 mx-2 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors ${isCollapsed ? 'justify-center' : ''}`}>
+        <div className={`flex items-center gap-2 p-2 mx-2 bg-muted/50 rounded-lg hover:bg-muted/70 transition-colors ${isCollapsed ? 'justify-center' : 'max-w-[200px]'}`}>
           <Avatar className="h-9 w-9">
             <AvatarFallback className="bg-primary text-primary-foreground">
               {user?.email?.charAt(0).toUpperCase()}
