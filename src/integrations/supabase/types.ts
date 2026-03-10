@@ -334,6 +334,7 @@ export type Database = {
           icon: string | null
           id: string
           nome: string
+          nome_busca: string | null
           tags: string | null
           tipo: string | null
           updated_at: string
@@ -347,6 +348,7 @@ export type Database = {
           icon?: string | null
           id?: string
           nome: string
+          nome_busca?: string | null
           tags?: string | null
           tipo?: string | null
           updated_at?: string
@@ -360,6 +362,7 @@ export type Database = {
           icon?: string | null
           id?: string
           nome?: string
+          nome_busca?: string | null
           tags?: string | null
           tipo?: string | null
           updated_at?: string
@@ -788,6 +791,7 @@ export type Database = {
         Args: { _caixinha_id: string; _valor: number }
         Returns: Json
       }
+      unaccent: { Args: { "": string }; Returns: string }
     }
     Enums: {
       agent_action_type: "create" | "edit" | "cancel" | "remind" | "list"
