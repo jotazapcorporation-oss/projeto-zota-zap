@@ -275,7 +275,6 @@ export function useSupabaseCaixinhas() {
   return {
     caixinhas,
     loading,
-    saldoGeral,
     fetchCaixinhas,
     createCaixinha,
     depositar,

@@ -191,22 +191,7 @@ export default function Caixinhas() {
       </div>
 
       {/* Cards de Resumo */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card className="hover-impulse">
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Saldo Disponível</p>
-                <p className="text-2xl font-bold text-primary mt-1">
-                  {formatCurrency(saldoGeral)}
-                </p>
-              </div>
-              <div className="p-3 bg-primary/10 rounded-lg">
-                <Wallet className="h-6 w-6 text-primary" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="grid gap-4 md:grid-cols-2">
 
         <Card className="hover-impulse">
           <CardContent className="p-6">
