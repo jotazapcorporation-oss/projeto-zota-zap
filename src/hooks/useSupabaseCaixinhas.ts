@@ -19,7 +19,6 @@ export interface Caixinha {
 export function useSupabaseCaixinhas() {
   const [caixinhas, setCaixinhas] = useState<Caixinha[]>([]);
   const [loading, setLoading] = useState(true);
-  const [saldoGeral, setSaldoGeral] = useState(0);
 
   const fetchCaixinhas = async () => {
     try {

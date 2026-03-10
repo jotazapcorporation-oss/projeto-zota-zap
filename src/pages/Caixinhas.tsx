@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Wallet, PiggyBank, TrendingUp, ArrowUpDown } from "lucide-react";
+import { PiggyBank, TrendingUp, ArrowUpDown } from "lucide-react";
 import { useSupabaseCaixinhas } from "@/hooks/useSupabaseCaixinhas";
 import { CaixinhaCard } from "@/components/caixinhas/CaixinhaCard";
 import { CreateCaixinhaModal } from "@/components/caixinhas/CreateCaixinhaModal";
