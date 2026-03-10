@@ -66,6 +66,7 @@ export default function Admin() {
         totalUsers={userStats.data?.totalUsers || 0}
         payingUsers={userStats.data?.payingUsers || 0}
         freeUsers={userStats.data?.freeUsers || 0}
+        adminUsers={userStats.data?.adminUsers || 0}
       />
 
       <Card>
