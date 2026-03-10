@@ -53,7 +53,8 @@ export const useAdminActions = (
         .from('profiles')
         .select('*', { count: 'exact', head: true })
         .or('assinaturaid.is.null,assinaturaid.eq.')
-        .or('admin.is.null,admin.eq.false');
+        .or('admin.is.null,admin.eq.false')
+        .not('admin', 'eq', true);
 
       if (freeError) throw freeError;
 
