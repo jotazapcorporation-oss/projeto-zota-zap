@@ -52,7 +52,7 @@ const defaultItems: MenuItem[] = [
   { id: 'categorias', title: 'Categorias', url: '/categorias', icon: Tag },
   { id: 'relatorios', title: 'Relatórios', url: '/relatorios', icon: BarChart3 },
   { id: 'termometro', title: 'Termômetro', url: '/termometro', icon: Activity },
-  { id: 'lembretes', title: 'Lembretes', url: '/lembretes', icon: Bell },
+  
   { id: 'agenda', title: 'Agenda', url: '/agenda', icon: Calendar },
   { id: 'caixinhas', title: 'Caixinhas', url: '/caixinhas', icon: PiggyBank },
   { id: 'metas', title: 'Metas', url: '/metas', icon: Flag },
