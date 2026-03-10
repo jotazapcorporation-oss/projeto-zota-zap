@@ -277,7 +277,7 @@ export function AppSidebar() {
           <SidebarGroupLabel 
             className={cn(
               "px-3 text-xs uppercase tracking-wider text-muted-foreground transition-all duration-300",
-              isCollapsed ? "opacity-0 h-0 overflow-hidden" : "opacity-100"
+              isCollapsed ? "opacity-0" : "opacity-100"
             )}
           >
             Menu
