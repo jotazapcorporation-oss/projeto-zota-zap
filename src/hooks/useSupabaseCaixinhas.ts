@@ -19,7 +19,6 @@ export interface Caixinha {
 export function useSupabaseCaixinhas() {
   const [caixinhas, setCaixinhas] = useState<Caixinha[]>([]);
   const [loading, setLoading] = useState(true);
-  const [saldoGeral, setSaldoGeral] = useState(0);
 
   const fetchCaixinhas = async () => {
     try {
@@ -40,18 +39,6 @@ export function useSupabaseCaixinhas() {
       if (caixinhasError) throw caixinhasError;
 
       setCaixinhas(caixinhasData || []);
-
-      // Buscar saldo geral do usuário
-      // @ts-ignore - Avoiding circular type reference in Supabase types
-      const profileResponse = await supabase
-        .from("profiles")
-        .select("saldo")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (profileResponse.error) throw profileResponse.error;
-
-      setSaldoGeral(profileResponse.data?.saldo || 0);
     } catch (error: any) {
       console.error("Erro ao buscar caixinhas:", error);
       toast({
@@ -288,7 +275,6 @@ export function useSupabaseCaixinhas() {
   return {
     caixinhas,
     loading,
-    saldoGeral,
     fetchCaixinhas,
     createCaixinha,
     depositar,
