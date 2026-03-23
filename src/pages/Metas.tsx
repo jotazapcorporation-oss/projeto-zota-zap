@@ -317,7 +317,7 @@ export default function Metas() {
 
   if (!selectedBoard) {
     return (
-      <div className="min-h-[calc(100vh-8rem)] flex flex-col animate-fade-in">
+      <div className="min-h-[calc(100vh-8rem)] flex flex-col">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
