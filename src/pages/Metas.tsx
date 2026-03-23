@@ -360,7 +360,7 @@ export default function Metas() {
               />
             </div>
           )}
-        </motion.div>
+        </div>
 
         {/* Boards Grid */}
         {boards.length === 0 ? (
