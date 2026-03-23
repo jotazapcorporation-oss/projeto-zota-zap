@@ -319,9 +319,7 @@ export default function Metas() {
     return (
       <div className="min-h-[calc(100vh-8rem)] flex flex-col">
         {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
+        <div
           className="mb-8"
         >
           <div className="flex items-center justify-between mb-4">
