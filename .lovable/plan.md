@@ -1,18 +1,14 @@
 
 
-## Remover animação do container principal em /metas
+## Remover item "V-ZAP" do dropdown de temas
 
-No `src/pages/Metas.tsx`, remover a classe `animate-fade-in` da div principal (tela de boards, ~linha 228):
+No `src/components/ui/theme-toggle.tsx`, remover as linhas 31-33:
 
-```
-<div className="min-h-[calc(100vh-8rem)] flex flex-col animate-fade-in">
-```
-
-Alterar para:
-
-```
-<div className="min-h-[calc(100vh-8rem)] flex flex-col">
+```tsx
+<DropdownMenuItem onClick={() => setTheme('vzap')}>
+  V-ZAP
+</DropdownMenuItem>
 ```
 
-Uma única alteração de uma linha. As demais animações (header, cards, progress bar) permanecem intactas.
+Uma única remoção de 3 linhas.
 
