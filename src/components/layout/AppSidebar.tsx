@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { Home, CreditCard, Calendar, User, LogOut, Tag, FileText, PiggyBank, Activity, GripVertical, Flag, BarChart3, PanelLeftClose, PanelLeft, Shield } from 'lucide-react'
+import { Home, CreditCard, Calendar, User, LogOut, Tag, FileText, PiggyBank, Activity, GripVertical, Flag, BarChart3, PanelLeftClose, PanelLeft, Shield, Settings } from 'lucide-react'
 import { motion } from 'framer-motion'
 import {
   Sidebar,
