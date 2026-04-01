@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Users, UserPlus, Trash2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { getApiConfig } from "@/hooks/useAdminSettings";
 
 interface MasterPlan {
   limite_de_slots: number;
