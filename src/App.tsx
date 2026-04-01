@@ -170,6 +170,16 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/configuracoes"
+        element={
+          <ProtectedRoute>
+            <AdminRoute>
+              <Configuracoes />
+            </AdminRoute>
+          </ProtectedRoute>
+        }
+      />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

@@ -218,9 +218,9 @@ export function AppSidebar() {
           }
         }
         // Fallback: adicionar no final
-        return [...prev, adminItem]
+        return [...prev, ...adminItems]
       } else if (!isAdmin && prev.find(item => item.id === 'admin')) {
-        return prev.filter(item => item.id !== 'admin')
+        return prev.filter(item => item.id !== 'admin' && item.id !== 'configuracoes')
       }
       return prev
     })
