@@ -44,6 +44,30 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_settings: {
+        Row: {
+          external_api_url: string | null
+          id: string
+          updated_at: string
+          updated_by: string | null
+          use_external_api: boolean
+        }
+        Insert: {
+          external_api_url?: string | null
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+          use_external_api?: boolean
+        }
+        Update: {
+          external_api_url?: string | null
+          id?: string
+          updated_at?: string
+          updated_by?: string | null
+          use_external_api?: boolean
+        }
+        Relationships: []
+      }
       agenda_eventos: {
         Row: {
           created_at: string
