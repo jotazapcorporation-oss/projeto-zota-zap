@@ -192,12 +192,13 @@ export function AppSidebar() {
         return isAdmin ? [...defaultItems, adminItem] : defaultItems
       }
     }
-    return isAdmin ? [...defaultItems, adminItem] : defaultItems
+    return isAdmin ? [...defaultItems, adminItem, configItem] : defaultItems
   })
 
   // Atualizar menuItems quando isAdmin mudar
   useEffect(() => {
     setMenuItems(prev => {
+      const adminItems = [adminItem, configItem]
       if (isAdmin && !prev.find(item => item.id === 'admin')) {
         // Consultar localStorage para saber onde inserir
         const saved = localStorage.getItem('menu-order')
