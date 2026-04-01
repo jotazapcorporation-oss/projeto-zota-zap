@@ -23,6 +23,7 @@ import TermometroGastos from "./pages/TermometroGastos";
 import NotFound from "./pages/NotFound";
 import Plano from "./pages/Plano";
 import Admin from "./pages/Admin";
+import Configuracoes from "./pages/Configuracoes";
 
 const queryClient = new QueryClient();
 
@@ -165,6 +166,16 @@ function AppRoutes() {
           <ProtectedRoute>
             <AdminRoute>
               <Admin />
+            </AdminRoute>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/configuracoes"
+        element={
+          <ProtectedRoute>
+            <AdminRoute>
+              <Configuracoes />
             </AdminRoute>
           </ProtectedRoute>
         }

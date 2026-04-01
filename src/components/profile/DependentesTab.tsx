@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Users, UserPlus, Trash2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { getApiConfig } from "@/hooks/useAdminSettings";
 
 interface MasterPlan {
   limite_de_slots: number;
@@ -118,20 +119,42 @@ export function DependentesTab() {
       } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
 
-      // Chamar webhook do n8n
-      const response = await fetch("https://webhook.jzap.net/webhook/dependentes/adicionar", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Basic VVNVQVJJTzpTRU5IQQ==",
-        },
-        body: JSON.stringify({
-          nome: dependentName,
-          email: dependentEmail,
-          whatsapp: whatsappNumber,
-          master_id: user.id,
-        }),
-      });
+      const config = await getApiConfig();
+
+      let response: Response;
+
+      if (config.useExternal && config.baseUrl) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) throw new Error("Não autenticado");
+
+        response = await fetch(`${config.baseUrl}/dependente`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            nome: dependentName,
+            email: dependentEmail,
+            whatsapp: whatsappNumber,
+            master_id: user.id,
+          }),
+        });
+      } else {
+        response = await fetch("https://webhook.jzap.net/webhook/dependentes/adicionar", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Basic VVNVQVJJTzpTRU5IQQ==",
+          },
+          body: JSON.stringify({
+            nome: dependentName,
+            email: dependentEmail,
+            whatsapp: whatsappNumber,
+            master_id: user.id,
+          }),
+        });
+      }
 
       if (!response.ok) {
         throw new Error("Erro ao adicionar dependente");
@@ -172,17 +195,38 @@ export function DependentesTab() {
       } = await supabase.auth.getUser();
       if (!user) throw new Error("Usuário não autenticado");
 
-      const response = await fetch("https://webhook.jzap.net/webhook/dependentes/excluir", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: "Basic VVNVQVJJTzpTRU5IQQ==",
-        },
-        body: JSON.stringify({
-          dependente_id: dependenteId,
-          master_id: user.id,
-        }),
-      });
+      const config = await getApiConfig();
+
+      let response: Response;
+
+      if (config.useExternal && config.baseUrl) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) throw new Error("Não autenticado");
+
+        response = await fetch(`${config.baseUrl}/dependente/excluir`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            dependente_id: dependenteId,
+            master_id: user.id,
+          }),
+        });
+      } else {
+        response = await fetch("https://webhook.jzap.net/webhook/dependentes/excluir", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Basic VVNVQVJJTzpTRU5IQQ==",
+          },
+          body: JSON.stringify({
+            dependente_id: dependenteId,
+            master_id: user.id,
+          }),
+        });
+      }
 
       if (!response.ok) {
         throw new Error("Erro ao excluir dependente");

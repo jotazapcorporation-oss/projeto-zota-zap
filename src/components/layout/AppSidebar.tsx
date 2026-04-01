@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
-import { Home, CreditCard, Calendar, User, LogOut, Tag, FileText, PiggyBank, Activity, GripVertical, Flag, BarChart3, PanelLeftClose, PanelLeft, Shield } from 'lucide-react'
+import { Home, CreditCard, Calendar, User, LogOut, Tag, FileText, PiggyBank, Activity, GripVertical, Flag, BarChart3, PanelLeftClose, PanelLeft, Shield, Settings } from 'lucide-react'
 import { motion } from 'framer-motion'
 import {
   Sidebar,
@@ -60,6 +60,7 @@ const defaultItems: MenuItem[] = [
 ]
 
 const adminItem: MenuItem = { id: 'admin', title: 'Administração', url: '/admin', icon: Shield }
+const configItem: MenuItem = { id: 'configuracoes', title: 'Configurações', url: '/configuracoes', icon: Settings }
 
 function SortableMenuItem({ 
   item, 
@@ -173,8 +174,7 @@ export function AppSidebar() {
     if (saved) {
       try {
         const savedIds = JSON.parse(saved) as string[]
-        // Criar lista completa incluindo admin se aplicável
-        const allItems = isAdmin ? [...defaultItems, adminItem] : defaultItems
+        const allItems = isAdmin ? [...defaultItems, adminItem, configItem] : defaultItems
         
         // Reordenar os items baseado na ordem salva
         const ordered = savedIds
@@ -191,12 +191,13 @@ export function AppSidebar() {
         return isAdmin ? [...defaultItems, adminItem] : defaultItems
       }
     }
-    return isAdmin ? [...defaultItems, adminItem] : defaultItems
+    return isAdmin ? [...defaultItems, adminItem, configItem] : defaultItems
   })
 
   // Atualizar menuItems quando isAdmin mudar
   useEffect(() => {
     setMenuItems(prev => {
+      const adminItems = [adminItem, configItem]
       if (isAdmin && !prev.find(item => item.id === 'admin')) {
         // Consultar localStorage para saber onde inserir
         const saved = localStorage.getItem('menu-order')
@@ -216,9 +217,9 @@ export function AppSidebar() {
           }
         }
         // Fallback: adicionar no final
-        return [...prev, adminItem]
+        return [...prev, ...adminItems]
       } else if (!isAdmin && prev.find(item => item.id === 'admin')) {
-        return prev.filter(item => item.id !== 'admin')
+        return prev.filter(item => item.id !== 'admin' && item.id !== 'configuracoes')
       }
       return prev
     })
