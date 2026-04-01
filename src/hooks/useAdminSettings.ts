@@ -29,7 +29,7 @@ export const useAdminSettings = () => {
   });
 
   const updateSettings = useMutation({
-    mutationFn: async (updates: { use_external_api: boolean; external_api_url: string | null }) => {
+    mutationFn: async (updates: { id: string; use_external_api: boolean; external_api_url: string | null }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Não autenticado');
 
@@ -41,6 +41,7 @@ export const useAdminSettings = () => {
           updated_by: user.id,
           updated_at: new Date().toISOString(),
         })
+        .eq('id', updates.id)
         .select()
         .single();
 
