@@ -60,6 +60,7 @@ const defaultItems: MenuItem[] = [
 ]
 
 const adminItem: MenuItem = { id: 'admin', title: 'Administração', url: '/admin', icon: Shield }
+const configItem: MenuItem = { id: 'configuracoes', title: 'Configurações', url: '/configuracoes', icon: Settings }
 
 function SortableMenuItem({ 
   item, 
