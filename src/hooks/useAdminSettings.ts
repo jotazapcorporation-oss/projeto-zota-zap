@@ -41,6 +41,7 @@ export const useAdminSettings = () => {
           updated_by: user.id,
           updated_at: new Date().toISOString(),
         })
+        .eq('id', updates.id)
         .select()
         .single();
 

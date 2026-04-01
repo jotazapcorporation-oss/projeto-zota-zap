@@ -36,6 +36,7 @@ export default function Configuracoes() {
     }
 
     updateSettings.mutate({
+      id: settings.data!.id,
       use_external_api: useExternalApi,
       external_api_url: useExternalApi ? externalApiUrl.trim() : null,
     });
