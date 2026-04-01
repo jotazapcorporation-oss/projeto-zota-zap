@@ -174,8 +174,7 @@ export function AppSidebar() {
     if (saved) {
       try {
         const savedIds = JSON.parse(saved) as string[]
-        // Criar lista completa incluindo admin se aplicável
-        const allItems = isAdmin ? [...defaultItems, adminItem] : defaultItems
+        const allItems = isAdmin ? [...defaultItems, adminItem, configItem] : defaultItems
         
         // Reordenar os items baseado na ordem salva
         const ordered = savedIds

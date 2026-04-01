@@ -103,26 +103,51 @@ export const useAdminActions = (
     refetchOnWindowFocus: false,
   });
 
-  // Criar novo usuário via webhook
+  // Criar novo usuário via webhook ou API externa
   const createUser = useMutation({
     mutationFn: async (userData: UserData) => {
-      const credentials = btoa(`${import.meta.env.VITE_WEBHOOK_USERNAME || 'USUARIO'}:${import.meta.env.VITE_WEBHOOK_PASSWORD || 'SENHA'}`);
-      
-      const response = await fetch('https://webhook.jzap.net/webhook/admin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Basic ${credentials}`,
-        },
-        body: JSON.stringify(userData),
-      });
+      const config = await getApiConfig();
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Erro ao criar usuário' }));
-        throw new Error(errorData.error || 'Erro ao criar usuário');
+      if (config.useExternal && config.baseUrl) {
+        // API externa com Bearer token
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) throw new Error('Não autenticado');
+
+        const response = await fetch(`${config.baseUrl}/admin`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify(userData),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: 'Erro ao criar usuário' }));
+          throw new Error(errorData.error || 'Erro ao criar usuário');
+        }
+
+        return response.json();
+      } else {
+        // Webhook n8n com Basic Auth (comportamento atual)
+        const credentials = btoa(`${import.meta.env.VITE_WEBHOOK_USERNAME || 'USUARIO'}:${import.meta.env.VITE_WEBHOOK_PASSWORD || 'SENHA'}`);
+        
+        const response = await fetch('https://webhook.jzap.net/webhook/admin', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Basic ${credentials}`,
+          },
+          body: JSON.stringify(userData),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: 'Erro ao criar usuário' }));
+          throw new Error(errorData.error || 'Erro ao criar usuário');
+        }
+
+        return response.json();
       }
-
-      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
