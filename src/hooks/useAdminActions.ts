@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from './useLocalAuth';
 import { getAvatarUrl } from '@/utils/avatar';
+import { getApiConfig } from './useAdminSettings';
 
 export interface UserData {
   nome: string;
