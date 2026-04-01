@@ -23,6 +23,7 @@ import TermometroGastos from "./pages/TermometroGastos";
 import NotFound from "./pages/NotFound";
 import Plano from "./pages/Plano";
 import Admin from "./pages/Admin";
+import Configuracoes from "./pages/Configuracoes";
 
 const queryClient = new QueryClient();
 
