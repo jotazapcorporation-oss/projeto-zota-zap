@@ -29,7 +29,7 @@ export const useAdminSettings = () => {
   });
 
   const updateSettings = useMutation({
-    mutationFn: async (updates: { use_external_api: boolean; external_api_url: string | null }) => {
+    mutationFn: async (updates: { id: string; use_external_api: boolean; external_api_url: string | null }) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Não autenticado');
 
